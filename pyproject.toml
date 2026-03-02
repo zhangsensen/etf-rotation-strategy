@@ -3,9 +3,9 @@ requires = ["setuptools>=68", "wheel"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "quant-factor-trading"
-version = "0.3.0"
-description = "综合量化因子投资平台 - ETF轮动 + 因子库 + WFO优化"
+name = "etf-rotation-strategy"
+version = "8.0.0"
+description = "生产级 A 股 ETF 轮动策略平台 — 三层验证引擎 (WFO → VEC → BT) + 实盘验证"
 readme = "README.md"
 license = {text = "MIT"}
 authors = [{name = "Quant Team", email = "quant@example.com"}]
@@ -159,11 +159,11 @@ exclude_lines = [
 
 # ============ 项目URLs ============
 [project.urls]
-Homepage = "https://github.com/zhangsensen/quant-factor-trading"
-Repository = "https://github.com/zhangsensen/quant-factor-trading.git"
-Documentation = "https://github.com/zhangsensen/quant-factor-trading/blob/main/README.md"
-"Bug Tracker" = "https://github.com/zhangsensen/quant-factor-trading/issues"
-Changelog = "https://github.com/zhangsensen/quant-factor-trading/releases"
+Homepage = "https://github.com/zhangsensen/etf-rotation-strategy"
+Repository = "https://github.com/zhangsensen/etf-rotation-strategy.git"
+Documentation = "https://github.com/zhangsensen/etf-rotation-strategy/blob/master/README.md"
+"Bug Tracker" = "https://github.com/zhangsensen/etf-rotation-strategy/issues"
+Changelog = "https://github.com/zhangsensen/etf-rotation-strategy/releases"
 
 [tool.setuptools.packages.find]
 where = ["src"]

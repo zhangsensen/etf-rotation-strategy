@@ -91,8 +91,10 @@ class SmartETFDownloader:
 
                     main_config = yaml.safe_load(f)
                     token = main_config.get("tushare_token")
-            except:
-                token = "4a24bcfff16f7593632e6c46976a83e6a26f8f565daa156cb9ea9c1f"
+            except Exception:
+                import os
+
+                token = os.environ.get("TUSHARE_TOKEN")
 
         if not token:
             raise ValueError("未找到Tushare API token")

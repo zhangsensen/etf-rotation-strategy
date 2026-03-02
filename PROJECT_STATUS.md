@@ -1,6 +1,6 @@
 # ETF策略项目状态汇总
 
-**最后更新**: 2026-02-16
+**最后更新**: 2026-03-02
 **当前版本**: v8.0 (sealed 2026-02-15)
 **生产策略**: composite_1 (5F) — ADX_14D + BREAKOUT_20D + MARGIN_BUY_RATIO + PRICE_POSITION_120D + SHARE_CHG_5D
 **回退策略**: core_4f (4F) — MARGIN_CHG_10D + PRICE_POSITION_120D + SHARE_CHG_20D + SLOPE_20D
@@ -142,16 +142,22 @@ IC gate+评分     Numba JIT内核     Backtrader事件驱动
 - **验证**: HO中位数 +4.9pp
 - **文档**: `docs/research/bucket_constraints_ablation.md`
 
-### 3.3 待研究方向
+### 3.3 研究状态: 三维度全部耗尽
 
-#### Phase 2: 新信息源因子开发
+WHAT (因子重组合 + 新管道 + 得分离散度)、WHEN (收益离散度)、HOW (策略 Ensemble) 三个维度的改进空间已全部关闭:
 
-| 实验 | 数据源 | 因子候选 | 状态 |
-|------|--------|---------|------|
-| B4 汇率 | AkShare BOC FX | USD_CNY_MOM_5D, FX_CARRY | **数据已有** |
-| B2 北向资金 | Tushare moneyflow_hsgt | NORTHBOUND_NET_5D | 需确认映射 |
-| B1 IOPV折溢价 | QMT/Wind实时 | IOPV_PREMIUM_5D | 数据管道待建 |
-| B3 期权IV | Tushare opt_daily | IV_RANK_20D | 覆盖面窄 |
+| 方向 | 结论 | 关键证据 |
+|------|------|---------|
+| 因子重组合 | EXHAUSTED | 23 因子空间 Kaiser 5/17，v8.0 已最优 |
+| Moneyflow 因子 | REJECTED | 与 SHARE_CHG_5D rho=-0.58，同维度信息 |
+| 得分离散度 | REJECTED | rho<0.08, train/HO 方向反转 |
+| 收益离散度 (WHEN) | REJECTED | ⊂ 市场波动率 rho=0.538 (Rule 33) |
+| 策略 Ensemble (HOW) | REJECTED | POS_SIZE=1 崩塌 -75% Sharpe (Rule 32) |
+| ETF 折溢价 | REJECTED | 正交但无预测力 stability=0.27 (Rule 34) |
+
+**当前策略**: 停止所有因子研究，专注 v8.0 shadow 验证 + 日常运维。新正交数据源可得时再启动。
+
+详细文档: `docs/research/when_how_dimension_research_20260217.md`
 
 ---
 
@@ -211,7 +217,7 @@ cat sealed_strategies/v8.0_20260215/SEAL_SUMMARY.md
 ### 6.3 接手checklist
 - [ ] 已阅读 `CLAUDE.md` 了解项目规范
 - [ ] 已阅读本文件了解当前状态
-- [ ] 已阅读 `memory/rules.md` 了解 26 条硬性规则
+- [ ] 已阅读 `memory/rules.md` 了解 34 条硬性规则
 - [ ] 已理解三层验证体系和信号评估原则
 - [ ] 已理解 v8.0 生产参数 (FREQ=5, POS_SIZE=2, Exp4 hysteresis)
 
@@ -245,4 +251,4 @@ BT必须使用执行态 (shadow_holdings) 而非信号态驱动 hysteresis
 **文档维护**: 每次重大研究后更新
 **封存策略**: `sealed_strategies/v8.0_20260215/`
 **研究文档**: `docs/research/`
-**经验教训**: `memory/rules.md` (26条)
+**经验教训**: `memory/rules.md` (34条)

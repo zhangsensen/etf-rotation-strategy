@@ -30,7 +30,7 @@ class ETFDataUpdater:
 
     def __init__(
         self,
-        host: str = "192.168.122.132",
+        host: str = "localhost",
         port: int = 8001,
         data_dir: str = "./raw/ETF/daily",
     ):
@@ -338,7 +338,7 @@ async def main():
     parser.add_argument("--symbols", type=str, help="ETF代码，逗号分隔")
     parser.add_argument("--config", type=str, help="配置文件路径")
     parser.add_argument("--all", action="store_true", help="更新配置文件中的所有ETF")
-    parser.add_argument("--host", type=str, default="192.168.122.132")
+    parser.add_argument("--host", type=str, default="localhost")
     parser.add_argument("--port", type=int, default=8001)
     parser.add_argument("--data-dir", type=str, default="./raw/ETF/daily")
     parser.add_argument("--exchange", type=str, default="SH")
