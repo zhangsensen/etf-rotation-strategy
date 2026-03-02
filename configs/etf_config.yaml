@@ -3,7 +3,7 @@
 
 # 数据源配置
 source: "tushare"
-tushare_token: "4a24bcfff16f7593632e6c46976a83e6a26f8f565daa156cb9ea9c1f"  # Tushare API Token
+tushare_token: "${TUSHARE_TOKEN}"  # 从环境变量获取，或替换为你的 token
 
 # 数据目录配置
 base_dir: "raw/ETF"

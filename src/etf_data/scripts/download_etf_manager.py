@@ -7,6 +7,7 @@ ETF下载管理器主脚本
 
 import argparse
 import logging
+import os
 import sys
 from pathlib import Path
 from typing import List, Optional
@@ -43,7 +44,7 @@ def create_default_config() -> ETFConfig:
     except:
         return ETFConfig(
             source=ETFDataSource.TUSHARE,
-            tushare_token="4a24bcfff16f7593632e6c46976a83e6a26f8f565daa156cb9ea9c1f",  # 使用配置的Token
+            tushare_token=os.environ.get("TUSHARE_TOKEN", ""),  # 使用配置的Token
             base_dir="raw/ETF",
             years_back=2,
             max_retries=3,
@@ -69,7 +70,7 @@ def create_quick_download_config() -> ETFConfig:
     except:
         return ETFConfig(
             source=ETFDataSource.TUSHARE,
-            tushare_token="4a24bcfff16f7593632e6c46976a83e6a26f8f565daa156cb9ea9c1f",
+            tushare_token=os.environ.get("TUSHARE_TOKEN", ""),
             base_dir="raw/ETF",
             years_back=1,
             max_retries=2,

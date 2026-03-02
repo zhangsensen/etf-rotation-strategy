@@ -14,6 +14,7 @@ Tushare ETF 份额(fund_share) + 净值(fund_nav) 增量更新脚本
   uv run python scripts/update_tushare_funddata.py --check    # 仅检查数据状态
 """
 
+import os
 import argparse
 import sys
 import time
@@ -34,7 +35,7 @@ logging.basicConfig(level=logging.INFO, format="%(asctime)s [%(levelname)s] %(me
 logger = logging.getLogger(__name__)
 
 # ── Config ──────────────────────────────────────────────────────────
-TOKEN = "4a24bcfff16f7593632e6c46976a83e6a26f8f565daa156cb9ea9c1f"
+TOKEN = os.environ.get("TUSHARE_TOKEN", "")
 FULL_START = "20200101"
 
 # 49 ETFs from combo_wfo_config.yaml (41 A-share + 8 QDII)

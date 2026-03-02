@@ -202,8 +202,8 @@ cross_section:
       allocation: 0.5
       pos_count: 1
 data:
-  cache_dir: /home/sensen/dev/projects/-0927/.cache
-  data_dir: /home/sensen/dev/projects/-0927/raw/ETF/daily
+  cache_dir: .cache
+  data_dir: raw/ETF/daily
   start_date: '2020-01-01'
   end_date: '2026-02-10'
   training_end_date: '2025-04-30'

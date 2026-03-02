@@ -680,7 +680,7 @@ composite = 0.4 × MA信号 + 0.4 × 动量信号 + 0.2 × 黄金信号
 ### 9.1 数据来源
 
 ```
-QMT Trading Terminal (VM: 192.168.122.132:8001)
+QMT Trading Terminal (VM: <your-qmt-host>:8001)
     ↓ qmt-data-bridge SDK (异步API)
     ↓
 scripts/update_daily_from_qmt_bridge.py --all

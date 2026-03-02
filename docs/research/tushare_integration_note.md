@@ -9,4 +9,4 @@
 
 只要配置了 Token，就可以直接通过 API 获取，不需要任何爬虫逻辑（解析 HTML 等）。
 
-Tushare Token: `3231795730303233c0bd4007df945283857b2803b98c397554580bf1`
+Tushare Token: 通过环境变量 `TUSHARE_TOKEN` 配置

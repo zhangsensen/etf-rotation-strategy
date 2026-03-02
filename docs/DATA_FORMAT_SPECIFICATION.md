@@ -215,7 +215,7 @@ print(msg)
 ### 批量验证
 
 ```bash
-cd /home/sensen/dev/projects/-0927
+cd /path/to/etf-rotation-strategy
 uv run python << 'EOF'
 import pandas as pd
 import os
@@ -356,7 +356,7 @@ ValueError: 510300.SH 缺少vol或volume列
 
 ### 本项目使用的数据源
 - **QMT Bridge API** (推荐)
-  - Host: `192.168.122.132:8001`
+  - Host: `<your-qmt-host>:8001`
   - SDK: `qmt-data-bridge`
   - 格式: 已转换为标准格式（包含复权价格）
 
