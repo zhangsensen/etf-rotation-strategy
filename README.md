@@ -1,3 +1,5 @@
+
+
 # A 股 ETF 轮动策略平台
 
 > 面向中国 A 股市场的 **生产级 ETF 轮动系统**。基于多因子截面选股，通过三层验证引擎 (WFO → VEC → BT) 从 12,597 个因子组合中筛选最优策略，实盘运行中。
@@ -97,7 +99,7 @@ cd etf-rotation-strategy
 uv sync --dev
 
 # 运行完整管线 (WFO → VEC → BT)
-make pipeline          # ~76 秒
+make pipeline          # ~40-60 分钟
 
 # 单独运行各层
 make wfo               # WFO 筛选 (~2min)
