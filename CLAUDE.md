@@ -1,3 +1,7 @@
+# 当前规则入口
+
+根 [AGENTS.md](AGENTS.md) 与用户当前指令优先。当前 IC 研究使用独立环境和固定 14 ETF / 8 组合同；以下原平台规则只用于其历史策略，收益、执行或 WFO 门槛不用于当前 IC 挖掘。
+
 # CLAUDE.md
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.

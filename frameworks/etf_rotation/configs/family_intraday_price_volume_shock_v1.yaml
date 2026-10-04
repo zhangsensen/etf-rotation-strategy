@@ -1,0 +1,9 @@
+domain: etf_rotation
+grammar_version: etf_family_intraday_price_volume_shock_v1
+factor_source: intraday_price_volume_shock
+frequency: 60m
+available_frequencies: [1m, 5m, 15m, 30m, 60m]
+atoms:
+  - {name: INTRADAY_PV_RETURN_TURNOVER_CORR, family: intraday_price_volume_shock}
+  - {name: INTRADAY_MAX_RETURN_TURNOVER_IMPACT, family: intraday_price_volume_shock}
+grammar: {operators: [atomic], pair_policy: cross_family_only, max_atoms: 1}

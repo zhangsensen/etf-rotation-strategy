@@ -1,0 +1,15 @@
+version: group_ic20_batch24_minute_20260923_annotation
+purpose: historical_annotation_only_not_runnable
+parent_config: frameworks/etf_rotation/configs/group_ic20_batch24_minute_20260923.yaml
+parent_config_sha256: 7f02ec017f3fc2b46191414a22e2f87c12e3a11bec401c89438581260041d962
+run_id: group_ic20_batch24_minute_20260923
+annotation:
+  first_attempt_failed_empty_run_dir: >-
+    The first attempt used prior_registered=370 instead of 378 and failed in
+    reserve_plan before PLAN.json or any calculation result existed. The empty
+    source-only directory was physically deleted rather than archived. This is
+    a process exception, not part of the sealed factor configuration. Future
+    failed or source-only run directories must be moved to the local archive
+    with a reason record and must not be physically deleted.
+sealed_run_snapshot: runtime_outputs/etf_rotation_research/runs/group_ic20_batch24_minute_20260923/source/group_ic20_batch24_minute_20260923.yaml
+not_a_factor_definition: true

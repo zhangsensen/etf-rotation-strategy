@@ -1,0 +1,52 @@
+version: group_ic_us_index_20260925
+source_type: us_index
+purpose: seen_history_discovery_only
+campaign_extension: true
+discovery_surface: IC_DISCOVERY_ONLY
+screens_version: cold_250_v1
+data_root: /home/sensen/dev/projects/gpu_ml/data/etf_rotation_v1
+as_of: '2026-03-24'
+start: '2023-07-27'
+evaluation_start: '2025-01-01'
+groups: frameworks/etf_rotation/configs/etf_candidate14_economic_groups_v1.yaml
+universe: config/etf_rotation_universe_v1.json
+calendar_symbol: 510300.SH
+series: NASDAQ100
+us_index_file: runtime_outputs/etf_rotation_research/us_index_source_preflight_20260925/NASDAQ100.csv
+us_index_sha256: 2e38516acc7da9fba531edae2aa82d1fd663254db71541bff828a6093fa68abc
+entry_lag: 2
+horizon: 5
+top_k: 2
+warmup: 60
+hac_lag: 10
+max_leads: 1
+external_registered_definitions: 8
+screens:
+  min_days: 250
+  min_year_days: 40
+  min_positive_years: 2
+  min_ic: 0.01
+  min_ic_hac_t: 2.0
+  min_ic_block_t: 2.0
+  min_excess8_hac_t: 2.0
+  alpha: 0.05
+  max_abs_rank_corr: 0.7
+prior_registered: 530
+budget_cap: 531
+new_definitions: 1
+windows: [60]
+mechanisms:
+  us_lagged_transmission:
+    direction: 1
+    family: external_us_market_lagged_transmission
+    hypothesis: ETF groups with stronger measured lagged response to the latest-known Nasdaq 100 shock may retain relative strength over the fixed H5 label.
+    raw_formula: beta_i,D-1(rolling 60 paired ETF daily returns vs prior A-share day's latest-known NASDAQ100 return) * latest_known_NASDAQ100_return_D
+notes:
+  fixed_population: 14 candidate ETFs / 8 economic groups; NASDAQ100 is an auxiliary feature only
+  signal_time: close(D); use only US observation dates strictly before D, at most 5 calendar days old
+  label: open(D+2) to open(D+7), adjusted-open research prices
+  source_vintage: FRED historical snapshot; actual daily publication vintage not verified
+  direction_status: positive economic prior frozen before H5 label read
+  historical_status: already-seen 2025+ window, never independent confirmation
+  prelabel_rejection: beta times US shock minus ETF D return correlated 0.931 with negative D return and was rejected without reading H5 labels
+  redundancy_annotation: complete-eight-group no-label comparison covered 501 saved score files and found maximum mean absolute daily rank correlation 0.594; old pending L40 gap scores had zero complete-eight-group dates through cutoff, so a prior partial-group correlation of 0.949 is not a valid whole-population redundancy statistic

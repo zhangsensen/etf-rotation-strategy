@@ -1,0 +1,16 @@
+domain: etf_rotation
+grammar_version: etf_family_pi_repl_s28_v1
+factor_source: pi_repl_s28
+frequency: 1m
+# S28 stage (round_618): the only 2 atoms in the S28 pair list with no
+# prior independent implementation on this line. S28_PRICE_POSITION_20:
+# Lane (1984) Stochastic %K-style price-range position, 20d high/low.
+# S28_VOV_HAR_RESID_20: Corsi (2009) HAR-RV residual (volatility-of-
+# volatility surprise), 60d rolling regression of daily RV (from 1m
+# returns) on lagged 1/5/22-day HAR components, 20d mean of the
+# within-window residual. Independently built from these literature
+# definitions; pi workspace code not read.
+atoms:
+  - {name: S28_PRICE_POSITION_20, family: pi_repl_s28}
+  - {name: S28_VOV_HAR_RESID_20, family: pi_repl_s28}
+grammar: {operators: [atomic, rank_spread], pair_policy: cross_family_only, max_atoms: 2}

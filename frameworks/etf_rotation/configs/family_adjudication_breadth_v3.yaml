@@ -1,0 +1,33 @@
+domain: etf_rotation_family_adjudication
+generation: etf_family_breadth_v3_first_adjudication
+prior_generations_charged: 4
+family_catalog: configs/family_catalog_v3.yaml
+economic_axis_taxonomy: configs/economic_axis_taxonomy_v3.yaml
+ranking_roles:
+- candidate
+expected_ranking_symbols: 14
+min_history_sessions: 120
+require_positive_volume: true
+min_pairs: 8
+execution:
+  signal_time: D_CLOSE
+  entry_lag_sessions: 2
+  horizons:
+  - 5
+  - 10
+  - 20
+  primary_horizon: 5
+surfaces:
+  discovery_end: '2023-12-31'
+  seen_audit_start: '2024-01-01'
+  seen_audit_end: '2025-04-30'
+gates:
+  min_discovery_days: 360
+  min_abs_ic: 0.01
+  min_abs_seen_audit_ic: 0.01
+  maxstat_alpha: 0.05
+referee:
+  block_sessions: 20
+  permutation_draws: 2000
+  max_permutation_draws: 1000000
+  seed: 20260919

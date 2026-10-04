@@ -1,0 +1,26 @@
+domain: etf_rotation
+grammar_version: etf_family_intraday_momentum_30m_v1
+factor_source: intraday_momentum_30m
+frequency: 30m
+asset_class_config: configs/etf_asset_classes_current20_v1.yaml
+# Literature provenance (directive: no citation, no atom):
+# INTRADAY_MOM_CORR_20/60: Gao, Han, Li & Zhou (2018, JFE) market intraday
+#   momentum -- rolling correlation, first vs last 30-minute bar return of
+#   the SAME day (distinct from intraday_return_path's FIRST_HOUR_RET/
+#   LAST_HOUR_RET levels and MORNING_AFTERNOON_SPREAD same-day difference).
+# INTRADAY_MOM_BETA_20: same relationship, regression slope instead of
+#   correlation (last30 ~ first30).
+# OVERNIGHT_FIRST30_CORR_20: rolling correlation of the overnight gap
+#   (open/prev_close-1) with the same day's first-30-minute return --
+#   tests whether the gap direction continues into the opening half hour.
+# LAST30_NEXTOPEN_CORR_20: rolling correlation of the PRIOR day's last-30-
+#   minute return with the current day's overnight gap (lagged by
+#   construction so every pair in the window is known by the signal date;
+#   see provider docstring for the leak-avoidance alignment).
+atoms:
+  - {name: INTRADAY_MOM_CORR_20, family: intraday_momentum_30m}
+  - {name: INTRADAY_MOM_CORR_60, family: intraday_momentum_30m}
+  - {name: INTRADAY_MOM_BETA_20, family: intraday_momentum_30m}
+  - {name: OVERNIGHT_FIRST30_CORR_20, family: intraday_momentum_30m}
+  - {name: LAST30_NEXTOPEN_CORR_20, family: intraday_momentum_30m}
+grammar: {operators: [atomic], pair_policy: cross_family_only, max_atoms: 1}

@@ -1,0 +1,18 @@
+domain: etf_rotation
+grammar_version: etf_family_gap_absorption_path_1m_v1
+factor_source: gap_absorption_path_1m
+frequency: 1m
+# S31 stage (round_629): deepen S27's GAP_DD_CONSUMPTION_RATIO_20
+# mechanism (the strongest left leg on this line). Barclay-Hendershott
+# 2003 price discovery; Bogousslavsky 2021; Gao-Han-Li-Zhou 2018.
+# Independently built from these literature definitions.
+atoms:
+  - {name: GAP_FILL_TIMING_20, family: gap_absorption_path_1m}
+  - {name: GAP_REMAIN_10AM_20, family: gap_absorption_path_1m}
+  - {name: GAP_REMAIN_1130_20, family: gap_absorption_path_1m}
+  - {name: GAP_REMAIN_CLOSE_20, family: gap_absorption_path_1m}
+  - {name: GAP_DD_DIRECTION_MATCH_20, family: gap_absorption_path_1m}
+  - {name: GAP_SHARE_OF_RANGE_20, family: gap_absorption_path_1m}
+  - {name: GAP_FILL_TIMING_CHG_20, family: gap_absorption_path_1m}
+  - {name: GAP_DD_DIRECTION_MATCH_CHG_20, family: gap_absorption_path_1m}
+grammar: {operators: [atomic, rank_spread], pair_policy: cross_family_only, max_atoms: 8}

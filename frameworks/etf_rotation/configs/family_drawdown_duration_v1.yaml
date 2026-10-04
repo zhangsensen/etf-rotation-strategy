@@ -1,0 +1,15 @@
+domain: etf_rotation
+grammar_version: etf_family_drawdown_duration_v1
+factor_source: drawdown_duration
+atoms:
+- name: UNDERWATER_RUN_60
+  family: drawdown_duration
+- name: UNDERWATER_FRACTION_20
+  family: drawdown_duration
+- name: UNDERWATER_FRACTION_60
+  family: drawdown_duration
+grammar:
+  operators:
+  - atomic
+  pair_policy: cross_family_only
+  max_atoms: 1

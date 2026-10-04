@@ -1,0 +1,8 @@
+domain: etf_rotation
+grammar_version: etf_family_path_efficiency_v1
+factor_source: path_efficiency
+atoms:
+  - {name: PATH_EFFICIENCY_10, family: path_efficiency}
+  - {name: PATH_EFFICIENCY_20, family: path_efficiency}
+  - {name: PATH_EFFICIENCY_60, family: path_efficiency}
+grammar: {operators: [atomic], pair_policy: cross_family_only, max_atoms: 1}

@@ -1,0 +1,133 @@
+version: group_ic_round5_minute_and_tail_20260923
+source_type: claude_rounds
+purpose: seen_history_discovery_only
+campaign_extension: true
+discovery_surface: IC_DISCOVERY_ONLY
+data_root: /home/sensen/dev/projects/gpu_ml/data/etf_rotation_v1
+as_of: '2026-09-17'
+start: '2023-07-27'
+evaluation_start: '2025-01-01'
+groups: frameworks/etf_rotation/configs/etf_candidate14_economic_groups_v1.yaml
+universe: config/etf_rotation_universe_v1.json
+calendar_symbol: 510300.SH
+entry_lag: 2
+horizon: 5
+top_k: 2
+warmup: 60
+hac_lag: 10
+max_leads: 4
+external_registered_definitions: 8
+minute_inputs: true
+screens:
+  min_days: 360
+  min_year_days: 40
+  min_positive_years: 2
+  min_ic: 0.01
+  min_ic_hac_t: 2.0
+  min_ic_block_t: 2.0
+  min_excess8_hac_t: 2.0
+  alpha: 0.05
+  max_abs_rank_corr: 0.7
+prior_registered: 480
+budget_cap: 483
+new_definitions: 3
+mechanisms:
+  minute_lead_lag_corr:
+    direction: 1
+    window: 20
+    hypothesis: "20-trading-day rolling mean of the per-day realized correlation between each member's PRIOR 5m bar return and the market's CONTEMPORANEOUS 5m bar return (member leads market by one 5-minute bar within the same trading day only; the first bar of each day has no same-day predecessor and is NaN). direction +1: a name whose intraday moves systematically lead the market's is expected to keep leading, predicting relative strength -- same directional sign as daily_rounds' lead_to_market, a different statistic (5-minute-bar lag within a day, not a full trading day)."
+    raw_formula: "Per trading day: corr(market_5m[t], member_5m[t-1]) over that single day's ~47 5m bars (pairwise-complete, min 10 valid bars or NaN); then a 20-trading-day rolling mean of that daily statistic, reindexed onto the full daily calendar. Uses data/etf_rotation_v1/5m/<symbol>.parquet (not 1m); 513100.SH's halted-open 5m bars (09:35-10:30 on days flagged by etf_ic_monthly_factory.open_halt_dates) are masked to NaN before any return is computed."
+  tail_coexceedance_asymmetry:
+    direction: 1
+    window: 60
+    hypothesis: "Upper-tail coexceedance rate minus lower-tail coexceedance rate: P(member in its own top-20% days | market in its own top-20% days) minus the analogous down-tail quantity, both within the trailing 60-day window, both sides' quantile thresholds computed causally (each day's own trailing quantile). direction +1: a name that co-exceeds with the market's upside more often than with its downside (upside beta without matching downside beta) is treated as a favorable asymmetry, predicting relative strength."
+    raw_formula: "coexceed_up = mean(member_up_tail & market_up_tail) / mean(market_up_tail); coexceed_down analogous with both series' bottom-20%; coexceed_up - coexceed_down; conditional min_periods=3 (matching market_tail_relative_return's own 20%-tail floor)."
+  residual_kurtosis:
+    direction: -1
+    window: 60
+    hypothesis: "Rolling excess kurtosis (pandas' Series.kurt(), Fisher-definition, verified against scipy.stats.kurtosis(fisher=True, bias=False)) of the market residual (r_i - r_m, same market leg as etf_group_daily_rounds._market_residuals), w=60. direction -1: fatter residual tails mark elevated idiosyncratic shock risk, predicting relative weakness."
+    raw_formula: "residual = r_i - r_m; rolling_kurt(residual, w=60, min_periods=60)."
+notes:
+  fixed_population: 14 ETFs / 8 economic groups
+  timing: close(D) signal; open(D+2) to open(D+7) H5 research label contract
+  evaluation_surface: previously-seen history, signal_date 2025-01-01 through 2026-09-17; discovery, not OOS
+  direction_status: economic sign frozen before evaluation; no sign selection or automatic flip
+  complete_input_windows_only: true
+  member_aggregation: each member atom computed independently, then existing fixed group aggregation
+  source_vintage: canonical daily bars (residual_kurtosis, tail_coexceedance_asymmetry) plus 5m intraday bars (minute_lead_lag_corr only, data/etf_rotation_v1/5m/, not 1m); no additional information sources.
+  engine: >-
+    frameworks/etf_rotation/src/etf_strategy/core/etf_group_claude_rounds.py, source_type=claude_rounds, with
+    the new optional minute_inputs=true flag (this config's minute_lead_lag_corr is the reason it is set).
+    discover_etf_groups.py was extended with a scoped claude_rounds+minute_inputs branch (17-line diff,
+    verified isolated: minute_inputs = kind=='claude_rounds' and cfg.get('minute_inputs') is True; every prior
+    claude_rounds config, including Batch A/B and rounds 1-4, has no minute_inputs field and is unaffected)
+    that (a) adds 5m + 513100.SH's raw 1m file to the run's input-hash list, (b) loads minute panels via the
+    new load_minute_panels/apply_513100_halt_mask functions in etf_group_claude_rounds.py and attaches them
+    under feature_panels['minute'], and (c) extends the canonical-reload prefix leak check to also reload and
+    truncate minute panels at 2024-12-31, so the existing leak-check coverage is not weakened for minute-based
+    candidates. leakage_checks (etf_group_claude_rounds.py) was extended to handle the nested minute-panel dict
+    (not itself a DataFrame) for both the prefix-truncation and future-perturbation checks. Manually simulated
+    the exact pipeline discover_etf_groups.py will execute (build_atoms + both leakage_checks cuts + the
+    canonical reload prefix check) against real full-history data before this config was drafted: all pass,
+    ~33 seconds total.
+  campaign: >-
+    Round 5 of the USER 2026-09-23 50-round sub-agent mining campaign. Rounds 1-4 registered 15 candidates (1
+    HAS_IC: peer_corr_network_change_60, round 3). Round 5 originally explored Theme C's remaining item
+    (correlation to 3 fixed macro anchors: gold/us_large_growth/hk_technology) -- 0 registered, 2 dropped on
+    dedup, 1 structurally invalid for the anchor tickers' own single-member groups (their own correlation-to-
+    self is trivially 1 in both the 20/60-day windows, so a "change" difference is an exact constant 0 for 3
+    of 8 economic groups); diagnostics archived at
+    runtime_outputs/etf_rotation_research/archive/round5_anchor_family_closed_20260923/, not deleted. Master
+    then approved Theme D (minute-level co-movement, 5m bars) and specified 3 Theme D candidates plus 2 Theme G
+    (cross-group conditional dependence) as backup; only 2 of those 5 survived dedup
+    (minute_lead_lag_corr_60->20, tail_coexceedance_asymmetry_60), diagnostics archived at
+    runtime_outputs/etf_rotation_research/archive/round5_theme_d_g_partial_20260923/. Master then added 2 more
+    (Theme H corwin_schultz_spread, Theme I residual_kurtosis); only residual_kurtosis survived dedup
+    (corwin_schultz_spread also collided with the existing minute_* family, 0.8915). Final round-5 registered
+    set: 3 candidates (minute_lead_lag_corr_20, tail_coexceedance_asymmetry_60, residual_kurtosis_60). Master's
+    rule adjustment after this round: minimum survivors per round changed from >=4 to >=3 (proposal stage still
+    targets >=4 families).
+  structural_finding: >-
+    Across 3 successive expansion attempts this round (Theme D intraday realized corr/beta, Theme G
+    quantile_beta_gap, Theme H corwin_schultz_spread -- 4 of 7 originally-proposed candidates total), every
+    candidate whose statistic touches intraday price RANGE, trading-amount IMPACT, or general LIQUIDITY
+    collided >=0.7 with the existing minute_* family (built in an earlier campaign from more granular
+    minute/tick data) or, in quantile_beta_gap's case, with the campaign's own beta_asymmetry_60. Candidates
+    that survived instead used a genuinely different statistical angle: TEMPORAL PRECEDENCE (minute_lead_lag_
+    corr), JOINT TAIL EVENTS (tail_coexceedance_asymmetry), or a HIGHER MOMENT (residual_kurtosis). Read as: the
+    intraday-range/amount-impact/liquidity information surface is already densely covered by the existing
+    minute_* family; new candidates in that surface should be expected to collide regardless of exact formula
+    or data source (5m vs 1m, spread estimator vs Amihud-style), and future rounds should prefer lead-lag,
+    joint-tail, or higher-moment constructions when exploring adjacent themes.
+  originally_proposed: >-
+    7 candidates across this round's 3 expansion passes: intraday_realized_corr_20, intraday_realized_beta_20,
+    minute_lead_lag_corr_20 (Theme D); quantile_beta_gap_60, tail_coexceedance_asymmetry_60 (Theme G);
+    corwin_schultz_spread_20, residual_kurtosis_60 (Theme H/I). 4 dropped on the no-label dedup precheck below
+    (not on family collision, not on structural diagnostics -- all 7 passed both of those cleanly).
+  family_precheck: >-
+    checked against runtime_outputs/etf_rotation_research/ic_inventory_20260923_claude_batchAB/families.csv
+    (freshest snapshot; rounds 1-4's 15 registered candidates are not yet reflected as families.csv rows, but
+    their real saved scores ARE in the dedup library below, along with the extensive pre-existing minute_*/
+    daily_rounds families this round's candidates collided against). No exact-duplicate under
+    source_type=claude_rounds for any of the 3 registered candidates.
+  no_label_dedup_precheck: >-
+    computed group scores only (no forward return/H5 label), 2025-01-01..2026-09-23, against the full saved
+    scores_*.csv library (deduped to latest per candidate id, now including rounds 1-4's 15 registered
+    candidates) plus the other candidates from each of this round's 3 expansion passes. Registered candidates'
+    max mean(abs(daily cross-sectional rank corr)): minute_lead_lag_corr_20 0.5001, tail_coexceedance_
+    asymmetry_60 0.4612, residual_kurtosis_60 0.4754 (all <0.7, all clean). Dropped (>=0.7): intraday_realized_
+    beta_20 0.9483, intraday_realized_corr_20 0.8952 (both vs existing minute_amount_price_impact_20/
+    minute_amount_range_pressure_20 and many related minute_* families), quantile_beta_gap_60 0.7616 (vs
+    beta_asymmetry_60), corwin_schultz_spread_20 0.8915 (vs minute_amount_price_impact_20 and many related
+    minute_*/minute_phase_* families). See
+    runtime_outputs/etf_rotation_research/diagnostics/round5_20260923/dedup_precheck.csv (final 4-candidate
+    pass) and the two archived partial passes referenced above.
+  eval_window_structural_precheck: >-
+    2025-01-01..2026-09-23 (420 days), read-only feature check, no labels read. All 3 registered candidates:
+    every single-member group nan_rate 0.0-0.0476 (all <=0.20), mode_value_rate<=0.0571 (no near-constant
+    group). Group coverage: tail_coexceedance_asymmetry_60/residual_kurtosis_60 both 420/420;
+    minute_lead_lag_corr_20 400/420 (513100.SH's own halt-mask reduces its single-member group's coverage
+    slightly, group-level 8-of-8 coverage otherwise unaffected). No candidate was dropped on this precheck. See
+    runtime_outputs/etf_rotation_research/diagnostics/round5_20260923/structural_diagnostics.csv.
+  no_label_read: true
+  no_formal_evaluation_in_implementation_task: true

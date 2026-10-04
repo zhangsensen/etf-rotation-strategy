@@ -1,0 +1,110 @@
+version: group_ic_batchC_relative_risk_structure_20260923
+source_type: claude_rounds
+purpose: seen_history_discovery_only
+campaign_extension: true
+discovery_surface: IC_DISCOVERY_ONLY
+data_root: /home/sensen/dev/projects/gpu_ml/data/etf_rotation_v1
+as_of: '2026-09-17'
+start: '2023-07-27'
+evaluation_start: '2025-01-01'
+groups: frameworks/etf_rotation/configs/etf_candidate14_economic_groups_v1.yaml
+universe: config/etf_rotation_universe_v1.json
+calendar_symbol: 510300.SH
+entry_lag: 2
+horizon: 5
+top_k: 2
+warmup: 60
+hac_lag: 10
+max_leads: 4
+external_registered_definitions: 8
+screens:
+  min_days: 360
+  min_year_days: 40
+  min_positive_years: 2
+  min_ic: 0.01
+  min_ic_hac_t: 2.0
+  min_ic_block_t: 2.0
+  min_excess8_hac_t: 2.0
+  alpha: 0.05
+  max_abs_rank_corr: 0.7
+prior_registered: 465
+budget_cap: 468
+new_definitions: 3
+mechanisms:
+  downside_correlation:
+    direction: -1
+    window: 60
+    hypothesis: "Rolling corr(r_m, r_i) computed on down-market days only (r_m<0, w=60). Larger positive downside correlation marks a name that tracks the market tightly precisely when the market is falling, i.e. offers no diversification exactly when it would matter; direction -1 expects tighter downside tracking to predict relative weakness."
+    raw_formula: "rolling_corr(r_m.where(r_m<0), r_i.where(r_m<0), w=60); r_m is the fixed14 leave-none equal-weight mean (etf_group_daily_rounds._market_residuals's market leg, all-14-complete dates only); conditional min_periods=max(10, w//4)=15 non-null observations within the 60-day window (masking to down-days only makes a strict min_periods=60 unsatisfiable)."
+  beta_variability:
+    direction: -1
+    window: 60
+    hypothesis: "Rolling std of a 20-day rolling beta(r_i, r_m) series, itself re-windowed over 60 days: std(beta_20(r_i,r_m), w=60). Larger variability in the name's own market-beta over time marks an unstable, regime-dependent market linkage; direction -1 expects instability to predict relative weakness."
+    raw_formula: "beta20 = rolling_beta(r_i, r_m, w=20, min_periods=20); rolling_std(beta20, w=60, min_periods=60); r_m as above."
+  residual_vol_term_structure_20_60:
+    direction: -1
+    window: 60
+    hypothesis: "Ratio of short-window to long-window market-residual return volatility: std(r_i - r_m, w=20) / std(r_i - r_m, w=60). Values above 1 mean the name's idiosyncratic (market-adjusted) volatility has recently expanded relative to its own longer-run level; direction -1 expects that recent idiosyncratic-vol expansion to predict relative weakness. Registered window is 60 (the longer of its own two fixed internal legs, 20 and 60, which are not reparametrized by the registered window field)."
+    raw_formula: "residual = r_i - r_m; short_vol = rolling_std(residual, w=20, min_periods=20); long_vol = rolling_std(residual, w=60, min_periods=60); short_vol / long_vol (only where long_vol>0); r_m as above."
+notes:
+  fixed_population: 14 ETFs / 8 economic groups
+  timing: close(D) signal; open(D+2) to open(D+7) H5 research label contract
+  evaluation_surface: previously-seen history, signal_date 2025-01-01 through 2026-09-17; discovery, not OOS
+  direction_status: economic sign frozen before evaluation; no sign selection or automatic flip
+  complete_input_windows_only: true
+  member_aggregation: each member atom computed independently, then existing fixed group aggregation
+  source_vintage: canonical daily bars; no additional information sources
+  engine: >-
+    frameworks/etf_rotation/src/etf_strategy/core/etf_group_claude_rounds.py, source_type=claude_rounds (same
+    module used for Batch A/B, extended with 6 new mechanisms 2026-09-23; only 3 of the 6 survive this batch's
+    no-label dedup precheck below). Does not modify etf_group_daily_rounds.py.
+  theme: >-
+    Batch C ("relative market risk structure"), proposed by master 2026-09-23 following Batch A/B (dda233ee).
+    Long-horizon price-structure variants (Batch B's theme) are closed per master's instruction and none of
+    these 6 candidates are variants of it; all 6 measure the name's risk relationship to the market (downside
+    tracking, beta stability, tail-relative return, up/down capture asymmetry, unconditional correlation level,
+    or idiosyncratic-vol term structure), not price level or momentum.
+  originally_proposed: >-
+    6 candidates specified by master: downside_correlation_60, beta_variability_60, market_tail_relative_return_60,
+    capture_asymmetry_60, corr_level_60, residual_vol_term_structure_20_60_60. 3 dropped on the no-label dedup
+    precheck below (not on family collision, not on structural diagnostics -- all 6 passed both of those cleanly).
+  family_precheck: >-
+    checked against runtime_outputs/etf_rotation_research/ic_inventory_20260923_claude_batchAB/families.csv (248
+    families, the freshest snapshot as of this batch). No exact-duplicate or window-only-variant collision under
+    source_type=claude_rounds for any of the 6 originally proposed candidates (only 3 claude_rounds families
+    exist there: beta_asymmetry, corr_stability_20, overnight_intraday_beta_gap, none of which match). Adjacent
+    concepts exist under other source types -- daily_rounds:market_residual_downside /
+    market_residual_downside_mean (adjacent to downside_correlation / market_tail_relative_return, but those
+    are residual-level statistics, not a downside-conditional correlation or tail-conditional excess-return
+    mean), daily_rounds:market_residual_market_beta (adjacent to beta_variability and corr_level, but that
+    family is an unconditional beta level, not variability-of-beta or a bare correlation level),
+    daily_rounds:realized_vol_term_structure_5 (adjacent to residual_vol_term_structure_20_60, but that is raw
+    return vol term structure on a 5-day leg, not market-residual vol on 20/60 legs), self_state:own_downside_5
+    / own_downside_20 (single-name own-return downside, not market-relative) -- none are exact matches; per
+    master's framing these are resolved by the no-label dedup precheck rather than a priori exclusion.
+  no_label_dedup_precheck: >-
+    computed group scores only (no forward return/H5 label), 2025-01-01..2026-09-23, against 433 saved
+    scores_*.csv files across the whole runs/ library (deduped to latest per candidate id) plus the other 5
+    originally-proposed Batch C candidates, plus an explicit comparison against Batch A's beta_asymmetry_60
+    (master singled this out as a suspect pair for capture_asymmetry_60). Registered candidates' max
+    mean(abs(daily cross-sectional rank corr)) against the real library: downside_correlation_60 0.7808, but
+    that single hit is only against NEW:market_tail_relative_return_60 (itself dropped below; no other library
+    hit >=0.4, so it survives once that candidate is removed from the pool), beta_variability_60 0.4894 (clean),
+    residual_vol_term_structure_20_60_60 0.5358 (clean). vs beta_asymmetry_60 specifically, all
+    6 originally-proposed candidates were well under 0.7 (max 0.4257, corr_level_60) -- master's specific
+    capture_asymmetry-vs-beta_asymmetry concern did not materialize; capture_asymmetry_60 is dropped for an
+    unrelated reason. Dropped (>=0.7): corr_level_60 0.8622 (vs market_residual_market_beta_20, also 0.8191-0.8528
+    vs d2025_market_residual_market_beta_20 and several minute_amount_* families, plus 0.8340 vs
+    NEW:market_tail_relative_return_60), market_tail_relative_return_60 0.8453 (vs market_residual_market_beta_20,
+    also 0.7007-0.8409 vs several minute_amount_impact/range families, 0.7440 vs downside_20, 0.7383 vs
+    volatility_20), capture_asymmetry_60 0.8302 (vs vol_scaled_momentum_60, a Batch B candidate,
+    ic_supported=False but still a real saved definition in the library). See
+    runtime_outputs/etf_rotation_research/diagnostics/batch_c_20260923/dedup_precheck.csv and
+    vs_beta_asymmetry_60.csv.
+  eval_window_structural_precheck: >-
+    2025-01-01..2026-09-23 (420 days), read-only feature check, no labels read. All 6 originally-proposed
+    candidates: every single-member group nan_rate=0.0, mode_value_rate<=0.012 (no near-constant group),
+    days_all_8_groups_valid=420/420. No candidate was dropped on this precheck (all dropped ones failed dedup
+    instead). See runtime_outputs/etf_rotation_research/diagnostics/batch_c_20260923/structural_diagnostics.csv.
+  no_label_read: true
+  no_formal_evaluation_in_implementation_task: true

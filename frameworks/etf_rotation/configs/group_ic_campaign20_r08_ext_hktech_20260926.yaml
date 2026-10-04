@@ -1,0 +1,62 @@
+version: group_ic_campaign20_r08_ext_hktech_20260926
+status: PROPOSED_NOT_APPROVED_NO_H5_LABELS_READ
+source_type: ext_hktech
+purpose: seen_history_discovery_only
+campaign_extension: true
+discovery_surface: IC_DISCOVERY_ONLY
+screens_version: cold_250_v1
+data_root: /home/sensen/dev/projects/gpu_ml/data/etf_rotation_v1
+as_of: '2026-03-24'
+start: '2023-07-27'
+evaluation_start: '2025-01-01'
+groups: frameworks/etf_rotation/configs/etf_candidate14_economic_groups_v1.yaml
+universe: config/etf_rotation_universe_v1.json
+calendar_symbol: 510300.SH
+hktech_file: runtime_outputs/etf_rotation_research/long_history_proxies/HKTECH.parquet
+hktech_sha256: 3777af65b2406d0bf9bf71c6157594f9b7aa1099792cf6c7069ac89aec534610
+entry_lag: 2
+horizon: 5
+top_k: 2
+warmup: 60
+hac_lag: 10
+max_leads: 3
+external_registered_definitions: 8
+prior_registered: 554
+new_definitions: 3
+budget_cap: 557
+windows: [60]
+screens:
+  min_days: 250
+  min_year_days: 40
+  min_positive_years: 2
+  min_ic: 0.01
+  min_ic_hac_t: 2.0
+  min_ic_block_t: 2.0
+  min_excess8_hac_t: 2.0
+  alpha: 0.05
+  max_abs_rank_corr: 0.7
+mechanisms:
+  hktech_same_day_response:
+    direction: 1
+    family: external_hk_tech_transmission
+    hypothesis: A rise in the Hang Seng Tech index reflects improving Hong Kong technology risk appetite and southbound-flow expectations. ETF groups with a more positive historical contemporaneous response to that signed HK shock may continue to reprice over H5; an HK tech fall reverses the predicted ranking.
+    raw_formula: On China D, x_D=log(close_u/close_prev) for the latest HK session u strictly before D and at most five calendar days old. score_i=beta0_i,D-1*x_D, where beta0=cov(r_i,t,x_t)/var(x_t), ddof=0, on exactly 60 complete China-session pairs t=D-60..D-1. D ETF return and x_D do not enter beta.
+  hktech_delayed_response:
+    direction: 1
+    family: external_hk_tech_transmission
+    hypothesis: HK-market-driven repositioning may reach domestic ETF groups with a one-China-session lag, then continue into H5.
+    raw_formula: score_i=beta1_i,D-1*x_D; beta1=cov(r_i,t,x_(t-1))/var(x_(t-1)), ddof=0, on exactly 60 complete ETF-return pairs t=D-60..D-1 with prior-China-session aligned HK shocks. D inputs do not enter beta.
+  hktech_sign_asymmetry:
+    direction: 1
+    family: external_hk_tech_transmission
+    hypothesis: HK tech rallies driven by risk-appetite repair may transmit differently from slides driven by outflow pressure; each signed response may continue over H5.
+    raw_formula: On exactly 60 complete pairs t=D-60..D-1 estimate beta_plus using x_t>0 and beta_minus using x_t<0, requiring at least 10 historical dates in each branch; ddof=0. score_i=beta_plus_i,D-1*x_D if x_D>0, or beta_minus_i,D-1*x_D if x_D<0; missing if x_D=0. D inputs do not enter beta.
+notes:
+  population: fixed 14 candidate ETFs and eight economic groups; the Hang Seng Tech index is auxiliary information only
+  external_source: Hang Seng Tech Index daily closes from the local long-history proxy library (SHA256-pinned, trimmed to the 2026-03-24 cold cutoff); 2762 observations from 2014-12-31
+  foreign_timing: Compute log close change on consecutive HK sessions. The HK equity session closes 16:00 Beijing time, after the China A-share close, so for each China D only the latest HK session strictly earlier than D and no more than five calendar days old is used; the same-calendar-date HK close is never assumed known at China D close.
+  source_vintage: Local historical proxy snapshot, not a point-in-time archive; index revisions are a limitation. This is seen-history discovery, not PIT confirmation.
+  sign_story: A positive x_D means the Hang Seng Tech index rose on the latest prior HK session. Positive historical beta times the signed shock ranks HK-linked and tech risk groups higher after an HK up-shock; a down-shock reverses the ranking. One-sided continuation over D+2..D+7 is a falsifiable hypothesis, not an observed fact.
+  overlap_risk: 513130 (HK tech ETF) is itself a candidate, so old peer overnight price transmission families built on it are explicit near-neighbors; old us_lagged_transmission_60 and R01-R07 transmission families are additional references. Distinct source does not imply distinct eight-group score.
+  historical_status: PREVIOUSLY_SEEN_2025_PLUS_NOT_OOS
+  decision_boundary: Proposed draft only. Master approval required before registration or any new H5 label read; zero evidence is retained.

@@ -1,0 +1,24 @@
+description: "RETIRED candidate generator: historical Sonnet rounds, retained for audit replay only."
+group: Research
+type: graph
+working_dir: /home/sensen/dev/projects/gpu_ml-coral
+schedule: "*/5 * * * *"
+max_active_runs: 1
+timeout_sec: 0
+log_output: merged
+env:
+  - PYTHONUNBUFFERED: "1"
+  - ETF_ARCHIVE_LANE: sonnet
+  - PATH: /home/sensen/.nvm/versions/node/v24.14.0/bin:/home/sensen/.local/bin:/usr/local/bin:/usr/bin:/bin
+preconditions:
+  - condition: 'test -f runtime_outputs/etf_sonnet_mining_20260920/ALLOW_LEGACY_LLM_CANDIDATE_GENERATION'
+  - condition: 'test ! -f runtime_outputs/etf_sonnet_mining_20260920/STOP'
+  - condition: 'test ! -f runtime_outputs/etf_sonnet_mining_20260920/MECHANISM_EXHAUSTED'
+steps:
+  - id: mine
+    name: Sonnet 5 mining session
+    run: >-
+      /home/sensen/dev/projects/gpu_ml-coral/.venv/bin/python
+      deployments/dagu/scripts/etf_sonnet_mining.py
+      --run-dir runtime_outputs/etf_sonnet_mining_20260920
+    timeout_sec: 0

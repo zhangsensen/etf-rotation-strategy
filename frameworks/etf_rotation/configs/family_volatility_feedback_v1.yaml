@@ -1,0 +1,17 @@
+domain: etf_rotation
+grammar_version: etf_family_volatility_feedback_v1
+factor_source: volatility_feedback
+atoms:
+- name: LEVERAGE_CORR_20
+  family: volatility_feedback
+- name: LEVERAGE_CORR_60
+  family: volatility_feedback
+- name: VOL_RESPONSE_ASYMMETRY_20
+  family: volatility_feedback
+- name: VOL_RESPONSE_ASYMMETRY_60
+  family: volatility_feedback
+grammar:
+  operators:
+  - atomic
+  pair_policy: cross_family_only
+  max_atoms: 1

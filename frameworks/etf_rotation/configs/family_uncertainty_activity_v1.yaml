@@ -1,0 +1,14 @@
+domain: etf_rotation
+grammar_version: etf_family_uncertainty_activity_v1
+factor_source: uncertainty_activity
+mechanism: range expansion coupled with turnover change
+atoms:
+- name: RANGE_ACTIVITY_ELASTICITY_20
+  family: uncertainty_activity
+- name: RANGE_ACTIVITY_ELASTICITY_60
+  family: uncertainty_activity
+grammar:
+  operators:
+  - atomic
+  pair_policy: cross_family_only
+  max_atoms: 1

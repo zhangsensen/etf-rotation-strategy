@@ -1,0 +1,123 @@
+version: group_ic_round3_higher_order_and_network_20260923
+source_type: claude_rounds
+purpose: seen_history_discovery_only
+campaign_extension: true
+discovery_surface: IC_DISCOVERY_ONLY
+data_root: /home/sensen/dev/projects/gpu_ml/data/etf_rotation_v1
+as_of: '2026-09-17'
+start: '2023-07-27'
+evaluation_start: '2025-01-01'
+groups: frameworks/etf_rotation/configs/etf_candidate14_economic_groups_v1.yaml
+universe: config/etf_rotation_universe_v1.json
+calendar_symbol: 510300.SH
+entry_lag: 2
+horizon: 5
+top_k: 2
+warmup: 60
+hac_lag: 10
+max_leads: 4
+external_registered_definitions: 8
+screens:
+  min_days: 360
+  min_year_days: 40
+  min_positive_years: 2
+  min_ic: 0.01
+  min_ic_hac_t: 2.0
+  min_ic_block_t: 2.0
+  min_excess8_hac_t: 2.0
+  alpha: 0.05
+  max_abs_rank_corr: 0.7
+prior_registered: 472
+budget_cap: 476
+new_definitions: 4
+mechanisms:
+  downside_coskewness:
+    direction: -1
+    window: 60
+    hypothesis: "Coskewness of member on market computed only on the market's own down days (r_m<0): E[(r_i-E_i)(r_m-E_m)^2 | r_m<0] / (std_i|down * var_m|down), w=60, Harvey-Siddique style downside coskewness. A name whose downside amplifies more than proportionally when the market itself is already falling predicts relative weakness; direction -1."
+    raw_formula: "Conditional 3rd joint co-moment via the raw-moment expansion E[(X-EX)(Y-EY)^2]=E[XY^2]-2*EY*E[XY]+2*EX*EY^2-EX*E[Y^2], with all conditional expectations restricted to r_m<0 and computed via a Series/DataFrame conditional-mean helper (same technique as downside_correlation, Batch C); conditional min_periods=max(10,60//4)=15; r_m is the fixed14 leave-none equal-weight mean."
+  avg_peer_residual_corr:
+    direction: -1
+    window: 60
+    hypothesis: "Mean, over the other 13 members j, of corr(residual_i, residual_j), residual=r_i-r_m, w=60. Measures whether the name's idiosyncratic (market-adjusted) moves still comove with the rest of the 14-name network; higher residual crowding with peers means less true diversification value; direction -1."
+    raw_formula: "TRUE average of 13 separate pairwise rolling correlations (91 pairs computed across the fixed 14-name pool), NOT a shortcut correlation against a leave-one-out linear combination of the other residuals -- that shortcut is mathematically degenerate here (see notes.implementation_bug_caught below) and was caught and fixed before registration."
+  peer_corr_network_change:
+    direction: -1
+    window: 60
+    hypothesis: "avg_peer_residual_corr on a short (20-day) window minus its own long (60-day) window value: is the name's residual connectedness to the rest of the network currently rising relative to its own recent history. Same term-structure construction as corr_stability_20_60 and residual_vol_term_structure_20_60, applied to the peer-network correlation level; direction -1: a rising peer-connectedness trend predicts relative weakness. Registered window is 60 (the longer of its own two fixed internal legs, 20 and 60)."
+    raw_formula: "avg_peer_residual_corr(w=20) - avg_peer_residual_corr(w=60), each independently recomputed (not cached/shared state) from the pairwise-correlation machinery above."
+  peer_corr_dispersion:
+    direction: -1
+    window: 60
+    hypothesis: "Std, over the other 13 members j, of corr(residual_i, residual_j), w=60 -- same underlying pairwise matrix as avg_peer_residual_corr, but its DISPERSION rather than its level: is the name's connectedness to the network even (similar correlation to all 13 peers) or concentrated (highly correlated with a subgroup, near-zero with the rest). direction -1: a concentrated/uneven peer-correlation structure is treated as a crowding/fragility signal, the same directional logic already used for illiquidity_trend/downside_correlation/high_low_vol_beta_gap."
+    raw_formula: "std(13 pairwise rolling correlations for member i, computed the same way as avg_peer_residual_corr's numerator, ddof=1)."
+notes:
+  fixed_population: 14 ETFs / 8 economic groups
+  timing: close(D) signal; open(D+2) to open(D+7) H5 research label contract
+  evaluation_surface: previously-seen history, signal_date 2025-01-01 through 2026-09-17; discovery, not OOS
+  direction_status: economic sign frozen before evaluation; no sign selection or automatic flip
+  complete_input_windows_only: true
+  member_aggregation: each member atom computed independently, then existing fixed group aggregation
+  source_vintage: canonical daily bars; no additional information sources
+  engine: >-
+    frameworks/etf_rotation/src/etf_strategy/core/etf_group_claude_rounds.py, source_type=claude_rounds (same
+    module as Batch A/B/C and round 2, extended with round 3's 5 originally-proposed mechanisms; only 4 survive
+    this round's no-label dedup precheck below).
+  campaign: >-
+    Round 3 of the USER 2026-09-23 50-round sub-agent mining campaign. Round 1 = Batch C (3 registered, 0
+    ic_supported). Round 2 = 4 registered (3 NOT_SUPPORTED_THIS_SCREEN, 1 COVERAGE_INSUFFICIENT high_low_vol_
+    beta_gap_60, n=354<360; not a negative finding, just insufficient sample). Round 3 continues Theme B
+    (higher-order co-movement: cokurtosis, downside_coskewness) and opens Theme C (cross-group correlation
+    network: avg_peer_residual_corr, peer_corr_network_change, peer_corr_dispersion). cokurtosis_60 was dropped
+    on the no-label dedup precheck below; per the round rule (minimum 4 survivors per round from round 2
+    onward, filled with a new family rather than a variant), peer_corr_dispersion was added to restore the
+    count to 4 (it reuses the same pairwise-correlation machinery as avg_peer_residual_corr but is a distinct
+    statistic -- dispersion, not level -- not a parameter variant of it).
+  originally_proposed: >-
+    5 candidates: cokurtosis_60, downside_coskewness_60, avg_peer_residual_corr_60, peer_corr_network_change_60,
+    peer_corr_dispersion_60. 1 dropped on the no-label dedup precheck below (not on family collision, not on
+    structural diagnostics -- all 5 passed both of those cleanly).
+  implementation_bug_caught: >-
+    While first implementing avg_peer_residual_corr, a naive "correlate residual_i against the leave-one-out
+    AVERAGE of the other 13 residuals" formulation was smoke-tested and found to return exactly +/-1 for every
+    member on every date, on two independent synthetic panels (one with a shared deterministic phase term, one
+    with pure independent idiosyncratic noise). Root cause: r_m is the equal-weight mean of ALL 14 members
+    INCLUDING member i, so the 14 residuals sum to exactly zero at every date by construction
+    (sum_k(r_k)-14*mean(r_k)==0 identically); the leave-one-out average of the other 13 is therefore an exact
+    negative scalar multiple of residual_i itself (peer_i == -residual_i/13 algebraically), which correlates at
+    +/-1 regardless of the underlying data -- a pure algebraic artifact, not a signal. Fixed by computing the
+    TRUE average of 13 separate genuine pairwise correlations instead (91 pairs across the fixed 14-name pool),
+    which carries no such identity. Regression-guarded in
+    frameworks/etf_rotation/tests/test_etf_group_claude_rounds.py::test_avg_peer_residual_corr_hand_formula_and_not_degenerate
+    (asserts output is not pinned near +/-1, plus a direct-numpy hand check against 13 separate pairwise
+    corr() calls).
+  family_precheck: >-
+    checked against runtime_outputs/etf_rotation_research/ic_inventory_20260923_claude_batchAB/families.csv
+    (freshest snapshot; a new snapshot is built only every 5 rounds per master's cadence decision, so rounds
+    1-2's 7 registered candidates are not yet reflected as families.csv rows, but their real saved scores ARE
+    in the dedup library below). No exact-duplicate under source_type=claude_rounds for any of the 5
+    originally-proposed candidates. Adjacencies found and resolved: daily_rounds:market_coskewness (HAS_LEADS,
+    an unconditional 3rd joint co-moment) is adjacent to downside_coskewness (a DOWN-DAY-CONDITIONAL 3rd joint
+    co-moment) but is a different statistic, not re-derived under a new name; daily_rounds:
+    amount_innovation_excess_kurtosis/clv_excess_kurtosis/gap_excess_kurtosis/wick_abs_kurtosis are all
+    SINGLE-VARIABLE excess kurtosis of one series (not a joint co-kurtosis with the market), unrelated to
+    cokurtosis despite the shared word. No existing family under any source_type mentions "peer_corr",
+    "network", "centrality", or "pairwise" -- avg_peer_residual_corr/peer_corr_network_change/
+    peer_corr_dispersion are the first candidates in this module's history to use a true pairwise (not
+    market-vs-member) correlation structure.
+  no_label_dedup_precheck: >-
+    computed group scores only (no forward return/H5 label), 2025-01-01..2026-09-23, against 440 saved
+    scores_*.csv files across the whole runs/ library (deduped to latest per candidate id, now including
+    rounds 1-2's 7 registered candidates) plus the other originally-proposed round 3 candidates. Registered
+    candidates' max mean(abs(daily cross-sectional rank corr)): downside_coskewness_60 0.5944,
+    avg_peer_residual_corr_60 0.6175, peer_corr_network_change_60 0.5751, peer_corr_dispersion_60 0.6612 (all
+    <0.7, all clean). Dropped (>=0.7): cokurtosis_60 0.7272 (vs market_residual_market_beta_20; also 0.7071 vs
+    downside_correlation_60, itself a registered claude_rounds Batch C candidate). See
+    runtime_outputs/etf_rotation_research/diagnostics/round3_20260923/dedup_precheck.csv.
+  eval_window_structural_precheck: >-
+    2025-01-01..2026-09-23 (420 days), read-only feature check, no labels read. All 5 originally-proposed
+    candidates: every single-member group nan_rate=0.0, mode_value_rate<=0.0119 (no near-constant group),
+    days_all_8_valid=420/420 for every candidate. No candidate was dropped on this precheck. See
+    runtime_outputs/etf_rotation_research/diagnostics/round3_20260923/structural_diagnostics.csv.
+  no_label_read: true
+  no_formal_evaluation_in_implementation_task: true

@@ -1,0 +1,53 @@
+domain: etf_rotation
+grammar_version: etf_current20_liquidity_rank_grammar_v1
+factor_source: liquidity
+availability_lag_sessions: 0
+
+population:
+  ranking_roles: [candidate, defensive_tool, benchmark, observation]
+  min_history_sessions: 120
+  require_positive_volume: true
+
+execution:
+  signal_time: D_CLOSE
+  entry_lag_sessions: 2
+  horizons: [5, 10, 20]
+  primary_horizon: 5
+
+surfaces:
+  discovery_end: '2023-12-31'
+  ordered_audit_start: '2024-01-01'
+  ordered_audit_end: '2025-04-30'
+  seen_diagnostic_start: '2025-05-01'
+
+atoms:
+  - {name: AMOUNT_RATIO_5_20, family: activity}
+  - {name: AMOUNT_RATIO_20_60, family: activity}
+  - {name: AMOUNT_Z_20, family: activity_shock}
+  - {name: AMOUNT_Z_60, family: activity_shock}
+  - {name: VOLUME_RATIO_5_20, family: volume_activity}
+  - {name: VOLUME_RATIO_20_60, family: volume_activity}
+  - {name: VOLUME_Z_20, family: volume_shock}
+  - {name: VOLUME_Z_60, family: volume_shock}
+  - {name: AMIHUD_20, family: illiquidity}
+  - {name: AMIHUD_60, family: illiquidity}
+  - {name: PRICE_AMOUNT_CORR_20, family: confirmation}
+  - {name: PRICE_AMOUNT_CORR_60, family: confirmation}
+  - {name: MONEY_PRESSURE_5, family: money_pressure}
+  - {name: MONEY_PRESSURE_20, family: money_pressure}
+  - {name: MONEY_PRESSURE_60, family: money_pressure}
+
+grammar:
+  operators: [atomic, rank_mean, rank_spread, rank_interaction]
+  pair_policy: cross_family_only
+  max_atoms: 2
+
+gates:
+  min_discovery_days: 500
+  min_median_pairs: 10
+  min_abs_discovery_ic: 0.015
+  min_rolling_direction_stability: 0.65
+  min_year_direction_agreement: 0.75
+  min_abs_ordered_audit_ic: 0.01
+  holm_alpha: 0.05
+  redundancy_max_abs_rank_corr: 0.80

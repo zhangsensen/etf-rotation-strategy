@@ -1,0 +1,13 @@
+domain: etf_rotation
+grammar_version: etf_family_cost_distribution_1m_sonnet_v1
+factor_source: cost_distribution_1m_sonnet
+frequency: 1m
+asset_class_config: configs/etf_asset_classes_current20_v1.yaml
+atoms:
+  - {name: CGO_1M_20, family: cost_distribution_1m_sonnet}
+  - {name: CGO_1M_60, family: cost_distribution_1m_sonnet}
+  - {name: UNDERWATER_VOL_SHARE_1M_60, family: cost_distribution_1m_sonnet}
+  - {name: COST_CONC_1M_60, family: cost_distribution_1m_sonnet}
+  - {name: MODE_DIST_1M_60, family: cost_distribution_1m_sonnet}
+  - {name: COST_SKEW_1M_60, family: cost_distribution_1m_sonnet}
+grammar: {operators: [atomic, rank_spread, rank_interaction], pair_policy: cross_family_only, max_atoms: 6}

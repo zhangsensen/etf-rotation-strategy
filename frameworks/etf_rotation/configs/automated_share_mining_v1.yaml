@@ -1,0 +1,50 @@
+domain: etf_rotation
+grammar_version: etf_share_rank_grammar_v1
+factor_source: fund_share
+availability_lag_sessions: 1
+
+population:
+  min_history_sessions: 120
+  require_positive_volume: true
+
+execution:
+  signal_time: CONSERVATIVE_AVAILABLE_DATE
+  entry_lag_sessions: 2
+  horizons: [5, 10, 20]
+  primary_horizon: 5
+
+surfaces:
+  discovery_end: '2023-12-31'
+  ordered_audit_start: '2024-01-01'
+  ordered_audit_end: '2025-04-30'
+  seen_diagnostic_start: '2025-05-01'
+
+atoms:
+  - {name: SHARE_CHG_1, family: flow_level}
+  - {name: SHARE_CHG_5, family: flow_level}
+  - {name: SHARE_CHG_10, family: flow_level}
+  - {name: SHARE_CHG_20, family: flow_level}
+  - {name: SHARE_CHG_60, family: flow_level}
+  - {name: SHARE_ACCEL_5_20, family: flow_acceleration}
+  - {name: SHARE_ACCEL_10_60, family: flow_acceleration}
+  - {name: SHARE_PERSISTENCE_20, family: flow_persistence}
+  - {name: SHARE_PERSISTENCE_60, family: flow_persistence}
+  - {name: SHARE_SURPRISE_5_60, family: flow_surprise}
+  - {name: SHARE_SURPRISE_5_120, family: flow_surprise}
+  - {name: SHARE_FLOW_VOL_20, family: flow_stability}
+  - {name: SHARE_FLOW_VOL_60, family: flow_stability}
+
+grammar:
+  operators: [atomic, rank_mean, rank_spread, rank_interaction]
+  pair_policy: cross_family_only
+  max_atoms: 2
+
+gates:
+  min_discovery_days: 700
+  min_median_pairs: 30
+  min_abs_discovery_ic: 0.015
+  min_rolling_direction_stability: 0.65
+  min_year_direction_agreement: 0.75
+  min_abs_ordered_audit_ic: 0.01
+  holm_alpha: 0.05
+  redundancy_max_abs_rank_corr: 0.80

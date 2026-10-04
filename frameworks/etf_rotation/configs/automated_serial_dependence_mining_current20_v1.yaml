@@ -1,0 +1,49 @@
+domain: etf_rotation
+grammar_version: etf_current20_serial_dependence_rank_grammar_v1
+factor_source: serial_dependence
+availability_lag_sessions: 0
+
+population:
+  ranking_roles: [candidate, defensive_tool, benchmark, observation]
+  min_history_sessions: 120
+  require_positive_volume: true
+
+execution:
+  signal_time: D_CLOSE
+  entry_lag_sessions: 2
+  horizons: [5, 10, 20]
+  primary_horizon: 5
+
+surfaces:
+  discovery_end: '2023-12-31'
+  ordered_audit_start: '2024-01-01'
+  ordered_audit_end: '2025-04-30'
+  seen_diagnostic_start: '2025-05-01'
+
+atoms:
+  - {name: RET_ACF1_5, family: return_autocorrelation}
+  - {name: RET_ACF1_20, family: return_autocorrelation}
+  - {name: RET_ACF1_60, family: return_autocorrelation}
+  - {name: RET_ACF2_20, family: return_autocorrelation}
+  - {name: RET_ACF2_60, family: return_autocorrelation}
+  - {name: SIGN_ACF1_5, family: sign_autocorrelation}
+  - {name: SIGN_ACF1_20, family: sign_autocorrelation}
+  - {name: SIGN_ACF1_60, family: sign_autocorrelation}
+  - {name: VAR_RATIO_5_60, family: variance_ratio}
+  - {name: VAR_RATIO_20_120, family: variance_ratio}
+
+grammar:
+  operators: [atomic, rank_mean, rank_spread, rank_interaction]
+  pair_policy: cross_family_only
+  max_atoms: 2
+
+gates:
+  # Frozen from coverage and inherited unchanged from prior ETF generations.
+  min_discovery_days: 500
+  min_median_pairs: 10
+  min_abs_discovery_ic: 0.015
+  min_rolling_direction_stability: 0.65
+  min_year_direction_agreement: 0.75
+  min_abs_ordered_audit_ic: 0.01
+  holm_alpha: 0.05
+  redundancy_max_abs_rank_corr: 0.80

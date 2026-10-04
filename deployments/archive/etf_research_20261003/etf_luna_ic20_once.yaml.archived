@@ -1,0 +1,23 @@
+description: "Bounded Luna/Sol campaign chain with stage-aware recovery"
+group: Research
+type: graph
+working_dir: /home/sensen/dev/projects/gpu_ml-coral
+schedule:
+  - at: "2026-09-27T16:52:00+08:00"
+max_active_runs: 1
+log_output: merged
+max_output_size: 16777216
+env:
+  - PYTHONUNBUFFERED: "1"
+  - PATH: "/home/sensen/.local/bin:/home/sensen/.cargo/bin:/usr/local/bin:/usr/bin:/bin"
+retry_policy:
+  limit: 2
+  interval_sec: 60
+steps:
+  - id: mine_20_rounds
+    name: Wait for current research, then run one Luna campaign
+    run: >-
+      /home/sensen/dev/projects/gpu_ml-coral/.venv/bin/python -u
+      frameworks/etf_rotation/scripts/research/schedule_etf_luna_campaign.py
+      --after luna_v6_campaign20_20260927
+      --campaign-id luna_v6_dagu20_20260927

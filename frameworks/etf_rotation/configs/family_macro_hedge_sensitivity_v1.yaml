@@ -1,0 +1,29 @@
+domain: etf_rotation
+grammar_version: etf_family_macro_hedge_sensitivity_v1
+factor_source: macro_hedge_sensitivity
+atoms:
+- name: GOLD_PARTIAL_CORR_20
+  family: macro_hedge_sensitivity
+- name: GOLD_PARTIAL_CORR_60
+  family: macro_hedge_sensitivity
+- name: BOND_PARTIAL_CORR_20
+  family: macro_hedge_sensitivity
+- name: BOND_PARTIAL_CORR_60
+  family: macro_hedge_sensitivity
+grammar:
+  operators:
+  - atomic
+  pair_policy: cross_family_only
+  max_atoms: 1
+benchmark_symbols:
+- 510300.SH
+- 510500.SH
+hedge_symbols:
+  518880.SH: GOLD
+  511010.SH: BOND
+# Actual IC pairs are intersected and reranked by common_sample_spearman.
+population_contract:
+  gold_excluded_candidate: 518880.SH
+  gold_max_candidate_pairs: 13
+  bond_max_candidate_pairs: 14
+  missing_signal_policy: exclude_and_rerank_signal_and_label_on_same_names

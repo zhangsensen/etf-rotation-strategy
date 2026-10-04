@@ -1,0 +1,15 @@
+version: etf_ic_lead_watch_v1
+purpose: descriptive_forward_ic_only
+parent_contract: frameworks/etf_rotation/configs/etf_ic_monthly_factory_v4.yaml
+first_month: '2026-10'
+signal_time: close_D
+entry_lag: 2
+horizon: 5
+metric: eight_group_daily_spearman_rank_ic
+candidate_catalog:
+  - range_expansion_5
+  - direction_range_coupling_20
+  - market_residual_abs_cluster_20
+  - d2025_body_wick_abs_corr_20
+  - d2025_clv_extreme_wick_rejection_20
+note: These five existing leads are present in the frozen v4 daily panel. The other eleven historical leads remain in the inventory; this observer does not delete or recertify them.

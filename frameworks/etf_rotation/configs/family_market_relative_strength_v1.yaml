@@ -1,0 +1,11 @@
+domain: etf_rotation
+grammar_version: etf_family_market_relative_strength_v1
+factor_source: market_relative_strength
+benchmark_symbols: [510300.SH, 510500.SH]
+atoms:
+  - {name: REL_MARKET_MOM_20, family: market_relative_strength}
+  - {name: REL_MARKET_MOM_60, family: market_relative_strength}
+  - {name: REL_MARKET_MOM_120, family: market_relative_strength}
+  - {name: TRACKING_ERROR_20, family: market_relative_strength}
+  - {name: TRACKING_ERROR_60, family: market_relative_strength}
+grammar: {operators: [atomic], pair_policy: cross_family_only, max_atoms: 1}

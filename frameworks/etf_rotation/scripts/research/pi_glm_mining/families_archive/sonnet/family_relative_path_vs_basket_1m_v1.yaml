@@ -1,0 +1,31 @@
+domain: etf_rotation
+grammar_version: etf_family_relative_path_vs_basket_1m_v1
+factor_source: relative_path_vs_basket_1m
+frequency: 1m
+benchmark_symbols: [510300.SH, 510500.SH]
+# Literature provenance (directive: no citation, no atom):
+# REL_UNDERWATER_FRAC_20 / REL_UNDERWATER_FRAC_CHG_20: Chekhlov-Uryasev-
+#   Zabarankin (2005) CDaR framing reapplied to the cumulative ACTIVE
+#   return path (asset minus 510300/510500 basket proxy), fraction of
+#   bars with active drawdown>0, 20d mean / 20d change.
+# REL_MAXDD_20 / REL_MAXDD_CHG_20: day's max active drawdown, 20d mean /
+#   20d change.
+# REL_RECOVERY_FRAC_20: S12's recovery-episode construction reapplied to
+#   the active path, 20d mean.
+# REL_PERM_ENTROPY_20: Bandt-Pompe (2002) permutation entropy (d=3) of
+#   the raw active-return series, 20d mean.
+# REL_PATH_EFFICIENCY_20: Kaufman-style efficiency ratio reapplied to the
+#   active path, 20d mean.
+# UNDERWATER_FRAC_DIFF_20: absolute-price underwater fraction minus
+#   active-path underwater fraction, 20d mean (basket's share of the
+#   day's underwater time).
+atoms:
+  - {name: REL_UNDERWATER_FRAC_20, family: relative_path_vs_basket_1m}
+  - {name: REL_UNDERWATER_FRAC_CHG_20, family: relative_path_vs_basket_1m}
+  - {name: REL_MAXDD_20, family: relative_path_vs_basket_1m}
+  - {name: REL_MAXDD_CHG_20, family: relative_path_vs_basket_1m}
+  - {name: REL_RECOVERY_FRAC_20, family: relative_path_vs_basket_1m}
+  - {name: REL_PERM_ENTROPY_20, family: relative_path_vs_basket_1m}
+  - {name: REL_PATH_EFFICIENCY_20, family: relative_path_vs_basket_1m}
+  - {name: UNDERWATER_FRAC_DIFF_20, family: relative_path_vs_basket_1m}
+grammar: {operators: [atomic, rank_spread, rank_interaction], pair_policy: cross_family_only, max_atoms: 8}

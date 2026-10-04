@@ -1,0 +1,55 @@
+version: group_ic_cn_benchmark_aux_20260925
+source_type: domestic_benchmark
+purpose: seen_history_ic_discovery_only
+campaign_extension: true
+discovery_surface: IC_DISCOVERY_ONLY
+screens_version: cold_250_v1
+data_root: /home/sensen/dev/projects/gpu_ml/data/etf_rotation_v1
+as_of: '2026-03-24'
+start: '2023-07-27'
+evaluation_start: '2025-01-01'
+groups: frameworks/etf_rotation/configs/etf_candidate14_economic_groups_v1.yaml
+universe: config/etf_rotation_universe_v1.json
+calendar_symbol: 510300.SH
+auxiliary_symbols: [510300.SH, 510500.SH]
+entry_lag: 2
+horizon: 5
+top_k: 2
+warmup: 60
+hac_lag: 10
+max_leads: 2
+external_registered_definitions: 8
+prior_registered: 531
+new_definitions: 2
+budget_cap: 533
+windows: [60]
+screens:
+  min_days: 250
+  min_year_days: 40
+  min_positive_years: 2
+  min_ic: 0.01
+  min_ic_hac_t: 2.0
+  min_ic_block_t: 2.0
+  min_excess8_hac_t: 2.0
+  alpha: 0.05
+  max_abs_rank_corr: 0.7
+mechanisms:
+  cn_mid_large_style_transmission:
+    direction: 1
+    family: external_domestic_mid_large_style_continuation
+    hypothesis: A sustained rise of the domestic mid-cap versus large-cap benchmark represents risk appetite that transmits to ETF groups with higher measured sensitivity to that style spread over the next H5 interval.
+    raw_formula: "For each session t, x_t = pct_change(close_510500,t) - pct_change(close_510300,t). Let beta_i,D = rolling_60_cov(pct_change(close_i), x) / rolling_60_var(x), using exactly 60 consecutive exchange sessions through D with ddof=0 and invalid if any pair or denominator is missing/nonpositive. Let style20_D = (close_510500,D / close_510500,D-20) / (close_510300,D / close_510300,D-20) - 1. Member score = beta_i,D * style20_D; group score = equal-member mean, invalid if any member score missing. Expected direction +1."
+  cn_largecap_downside_resilience:
+    direction: 1
+    family: external_domestic_largecap_downside_insulation
+    hypothesis: Groups with lower exposure to falling domestic large-cap equities may retain relative value across the next H5 interval when downside risk is persistent.
+    raw_formula: "For each t, m_t = pct_change(close_510300,t), r_i,t = pct_change(close_i,t). Within the last exactly 60 exchange sessions through D, keep t with m_t < 0; require at least 10 such sessions and valid paired returns on all 60 rows. beta_down_i,D = cov(r_i,m | m<0, ddof=0) / var(m | m<0, ddof=0), invalid if denominator nonpositive. Member score = -beta_down_i,D; group score = equal-member mean, invalid if any member score missing. Expected direction +1."
+notes:
+  fixed_population: 14 candidate ETFs in eight immutable economic groups; 510300 and 510500 are benchmark-role auxiliary features, never candidates
+  signal_time: auxiliary benchmark adjusted closes and candidate ETF closes available only after close(D)
+  label: adjusted open(D+2) to adjusted open(D+7), fixed H5 research label
+  data_vintage: existing local adjusted daily benchmark files filtered to cold cutoff; historical point-in-time revisions are not independently certified
+  historical_status: PREVIOUSLY_SEEN_2025_PLUS_NOT_OOS
+  repeat_check: style beta-times-trend is structurally close to prior bond_trend_exposure_60 but uses a mid-cap-minus-large-cap domestic style spread; downside beta is adjacent to beta_asymmetry_60 but uses external 510300 negative days and no up-minus-down contrast; both require no-label rank-correlation annotation before IC interpretation
+  prelabel_stop: if either definition has zero complete eight-group rankable dates, record structural failure and do not count it as evaluated; if correlation with existing catalog is at least 0.7, retain IC arithmetic but mark redundant and do not claim independent information
+  strategy_mapping: independently fixed to cn_mid_large_style_transmission_60 only, first exchange session each ISO week close(D) Top2 groups equal/group-member, D+2 open entry/D+7 open exit, skip overlap, incomplete eight-group score cash, 10bp/side illustrative and same-date B8/B14; if factor structurally unavailable, strategy is UNAVAILABLE with no substitute

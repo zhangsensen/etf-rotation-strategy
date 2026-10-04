@@ -1,0 +1,10 @@
+domain: etf_rotation
+grammar_version: etf_family_intraday_volatility_structure_v1
+factor_source: intraday_volatility_structure
+frequency: 60m
+available_frequencies: [1m, 5m, 15m, 30m, 60m]
+atoms:
+  - {name: MORNING_VOL_SHARE, family: intraday_volatility_structure}
+  - {name: AFTERNOON_VOL_SHARE, family: intraday_volatility_structure}
+  - {name: VOL_CONCENTRATION, family: intraday_volatility_structure}
+grammar: {operators: [atomic], pair_policy: cross_family_only, max_atoms: 1}

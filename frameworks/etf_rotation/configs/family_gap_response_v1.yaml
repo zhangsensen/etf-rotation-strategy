@@ -1,0 +1,6 @@
+domain: etf_rotation
+grammar_version: etf_family_gap_response_v1
+factor_source: gap_response
+atoms:
+  - {name: GAP_SESSION_CORR_20, family: gap_response}
+grammar: {operators: [atomic], pair_policy: cross_family_only, max_atoms: 1}

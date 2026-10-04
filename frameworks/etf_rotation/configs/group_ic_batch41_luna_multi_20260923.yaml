@@ -1,0 +1,98 @@
+version: group_ic_batch41_luna_multi_20260923
+source_type: daily_rounds
+purpose: seen_history_discovery_only
+campaign_extension: true
+discovery_surface: IC_DISCOVERY_ONLY
+data_root: /home/sensen/dev/projects/gpu_ml/data/etf_rotation_v1
+as_of: '2026-09-17'
+start: '2023-07-27'
+evaluation_start: '2025-01-01'
+groups: frameworks/etf_rotation/configs/etf_candidate14_economic_groups_v1.yaml
+universe: config/etf_rotation_universe_v1.json
+calendar_symbol: 510300.SH
+entry_lag: 2
+horizon: 5
+top_k: 2
+warmup: 60
+hac_lag: 10
+max_leads: 4
+external_registered_definitions: 8
+windows:
+- 20
+screens:
+  min_days: 360
+  min_year_days: 40
+  min_positive_years: 2
+  min_ic: 0.01
+  min_ic_hac_t: 2.0
+  min_ic_block_t: 2.0
+  min_excess8_hac_t: 2.0
+  alpha: 0.05
+  max_abs_rank_corr: 0.7
+notes:
+  fixed_population: 14 ETFs / 8 economic groups
+  timing: close(D) signal; open(D+2) to open(D+7) H5 research label contract
+  evaluation_surface: previously-seen history, signal_date 2025-01-01 through 2026-09-17;
+    discovery, not OOS
+  direction_status: economic sign frozen before evaluation; no sign selection or automatic
+    flip
+  complete_input_windows_only: true
+  member_aggregation: each member atom computed independently, then existing fixed
+    group aggregation
+  source_vintage: canonical daily bars; no additional information sources
+prior_registered: 415
+budget_cap: 419
+new_definitions: 4
+mechanisms:
+  l41_peer_amount_to_return_beta:
+    direction: 1
+    raw_formula: For each ETF i, e_i=log(amount_i)-mean(previous 20 log amounts);
+      m^-i_t=mean(e_j,t for other 13 fixed ETFs). Score beta_20(r_i,t, m^-i_(t-1)),
+      then fixed-member mean within each economic group.
+    hypothesis: Peer activity may precede repricing in the receiving ETF; + means
+      stronger response to yesterday's peer participation shock.
+    family: peer_activity_transmission
+    nearest_previous: peer_lag_return_beta_20 and market_residual_amount_beta_20
+    distinction: Those use peer lagged returns or own amount vs own residual return.
+      This uses peer amount innovation lagged against own return; requires all 14
+      series.
+  l41_peer_amount_return_correlation:
+    direction: 1
+    raw_formula: On each complete 20-pair window, Pearson correlation (population
+      standard deviations, ddof=0) between member return r_i,t and one-day-lagged
+      leave-one-out mean trading-activity innovation of the other 13 ETFs; zero variance
+      => NaN; group fixed-member mean.
+    hypothesis: Standardized cross-series co-movement captures peer-flow-led repricing;
+      positive comovement predicts relative strength.
+    family: peer_activity_transmission
+    nearest_previous: peer_lag_return_beta_20
+    distinction: 'Pearson correlation rather than the prior peer-lag-return beta:
+      peer amount innovation is lagged and the receiving member return is the response.'
+  l41_peer_amount_shock_response_asymmetry:
+    direction: 1
+    raw_formula: Over a complete 20-pair grid of lagged peer activity shock x and
+      member return, mean return for x>0 minus mean return for x<0; require at least
+      4 valid pairs in each state. Zero shock is excluded. Group fixed-member mean.
+    hypothesis: Member prices responding more to peer inflows than peer outflows signals
+      positive flow transmission.
+    family: peer_activity_transmission
+    nearest_previous: amount_return_asymmetry_20; peer_lag_return_beta_20
+    distinction: Conditional means are keyed to lagged fixed-pool peer amount-shock
+      sign, not own amount or own return sign; denominator/state support is explicit.
+  l41_peer_flow_reversal_beta:
+    direction: -1
+    raw_formula: For each member, x_t=mean of the other 13 fixed ETFs’ activity innovations
+      at t-1. Threshold at response date t is median(|peer activity|) over the 20
+      observations ending t-2, known by lagged shock date t-1 and excluding that shock.
+      Select |x_t| >= threshold (ties included); compute OLS slope with intercept
+      beta_20(r_i,t,x_t) on selected pairs only; require at least 4 selected pairs
+      and positive population variance (ddof=0); any missing threshold makes that
+      date ineligible. Group fixed-member mean. Every date in the 20-pair calendar
+      grid must have a known threshold, x and return; otherwise output NaN.
+    hypothesis: Extreme peer-flow impulse is expected to induce short-lived crowding/reversal
+      in the receiving ETF; negative sign is frozen.
+    family: peer_activity_transmission
+    nearest_previous: peer_lag_return_beta_20; amount_shock_*
+    distinction: Extreme peer activity shock threshold is lagged-date measurable and
+      evaluated against prior-20 peer activity; state slope is distinct from unconditional
+      peer lag-return beta.

@@ -1,0 +1,23 @@
+description: "RETIRED candidate generator: historical pi GLM rounds, retained for audit replay only."
+group: Research
+type: graph
+working_dir: /home/sensen/dev/projects/gpu_ml-coral
+schedule: "*/5 * * * *"
+max_active_runs: 1
+timeout_sec: 0
+log_output: merged
+env:
+  - PYTHONUNBUFFERED: "1"
+  - PATH: /home/sensen/.nvm/versions/node/v24.14.0/bin:/home/sensen/.local/bin:/usr/local/bin:/usr/bin:/bin
+preconditions:
+  - condition: 'test -f runtime_outputs/etf_pi_glm_mining_20260919/ALLOW_LEGACY_LLM_CANDIDATE_GENERATION'
+  - condition: 'test ! -f runtime_outputs/etf_pi_glm_mining_20260919/STOP'
+  - condition: 'test ! -f runtime_outputs/etf_pi_glm_mining_20260919/MECHANISM_EXHAUSTED'
+steps:
+  - id: mine
+    name: Continue persistent ETF mining session
+    run: >-
+      /home/sensen/dev/projects/gpu_ml-coral/.venv/bin/python
+      deployments/dagu/scripts/etf_pi_glm_mining.py
+      --run-dir runtime_outputs/etf_pi_glm_mining_20260919
+    timeout_sec: 0

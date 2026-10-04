@@ -1,0 +1,34 @@
+domain: etf_rotation
+grammar_version: etf_family_overnight_structure_1d_v1
+factor_source: overnight_structure_1d
+frequency: 1m
+# Literature provenance (directive: no citation, no atom):
+# ON_PREM_SKEW_20: Aboody et al. (2018) overnight-return skewness as a
+#   sentiment proxy, 20d rolling window.
+# ON_PREM_RATIO_20_60: 20d vs 60d overnight-return mean ratio (regime
+#   shift in overnight drift); directive's raw ON_PREM_20/60 levels
+#   duplicate the pre-existing daily_candle:GAP_MEAN_20/60 -- reused
+#   there, only the ratio is new here.
+# ON_INTRADAY_CORR_20: Berkman-Koch-Tuttle-Zhang (2012) overnight-vs-
+#   same-day-intraday return correlation (persistence vs reversal).
+# ON_SIGN_STREAK_20: signed run-length of overnight-return direction,
+#   20d rolling mean.
+# ON_RV_SHARE_60: 60d overnight-variance share of total (overnight +
+#   intraday) variance; directive-flagged as likely near-duplicate of
+#   S9's range_based_vol_1m:YZ_OVERNIGHT_SHARE_20 -- kept pending atom-
+#   health cross-check.
+# ON_VOL_ADJ_RET_20: overnight return weighted by the first 1m bar's
+#   share of the day's total volume, 20d mean (Cliff-Cooper-Gulen 2008
+#   framing, volume-adjusted).
+# ON_ABS_MEAN_20: 20d mean of |overnight return| (magnitude dimension).
+# ON_PREM_CHG_20: 20d change of the 20d overnight-return mean.
+atoms:
+  - {name: ON_PREM_SKEW_20, family: overnight_structure_1d}
+  - {name: ON_PREM_RATIO_20_60, family: overnight_structure_1d}
+  - {name: ON_INTRADAY_CORR_20, family: overnight_structure_1d}
+  - {name: ON_SIGN_STREAK_20, family: overnight_structure_1d}
+  - {name: ON_RV_SHARE_60, family: overnight_structure_1d}
+  - {name: ON_VOL_ADJ_RET_20, family: overnight_structure_1d}
+  - {name: ON_ABS_MEAN_20, family: overnight_structure_1d}
+  - {name: ON_PREM_CHG_20, family: overnight_structure_1d}
+grammar: {operators: [atomic], pair_policy: cross_family_only, max_atoms: 1}

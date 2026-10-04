@@ -1,0 +1,23 @@
+domain: etf_rotation
+grammar_version: etf_family_overnight_conditioned_drawdown_volume_v1
+factor_source: overnight_conditioned_drawdown_volume
+frequency: 1m
+# Literature provenance (directive: no citation, no atom):
+# OVERNIGHT_SIGN_DDVOL_EXCESS_DIFF_20: Lou-Polk-Skouras (2019) overnight/
+#   intraday clientele split; rolling 40d window, mean(DD_VOL_SHARE_EXCESS
+#   daily raw | overnight>0) - mean(... | overnight<0).
+# GAP_MAGNITUDE_UNDERWATER_SPLIT_20: rolling 20d window, split by median
+#   of |overnight_ret|/sigma_prev; mean(underwater_frac | above-median
+#   gap magnitude) - mean(... | below-median).
+# ON_POS_TROUGH_PREPOST_RATIO_20: rolling 40d window, mean of
+#   TROUGH_PREPOST_VOL_RATIO daily raw restricted to overnight>0 days
+#   (Blume-Easley-O'Hara 1994 volume-as-signal-quality, conditioned).
+# GAP_CONSUMPTION_DDVOL_CORR_20: 20d rolling Pearson correlation between
+#   GAP_DD_CONSUMPTION_RATIO daily raw and DD_VOL_SHARE_EXCESS daily raw
+#   (single statistic, not a product atom).
+atoms:
+  - {name: OVERNIGHT_SIGN_DDVOL_EXCESS_DIFF_20, family: overnight_conditioned_drawdown_volume}
+  - {name: GAP_MAGNITUDE_UNDERWATER_SPLIT_20, family: overnight_conditioned_drawdown_volume}
+  - {name: ON_POS_TROUGH_PREPOST_RATIO_20, family: overnight_conditioned_drawdown_volume}
+  - {name: GAP_CONSUMPTION_DDVOL_CORR_20, family: overnight_conditioned_drawdown_volume}
+grammar: {operators: [atomic], pair_policy: cross_family_only, max_atoms: 1}

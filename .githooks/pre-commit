@@ -1,0 +1,7 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+repo_root="$(git rev-parse --show-toplevel)"
+cd "$repo_root"
+guard="$(git rev-parse --path-format=absolute --git-common-dir)/../scripts/guard_no_data_in_git.sh"
+exec bash "$guard" staged

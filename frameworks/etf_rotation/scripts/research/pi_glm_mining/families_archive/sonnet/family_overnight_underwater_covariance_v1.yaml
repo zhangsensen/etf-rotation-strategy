@@ -1,0 +1,15 @@
+domain: etf_rotation
+grammar_version: etf_family_overnight_underwater_covariance_v1
+factor_source: overnight_underwater_covariance
+frequency: 1m
+# S48 stage (round_649): overnight behavior vs intraday drawdown as a
+# direct rolling covariation statistic. See
+# overnight_underwater_covariance.py module docstring for definitions.
+atoms:
+  - {name: OVERNIGHT_UNDERWATER_SPEARMAN_20, family: overnight_underwater_covariance}
+  - {name: OVERNIGHT_SIGN_UNDERWATERCHG_CORR_20, family: overnight_underwater_covariance}
+  - {name: OVERNIGHT_VARSHARE_UNDERWATER_CORR_60, family: overnight_underwater_covariance}
+  - {name: GAP_SIGMA_MAXDD_SIGMA_CORR_20, family: overnight_underwater_covariance}
+  - {name: OVERNIGHT_UNDERWATER_SPEARMAN_CHG_20, family: overnight_underwater_covariance}
+  - {name: OVERNIGHT_VARSHARE_UNDERWATER_CORR_CHG_20, family: overnight_underwater_covariance}
+grammar: {operators: [atomic, rank_spread], pair_policy: cross_family_only, max_atoms: 1}

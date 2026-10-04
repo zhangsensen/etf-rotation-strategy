@@ -1,0 +1,34 @@
+version: group_discovery_share_v1
+purpose: seen_history_discovery_only
+source_type: share
+availability_status: NEXT_SESSION_ASSUMPTION_NOT_PUBLICATION_PROOF
+max_stale_calendar_days: 7
+data_root: /home/sensen/dev/projects/gpu_ml/data/etf_rotation_v1
+as_of: '2026-09-17'
+start: '2023-07-27'
+groups: frameworks/etf_rotation/configs/etf_candidate14_economic_groups_v1.yaml
+universe: config/etf_rotation_universe_v1.json
+calendar_symbol: 510300.SH
+entry_lag: 2
+horizon: 5
+top_k: 2
+warmup: 60
+hac_lag: 10
+budget_cap: 96
+max_leads: 6
+windows: [20, 40]
+mechanisms:
+  share_redemption: {direction: -1, hypothesis: redemption pressure exhaustion precedes relative recovery}
+  share_persistence: {direction: -1, hypothesis: persistent share outflows identify exhausted supply}
+  share_acceleration: {direction: -1, hypothesis: recent flow acceleration reverses after demand overshoot}
+  share_volatility: {direction: -1, hypothesis: stable primary-market supply supports relative strength}
+screens:
+  min_days: 360
+  min_year_days: 40
+  min_positive_years: 2
+  min_ic: 0.01
+  min_ic_hac_t: 2.0
+  min_ic_block_t: 2.0
+  min_excess8_hac_t: 2.0
+  alpha: 0.05
+  max_abs_rank_corr: 0.7

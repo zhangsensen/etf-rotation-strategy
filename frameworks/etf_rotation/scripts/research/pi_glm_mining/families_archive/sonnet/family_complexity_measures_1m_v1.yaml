@@ -1,0 +1,29 @@
+domain: etf_rotation
+grammar_version: etf_family_complexity_measures_1m_v1
+factor_source: complexity_measures_1m
+frequency: 1m
+# Literature provenance (directive: no citation, no atom):
+# SAMPEN_RET_20: Richman-Moorman (2000) sample entropy, m=2, r=0.2*std,
+#   1m returns, self-matches excluded, 20d mean.
+# APEN_RET_20: Pincus (1991) approximate entropy, same m/r, self-matches
+#   included, 20d mean.
+# LZ_COMPLEXITY_20: Lempel-Ziv (1976) / Kaspar-Schuster (1987) normalized
+#   complexity of the 1m return sign sequence, 20d mean.
+# MSPE_5M_20 / MSPE_15M_20: Bandt-Pompe (2002) permutation entropy (d=3)
+#   applied to 5m/15m block-summed returns (multiscale entropy framing,
+#   Costa-Goldberger-Peng 2002 lineage), 20d mean.
+# MSPE_SCALE_DIFF_20: MSPE_15M_20 minus same-day 1m-scale permutation
+#   entropy (cross-scale order/disorder change), 20d mean.
+# RECURRENCE_RATE_20: Eckmann-Kamphorst-Ruelle (1987) recurrence rate,
+#   m=2, same tolerance as SampEn/ApEn, 20d mean.
+# SAMPEN_RET_CHG_20: 20-day change of SAMPEN_RET_20.
+atoms:
+  - {name: SAMPEN_RET_20, family: complexity_measures_1m}
+  - {name: APEN_RET_20, family: complexity_measures_1m}
+  - {name: LZ_COMPLEXITY_20, family: complexity_measures_1m}
+  - {name: MSPE_5M_20, family: complexity_measures_1m}
+  - {name: MSPE_15M_20, family: complexity_measures_1m}
+  - {name: MSPE_SCALE_DIFF_20, family: complexity_measures_1m}
+  - {name: RECURRENCE_RATE_20, family: complexity_measures_1m}
+  - {name: SAMPEN_RET_CHG_20, family: complexity_measures_1m}
+grammar: {operators: [atomic], pair_policy: cross_family_only, max_atoms: 1}

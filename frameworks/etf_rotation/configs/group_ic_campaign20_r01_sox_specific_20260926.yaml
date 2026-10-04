@@ -1,0 +1,64 @@
+version: group_ic_campaign20_r01_sox_specific_20260926
+status: PROPOSED_NOT_APPROVED_NO_H5_LABELS_READ
+source_type: us_sector
+purpose: seen_history_discovery_only
+campaign_extension: true
+discovery_surface: IC_DISCOVERY_ONLY
+screens_version: cold_250_v1
+data_root: /home/sensen/dev/projects/gpu_ml/data/etf_rotation_v1
+as_of: '2026-03-24'
+start: '2023-07-27'
+evaluation_start: '2025-01-01'
+groups: frameworks/etf_rotation/configs/etf_candidate14_economic_groups_v1.yaml
+universe: config/etf_rotation_universe_v1.json
+calendar_symbol: 510300.SH
+sox_file: runtime_outputs/etf_rotation_research/NASDAQSOX_cold_20260324.csv
+sox_sha256: aefe68ce126f8eaeb2c13a2132d38f8305082ada3204054b60f21833859e372b
+ndx_file: runtime_outputs/etf_rotation_research/us_index_source_preflight_20260925/NASDAQ100.csv
+ndx_sha256: 2e38516acc7da9fba531edae2aa82d1fd663254db71541bff828a6093fa68abc
+entry_lag: 2
+horizon: 5
+top_k: 2
+warmup: 60
+hac_lag: 10
+max_leads: 3
+external_registered_definitions: 8
+prior_registered: 533
+new_definitions: 3
+budget_cap: 536
+windows: [60]
+screens:
+  min_days: 250
+  min_year_days: 40
+  min_positive_years: 2
+  min_ic: 0.01
+  min_ic_hac_t: 2.0
+  min_ic_block_t: 2.0
+  min_excess8_hac_t: 2.0
+  alpha: 0.05
+  max_abs_rank_corr: 0.7
+mechanisms:
+  sox_specific_same_day_response:
+    direction: 1
+    family: external_us_semiconductor_specific_information_transmission
+    hypothesis: A semiconductor-industry move relative to the Nasdaq 100 carries global chip-chain information. ETF groups with a stronger historically observed contemporaneous response to that signed industry shock may continue to reprice over H5.
+    raw_formula: On China session D, score_i = beta0_i,D-1 * x_D. beta0 = cov(r_i,t, x_t) / var(x_t) using exactly 60 complete China-session pairs t=D-60..D-1, ddof=0. x_D is the latest strictly prior US-session SOX return minus same-US-date Nasdaq100 return; neither r_i,D nor x_D enters beta.
+  sox_specific_delayed_response:
+    direction: 1
+    family: external_us_semiconductor_specific_information_transmission
+    hypothesis: Domestic ETF groups may absorb an overseas chip-industry-specific shock over several China sessions rather than only on the first available China session. A positive historically delayed response should persist in H5 after a signed new shock.
+    raw_formula: On China session D, score_i = beta1_i,D-1 * x_D. beta1 = cov(r_i,t, x_{t-1}) / var(x_{t-1}) using exactly 60 complete China-session ETF-return pairs t=D-60..D-1 and previous-China-session aligned shocks, ddof=0; current D inputs do not enter beta.
+  sox_specific_sign_asymmetry:
+    direction: 1
+    family: external_us_semiconductor_specific_information_transmission
+    hypothesis: Positive and negative semiconductor-specific shocks may propagate at different speeds through globally linked chip supply chains. The signed response conditional on the current shock sign may continue over H5.
+    raw_formula: On China session D, estimate beta_plus and beta_minus separately over exactly 60 complete pairs t=D-60..D-1 restricted to x_t>0 and x_t<0; require at least 10 in each branch; ddof=0. score_i = beta_plus_i,D-1*x_D if x_D>0, beta_minus_i,D-1*x_D if x_D<0, missing if x_D=0. Neither r_i,D nor x_D enters either beta.
+notes:
+  population: fixed 14 candidate ETFs and eight immutable economic groups; SOX and Nasdaq100 are auxiliary information only
+  external_source: Nasdaq SOX daily index through FRED NASDAQSOX, https://fred.stlouisfed.org/series/NASDAQSOX; Nasdaq index methodology https://indexes.nasdaq.com/docs/methodology_SOX.pdf
+  foreign_timing: First compute SOX and Nasdaq100 returns on their common valid US observation dates using the same prior common US date. x_us is SOX return minus Nasdaq100 return, not an orthogonal residual. For each China D take the most recent US observation date strictly earlier than D and no more than five calendar days old; otherwise x_D missing. Never use same-calendar-date US closes at China D close.
+  source_vintage: FRED historical snapshots, locally trimmed to the 2026-03-24 cold cutoff and SHA256-identified. Nasdaq disseminates SOX during its US session, with closing-value corrections possible through 17:15 ET. Strict prior-US-date alignment is conservative for China D, but historical daily revisions are not point-in-time certified.
+  sign_story: Positive x_D means the US semiconductor industry outperformed the Nasdaq100 on the latest known US session. Positive beta times positive x_D ranks groups historically responsive to that signed industry-specific information higher; negative x_D reverses the predicted ranking. A slow cross-market supply-chain repricing over D+2..D+7 is a one-sided economic hypothesis, not an observed fact.
+  overlap_risk: Latest-known SOX and Nasdaq100 daily returns correlate 0.906 over the 294 China evaluation dates; x is a difference, not independent of Nasdaq100. The old us_lagged_transmission_60 and internal beta families are explicit no-label redundancy references.
+  historical_status: PREVIOUSLY_SEEN_2025_PLUS_NOT_OOS
+  decision_boundary: Config and implementation require master approval before any new H5 label access. The rejected cash-activity proposal consumed no registration and is not round 1.

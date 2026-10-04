@@ -1,0 +1,13 @@
+domain: etf_rotation
+grammar_version: etf_family_intraday_turnover_shape_v1
+factor_source: intraday_turnover_shape
+frequency: 60m
+available_frequencies: [1m, 5m, 15m, 30m, 60m]
+atoms:
+  - {name: FIRST_HOUR_TURNOVER_SHARE, family: intraday_turnover_shape}
+  - {name: LAST_HOUR_TURNOVER_SHARE, family: intraday_turnover_shape}
+  - {name: FIRST_HOUR_SHARE_REL_20, family: intraday_turnover_shape}
+  - {name: FIRST_HOUR_SHARE_REL_60, family: intraday_turnover_shape}
+  - {name: AFTERNOON_TURNOVER_SHARE, family: intraday_turnover_shape}
+  - {name: TURNOVER_CONCENTRATION, family: intraday_turnover_shape}
+grammar: {operators: [atomic], pair_policy: cross_family_only, max_atoms: 1}

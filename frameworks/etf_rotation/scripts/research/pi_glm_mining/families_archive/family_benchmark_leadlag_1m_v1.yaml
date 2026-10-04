@@ -1,0 +1,20 @@
+domain: etf_rotation
+grammar_version: etf_family_benchmark_leadlag_1m_v1
+factor_source: benchmark_leadlag_1m
+frequency: 1m
+benchmark_symbols: [510300.SH, 510500.SH]
+asset_class_config: configs/etf_asset_classes_current20_v1.yaml
+# Reference legs only (510300.SH / 510500.SH 1m); never candidate population.
+# LAG1_BENCH_CORR_20: lead-lag construction (Lo-MacKinlay 1990 style):
+#   daily corr(r_own[t], r_bench[t-1]) over within-day 1m returns, 20d mean.
+# SYNC_BETA_20 / SYNC_R2_20: daily beta / R^2 of own 1m returns on benchmark
+#   1m returns (Morck-Yeung-Yu 2000 style synchronicity), 20d mean.
+# BETA_CHG_20: 20d change of the 20d-mean sync beta.
+# TAIL30_BETA_GAP_20: last-30-min beta minus full-day beta per day, 20d mean.
+atoms:
+  - {name: LAG1_BENCH_CORR_20, family: benchmark_leadlag_1m}
+  - {name: SYNC_BETA_20, family: benchmark_leadlag_1m}
+  - {name: SYNC_R2_20, family: benchmark_leadlag_1m}
+  - {name: BETA_CHG_20, family: benchmark_leadlag_1m}
+  - {name: TAIL30_BETA_GAP_20, family: benchmark_leadlag_1m}
+grammar: {operators: [atomic], pair_policy: cross_family_only, max_atoms: 1}

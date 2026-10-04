@@ -1,0 +1,103 @@
+version: group_ic20_batch24_minute_20260923
+source_type: minute
+purpose: seen_history_discovery_only
+campaign_extension: true
+discovery_surface: 2025_DIRECTION_DISCOVERY_ONLY
+data_root: /home/sensen/dev/projects/gpu_ml/data/etf_rotation_v1
+as_of: '2025-12-31'
+start: '2023-07-27'
+evaluation_start: '2025-01-01'
+groups: frameworks/etf_rotation/configs/etf_candidate14_economic_groups_v1.yaml
+universe: config/etf_rotation_universe_v1.json
+calendar_symbol: 510300.SH
+entry_lag: 2
+horizon: 5
+top_k: 2
+warmup: 60
+hac_lag: 10
+max_leads: 3
+prior_registered: 378
+budget_cap: 381
+new_definitions: 3
+external_registered_definitions: 8
+windows: [20]
+mechanisms:
+  minute_volume_return_concentration_lead:
+    direction: 1
+    hypothesis: same-day opening-30min (09:31-10:00) volume share correlated with closing-30min (14:31-15:00) absolute return
+  minute_volume_shape_persistence:
+    direction: 1
+    hypothesis: day-over-day autocorrelation of the opening+closing U-shape volume ratio; a shape-stability state, not a level factor
+  minute_volume_midday_share:
+    direction: 1
+    hypothesis: share of daily volume in 11:01-11:30 plus 13:01-13:30, the complement bucket to the U-shape edges
+screens:
+  min_days: 360
+  min_year_days: 40
+  min_positive_years: 2
+  min_ic: 0.01
+  min_ic_hac_t: 2.0
+  min_ic_block_t: 2.0
+  min_excess8_hac_t: 2.0
+  alpha: 0.05
+  max_abs_rank_corr: 0.7
+notes:
+  fixed_population: 14 ETFs / 8 economic groups
+  timing: close(D) signal; open(D+2) to open(D+7) H5 label contract
+  minute_alignment: exactly 240 complete unadjusted bars, same 240-bar completeness/validity gate as all other minute mechanisms
+  bucket_boundaries: >-
+    selected by actual bar HH:MM timestamp, not array position, with an assertion (30/30/60 bars, 240 total) on
+    the canonical grid inside minute_daily. Opening 30 minutes = 09:31-10:00 (bar index 0:30). Closing 30 minutes
+    = 14:31-15:00 (bar index 210:240). Midday = 11:01-11:30 (bar index 90:120) plus 13:01-13:30 (bar index
+    120:150), i.e. index 90:150, 60 bars. 2026-09-23 correction: an earlier implementation used the wrong
+    position slice 100:150 (50 bars, actually 11:11-13:30); master caught this before any stage1 run.
+  halt_day_rule: >-
+    2026-09-23, master's pre-label rule, applied uniformly to every member: if a member's 09:31-10:30 volume
+    (bar index 0:60) is entirely zero (an opening-auction halt, not a data gap; 240-bar completeness stays
+    100%), that member-day's 6 volume-shape scalars (u_shape_ratio, gini, opening_absorption_speed,
+    opening_share, closing_session_abs_return, midday_share) are set to missing in minute_daily; no other
+    already-registered minute mechanism is touched. The 20-day rolling window for the 3 registered candidates
+    below then uses min_periods=15 (tolerates up to 5 such gaps) instead of requiring all 20, only at w=20.
+    Evaluation-window (2025-01-01..2026-09-17, 416 calendar days) halt/incomplete-day counts per member:
+    513100.SH 46 (11.1%), 513120.SH 1 (0.2%), all other 12 members 0. See
+    runtime_outputs/etf_rotation_research/diagnostics/batch23_share_amount_20260923/round2_eval_window_halt_day_counts.csv.
+  round2_theme: >-
+    finer intraday volume-shape structure than the existing 60/120/60 return/range/amount phase split
+    (batch16 family) or the single full-session volume-entropy scalar; distinct from all previously registered
+    minute mechanisms per the no-label dedup precheck below.
+  volume_return_concentration_lead_is_single_mechanism: >-
+    uses both a volume-shape leg and a same-day |return| leg, but this is one economic mechanism (does an
+    early-concentrated volume day predict a quiet or violent close), not a two-leg composite of two already
+    separately-registered candidates; both legs are new helper scalars introduced only for this mechanism.
+  no_label_dedup_precheck: >-
+    computed group scores only (no forward return/H5 label) over the full 2025-01-01..2026-09-17 evaluation
+    window (416 common trading days) and checked mean(abs(daily cross-sectional rank corr)) against every
+    already-registered minute mechanism at window 20 and against the other Round2 candidates. Rerun after the
+    midday bucket fix. Dropped for redundancy (>=0.7): minute_volume_gini vs minute_volume_entropy (0.9717),
+    minute_volume_u_shape_ratio vs minute_phase_amount_curvature (0.8749). minute_volume_midday_share vs
+    minute_phase_amount_curvature is close but stays under the line at 0.6800 (373 common days).
+    minute_volume_u_shape_ratio is retained internally, unregistered, only as the input to
+    minute_volume_shape_persistence's own-history autocorrelation. Registered candidates' next-highest
+    correlations: minute_volume_return_concentration_lead 0.3644 (vs minute_signed_flow_persistence),
+    minute_volume_shape_persistence 0.3848 (vs minute_late_return). See
+    runtime_outputs/etf_rotation_research/diagnostics/batch23_share_amount_20260923/round2_dedup_precheck.csv.
+  eval_window_structural_gate: >-
+    dropped for structural degeneracy (not dedup): minute_volume_opening_absorption_speed. In the real
+    2025-01-01..2026-09-17 evaluation window, us_large_growth (513100.SH) has zero traded volume in its first
+    30 minutes on 24.0% of days (240-bar completeness is 100% for all 14 members; this is a genuine absence of
+    opening-window trades, not a data gap), which pushes that candidate's nan_rate for the single-member group
+    past the 20% gate even before the halt-day rule (that candidate is not in the halt-tolerant min_periods=15
+    list). The 3 registered candidates all pass the single-member gate on every group including 513100 after
+    the halt-day rule: 513100 nan_rate is 0.1034 (return_concentration_lead), 0.1490 (shape_persistence),
+    0.1034 (midday_share), all other single-member groups 0.0; degenerate_rate <=0.28% everywhere. See
+    runtime_outputs/etf_rotation_research/diagnostics/batch23_share_amount_20260923/round2_eval_window_*.csv.
+  eval_window_coverage_risk: >-
+    days_all_8_groups_valid over the 416-day evaluation window: minute_volume_return_concentration_lead 373
+    (89.7%), minute_volume_midday_share 373 (89.7%), minute_volume_shape_persistence 354 (85.1%).
+    minute_volume_shape_persistence's 354 is BELOW the min_days=360 screen; it may come back
+    COVERAGE_INSUFFICIENT in the real stage1 run rather than fail on IC itself, which is a valid recorded
+    outcome under IC_MINING_RULES.md section 3, not a reason to withhold registration. Flagged for master here
+    per instruction.
+  raw_direction_status: all three Stage1 definitions fixed at +1
+  no_label_read: true
+  no_formal_evaluation_in_implementation_task: true

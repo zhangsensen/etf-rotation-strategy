@@ -1,0 +1,27 @@
+domain: etf_rotation
+grammar_version: etf_family_jump_variation_v1
+factor_source: jump_variation
+atoms:
+- name: JUMP_VARIATION_SHARE
+  family: jump_variation
+grammar:
+  operators:
+  - atomic
+  pair_policy: cross_family_only
+  max_atoms: 1
+peer_symbols:
+- 159995.SZ
+- 159516.SZ
+- 515880.SH
+- 159852.SZ
+- 562500.SH
+- 159732.SZ
+- 513130.SH
+- 159992.SZ
+- 513120.SH
+- 518880.SH
+- 512400.SH
+- 512890.SH
+- 159611.SZ
+- 513100.SH
+frequency: 5m

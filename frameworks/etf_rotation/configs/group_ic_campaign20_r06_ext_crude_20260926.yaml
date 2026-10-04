@@ -1,0 +1,62 @@
+version: group_ic_campaign20_r06_ext_crude_20260926
+status: PROPOSED_NOT_APPROVED_NO_H5_LABELS_READ
+source_type: ext_crude
+purpose: seen_history_discovery_only
+campaign_extension: true
+discovery_surface: IC_DISCOVERY_ONLY
+screens_version: cold_250_v1
+data_root: /home/sensen/dev/projects/gpu_ml/data/etf_rotation_v1
+as_of: '2026-03-24'
+start: '2023-07-27'
+evaluation_start: '2025-01-01'
+groups: frameworks/etf_rotation/configs/etf_candidate14_economic_groups_v1.yaml
+universe: config/etf_rotation_universe_v1.json
+calendar_symbol: 510300.SH
+crude_file: runtime_outputs/etf_rotation_research/long_history_proxies/macro/SC.parquet
+crude_sha256: 9e8aca40eee9f95adf20b4f4b7e77d01157ef7e8512a609a71d7e48b61b69d66
+entry_lag: 2
+horizon: 5
+top_k: 2
+warmup: 60
+hac_lag: 10
+max_leads: 3
+external_registered_definitions: 8
+prior_registered: 548
+new_definitions: 3
+budget_cap: 551
+windows: [60]
+screens:
+  min_days: 250
+  min_year_days: 40
+  min_positive_years: 2
+  min_ic: 0.01
+  min_ic_hac_t: 2.0
+  min_ic_block_t: 2.0
+  min_excess8_hac_t: 2.0
+  alpha: 0.05
+  max_abs_rank_corr: 0.7
+mechanisms:
+  crude_same_day_response:
+    direction: 1
+    family: external_crude_cost_push_transmission
+    hypothesis: A settlement rise in INE crude futures reflects higher energy costs and inflation expectations. ETF groups with a more positive historical contemporaneous response to that signed crude shock may continue to reprice over H5; a crude fall reverses the predicted ranking.
+    raw_formula: On China D, x_D=log(settle_D/settle_prev) using the INE crude settlement at China date D itself and the previous valid settlement (holiday gaps accumulate); dates without a futures settlement stay missing. score_i=beta0_i,D-1*x_D, where beta0=cov(r_i,t,x_t)/var(x_t), ddof=0, on exactly 60 complete China-session pairs t=D-60..D-1. D ETF return and x_D do not enter beta.
+  crude_delayed_response:
+    direction: 1
+    family: external_crude_cost_push_transmission
+    hypothesis: Energy-cost repricing may reach domestic ETF groups with a one-China-session lag through fuel-cost and logistics chains, then continue into H5.
+    raw_formula: score_i=beta1_i,D-1*x_D; beta1=cov(r_i,t,x_(t-1))/var(x_(t-1)), ddof=0, on exactly 60 complete ETF-return pairs t=D-60..D-1 with prior-China-session aligned crude shocks. D inputs do not enter beta.
+  crude_sign_asymmetry:
+    direction: 1
+    family: external_crude_cost_push_transmission
+    hypothesis: Crude rallies driven by supply shocks may transmit differently from crude slides driven by demand weakness; each signed response may continue over H5.
+    raw_formula: On exactly 60 complete pairs t=D-60..D-1 estimate beta_plus using x_t>0 and beta_minus using x_t<0, requiring at least 10 historical dates in each branch; ddof=0. score_i=beta_plus_i,D-1*x_D if x_D>0, or beta_minus_i,D-1*x_D if x_D<0; missing if x_D=0. D inputs do not enter beta.
+notes:
+  population: fixed 14 candidate ETFs and eight economic groups; INE crude is auxiliary information only
+  external_source: INE (Shanghai) crude front continuous futures daily settlement from the local long-history proxy library (SHA256-pinned, trimmed to the 2026-03-24 cold cutoff); 1939 observations from 2018-03-26, yuan-denominated
+  foreign_timing: Compute log settlement change on the China calendar directly. The settlement at China date t is finalized at the 15:00 futures close and is used as a close(D) input exactly like the domestic_benchmark auxiliary closes; missing futures dates stay missing and holiday gaps produce the cumulative settlement change.
+  source_vintage: Local historical proxy snapshot, not a point-in-time archive; front-contract rolls and settlement revisions are limitations. This is seen-history discovery, not PIT confirmation.
+  sign_story: A positive x_D means Shanghai crude settled higher at China date D. Positive historical beta times the signed shock ranks groups that historically benefit from or track energy-cost pressure higher after a crude up-shock (cost push, inflation-sensitive exposure); a down-shock reverses the ranking. One-sided continuation over D+2..D+7 is a falsifiable hypothesis, not an observed fact.
+  overlap_risk: R05 copper shares the commodity-transmission template; old macro and inflation-linked families and us_lagged_transmission_60 are explicit no-label redundancy references. Distinct source does not imply distinct eight-group score.
+  historical_status: PREVIOUSLY_SEEN_2025_PLUS_NOT_OOS
+  decision_boundary: Proposed draft only. Master approval required before registration or any new H5 label read; zero evidence is retained.

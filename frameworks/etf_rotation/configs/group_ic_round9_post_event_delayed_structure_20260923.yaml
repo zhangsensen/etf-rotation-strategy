@@ -1,0 +1,96 @@
+version: group_ic_round9_post_event_delayed_structure_20260923
+source_type: claude_rounds
+purpose: seen_history_discovery_only
+campaign_extension: true
+discovery_surface: IC_DISCOVERY_ONLY
+data_root: /home/sensen/dev/projects/gpu_ml/data/etf_rotation_v1
+as_of: '2026-09-17'
+start: '2023-07-27'
+evaluation_start: '2025-01-01'
+groups: frameworks/etf_rotation/configs/etf_candidate14_economic_groups_v1.yaml
+universe: config/etf_rotation_universe_v1.json
+calendar_symbol: 510300.SH
+entry_lag: 2
+horizon: 5
+top_k: 2
+warmup: 60
+hac_lag: 10
+max_leads: 4
+external_registered_definitions: 8
+screens:
+  min_days: 360
+  min_year_days: 40
+  min_positive_years: 2
+  min_ic: 0.01
+  min_ic_hac_t: 2.0
+  min_ic_block_t: 2.0
+  min_excess8_hac_t: 2.0
+  alpha: 0.05
+  max_abs_rank_corr: 0.7
+prior_registered: 493
+budget_cap: 496
+new_definitions: 3
+mechanisms:
+  post_market_tail_delayed_relative_return:
+    direction: 1
+    window: 60
+    hypothesis: "MY_ASSUMPTION. Master's round 9/10 angle (no formula given): the TIME STRUCTURE of relative returns after an event, specifically days t+2..t+5, distinct from round 7's post_market_tail_relative_return/post_own_tail_relative_return which only tested day t+1 (both NOT_SUPPORTED_THIS_SCREEN). Same market-tail-day threshold construction as round 7 (top quintile trailing |r_m| over the window), but the conditioning mask is now the OR of shift(2..5) instead of shift(1) -- day+1 captures the fast/algorithmic reaction (already tested, not found); ETF capital reallocation (thinner liquidity/attention than index futures) is hypothesized to take several days to fully manifest, a genuinely different timing claim, not a re-run of the day+1 test. direction +1 (continuation/resilience, same narrative as round 7's day+1 version, unchanged)."
+    raw_formula: "market_tail_day = |r_m| >= trailing-60d top-quintile(|r_m|); delayed_window = OR(market_tail_day.shift(2), .shift(3), .shift(4), .shift(5)); mean(r_i - r_m | delayed_window, w=60, min_periods=3)."
+  post_own_tail_delayed_relative_return:
+    direction: -1
+    window: 60
+    hypothesis: "MY_ASSUMPTION. Same days-t+2..t+5 delayed window as above, but conditioned on the MEMBER'S OWN idiosyncratic tail day (top quintile trailing |residual|, same construction as round 7's post_own_tail_relative_return) instead of a market-wide event -- the conditioning-variable distinction the campaign has already treated as legitimately separate (market event vs member's own idiosyncratic event, e.g. beta_asymmetry-family candidates). Mechanism distinct from candidate 1: an idiosyncratic single-name residual shock is more likely a transient premium/discount dislocation (liquidity-driven overshoot, temporary creation/redemption imbalance) that the ETF arbitrage mechanism corrects over the following days, unlike a market-wide move which reflects genuine repricing that a single ETF cannot arbitrage away. direction -1 (reversal, opposite of candidate 1's continuation)."
+    raw_formula: "own_tail_day = |r_i - r_m| >= trailing-60d top-quintile(|r_i - r_m|); delayed_window = OR(own_tail_day.shift(2..5)); mean(r_i - r_m | delayed_window, w=60, min_periods=3) * -1."
+  post_dispersion_delayed_relative_return:
+    direction: -1
+    window: 60
+    hypothesis: "MY_ASSUMPTION. Same days-t+2..t+5 delayed window, but conditioned on a HIGH 8-GROUP CROSS-SECTIONAL DISPERSION day (reuses _group_dispersion, the same USER dispersion-framework measure round 6 used for dispersion_conditional_relative_return/_beta_gap; top quintile here for consistency with this round's own other two candidates, vs round 6's tercile for its own SAME-day version). Conditioning event here is cross-sectional DIFFERENTIATION across the 8 economic groups (a rotation/regime-split event), not a single benchmark return's own magnitude -- a third, genuinely distinct event type from candidates 1/2. High-dispersion days often reflect temporary, flow-driven differentiation (thematic rotation overreaction, concentrated creation/redemption in a subset of groups) rather than fully efficient repricing; as dispersion normalizes over the following days, the pool's average relative-return level in this delayed post-dispersion regime should compress back toward the market mean. direction -1 (reversion) -- note this is the OPPOSITE narrative and OPPOSITE direction from round 6's SAME-day dispersion_conditional_relative_return (direction +1, continuation), which was dropped at the dedup precheck stage (0.7389 vs vol_scaled_momentum_60) before ever being IC-tested; this candidate is not a resubmission of that one, it targets a different lag structure with an opposite hypothesis."
+    raw_formula: "dispersion = std across the 8 economic groups' own equal-weight daily returns (all 8 valid); high_disp_day = dispersion >= trailing-60d top-quintile(dispersion); delayed_window = OR(high_disp_day.shift(2..5)); mean(r_i - r_m | delayed_window, w=60, min_periods=3) * -1."
+notes:
+  fixed_population: 14 ETFs / 8 economic groups
+  timing: close(D) signal; open(D+2) to open(D+7) H5 research label contract
+  evaluation_surface: previously-seen history, signal_date 2025-01-01 through 2026-09-17; discovery, not OOS
+  direction_status: economic sign frozen before evaluation; no sign selection or automatic flip
+  complete_input_windows_only: true
+  member_aggregation: each member atom computed independently, then existing fixed group aggregation
+  source_vintage: canonical daily bars; no additional information sources
+  engine: frameworks/etf_rotation/src/etf_strategy/core/etf_group_claude_rounds.py, source_type=claude_rounds.
+  campaign: >-
+    Round 9 of the USER 2026-09-23 50-round sub-agent mining campaign. Round 8 registered 4 candidates (1
+    HAS_IC: weekday_relative_return_pattern_60, family closed, no variants per master). Round 9: master gave
+    only the ANGLE (post-event time structure of relative returns, days t+2..t+5, distinct from round 7's
+    next-day-only test) and no formulas -- all 3 candidates below are self-devised MY_ASSUMPTION, mechanism
+    written before definition, master's cap: <=3 per round, all survived dedup (originally proposed 3, all 3
+    registered, no drops this round).
+  family_precheck: >-
+    checked against runtime_outputs/etf_rotation_research/ic_inventory_20260923_claude_5rounds/families.csv
+    (freshest snapshot, post round 1-5; rounds 6-8's 11 registered candidates not yet reflected as rows, but
+    their real saved scores ARE in the dedup library below). No exact-duplicate under source_type=claude_rounds
+    for any of the 3 candidates; only adjacency is claude_rounds:peer_corr_dispersion (a correlation-network
+    concept, not a return-conditioning-on-dispersion concept -- different object). Direct lineage disclosure
+    (not a collision, an explicit extension master authorized): all 3 candidates reuse round 7's
+    post_market_tail_relative_return/post_own_tail_relative_return threshold constructions (now at a
+    days-t+2..t+5 lag instead of day t+1) and round 6's dispersion_conditional_relative_return's dispersion
+    measure (now at a days-t+2..t+5 lag with an opposite direction/narrative instead of same-day continuation)
+    -- these are not independently reinvented names for already-tested ideas, they are the same underlying
+    event definitions at a different, master-specified lag structure.
+  no_label_dedup_precheck: >-
+    computed group scores only (no forward return/H5 label), 2025-01-01..2026-09-23, against the full saved
+    scores_*.csv library (deduped to latest per candidate id, now including rounds 1-8's 28 registered
+    candidates, n_library_scores_compared=461) plus the other 2 candidates from this round (symmetric NEW-vs-
+    NEW recording, master's round-8+ convention fix). Max mean(abs(daily cross-sectional rank corr)):
+    post_market_tail_delayed_relative_return_60 0.6740 (vs vol_scaled_momentum_60), post_dispersion_delayed_
+    relative_return_60 0.6626 (vs NEW:post_market_tail_delayed_relative_return_60), post_own_tail_delayed_
+    relative_return_60 0.6306 (vs vol_scaled_momentum_60). All <0.7, all clean, zero flagged rows -- closer to
+    the 0.7 ceiling than round 8's 4 (0.50-0.61 range), consistent with the round 5-7 config notes' observation
+    that the library's density keeps raising baseline collision rates as it grows past 450+ candidates. See
+    runtime_outputs/etf_rotation_research/diagnostics/round9_20260923/dedup_precheck.csv.
+  eval_window_structural_precheck: >-
+    2025-01-01..2026-09-23 (420 days), read-only feature check, no labels read. All 3 candidates: every
+    single-member group nan_rate<=0.0143 (post_own_tail_delayed_relative_return_60's us_large_growth group has
+    the only nonzero nan_rate, 0.0143, still far under the 0.20 threshold), mode_value_rate<=0.0333 (no
+    near-constant group), days_all_8_valid=420/420 for 2 of 3 candidates and 414/420 for post_own_tail_delayed_
+    relative_return_60. No candidate was dropped on this precheck. See
+    runtime_outputs/etf_rotation_research/diagnostics/round9_20260923/structural_diagnostics.csv.
+  no_label_read: true
+  no_formal_evaluation_in_implementation_task: true

@@ -1,0 +1,64 @@
+# ETF 文档逐项归属
+
+所有条目可通过显式链接访问。现行规则从 [研究资料基准](RESEARCH_BASELINE.md) 进入；历史材料保留原文，普通搜索隔离。辅助研究不自动成为新挖掘批次要求。
+
+| 文档 | 归属 |
+|---|---|
+| [ENGINEERING_HANDOFF.md](../ENGINEERING_HANDOFF.md) | 历史原文，按原日期与合同解释 |
+| [ETF_AUTOMATED_MINING_PLAN.md](../ETF_AUTOMATED_MINING_PLAN.md) | 历史原文，按原日期与合同解释 |
+| [ETF_DATA_FEASIBILITY_14_20260919.md](../ETF_DATA_FEASIBILITY_14_20260919.md) | 历史原文，按原日期与合同解释 |
+| [ETF_ENGINE_ACCEPTANCE_20260921.md](../ETF_ENGINE_ACCEPTANCE_20260921.md) | 历史原文，按原日期与合同解释 |
+| [ETF_FACTOR_MINING_SPEC.md](../ETF_FACTOR_MINING_SPEC.md) | 历史原文，按原日期与合同解释 |
+| [ETF_FACTOR_TASK_ROOT_CAUSE.md](../ETF_FACTOR_TASK_ROOT_CAUSE.md) | 历史原文，按原日期与合同解释 |
+| [ETF_FREEZE_REPORT_20260921.md](../ETF_FREEZE_REPORT_20260921.md) | 历史原文，按原日期与合同解释 |
+| [ETF_MINING_MECHANISM_AUDIT_20260921.md](../ETF_MINING_MECHANISM_AUDIT_20260921.md) | 历史原文，按原日期与合同解释 |
+| [ETF_PI_MINING_AUDIT_20260919.md](../ETF_PI_MINING_AUDIT_20260919.md) | 历史原文，按原日期与合同解释 |
+| [ETF_ROTATION_CONTRACT_14.md](../ETF_ROTATION_CONTRACT_14.md) | 历史原文，按原日期与合同解释 |
+| [ETF_ROTATION_METHODOLOGY.md](../ETF_ROTATION_METHODOLOGY.md) | 现行入口/合同 |
+| [FACTOR_MINING_PROVENANCE.md](../FACTOR_MINING_PROVENANCE.md) | 历史原文，按原日期与合同解释 |
+| [FAMILY_BREADTH_V2.md](../FAMILY_BREADTH_V2.md) | 历史原文，按原日期与合同解释 |
+| [FAMILY_BREADTH_V3.md](../FAMILY_BREADTH_V3.md) | 历史原文，按原日期与合同解释 |
+| [GPU_WFO_MIGRATION.md](../GPU_WFO_MIGRATION.md) | 历史原文，按原日期与合同解释 |
+| [README.md](../README.md) | 现行入口/合同 |
+| [RESEARCH_GUIDE.md](../RESEARCH_GUIDE.md) | 现行入口/合同 |
+| [configs/HISTORICAL_INDEX.md](../configs/HISTORICAL_INDEX.md) | 归档导航 |
+| [configs/README.md](../configs/README.md) | 现行入口/合同 |
+| [docs/ETF_AUTORESEARCH_PROGRAM.md](ETF_AUTORESEARCH_PROGRAM.md) | 现行入口/合同 |
+| [docs/ETF_IC_CAMPAIGN20_PROGRESS_20260926.md](ETF_IC_CAMPAIGN20_PROGRESS_20260926.md) | 历史原文，按原日期与合同解释 |
+| [docs/ETF_IC_CAMPAIGN20_PROPOSAL_20260926.md](ETF_IC_CAMPAIGN20_PROPOSAL_20260926.md) | 历史原文，按原日期与合同解释 |
+| [docs/ETF_IC_CAMPAIGN20_R02_PROPOSAL_20260926.md](ETF_IC_CAMPAIGN20_R02_PROPOSAL_20260926.md) | 历史原文，按原日期与合同解释 |
+| [docs/ETF_IC_CAMPAIGN20_R03_PROPOSAL_20260926.md](ETF_IC_CAMPAIGN20_R03_PROPOSAL_20260926.md) | 历史原文，按原日期与合同解释 |
+| [docs/ETF_IC_CAMPAIGN20_R04_PROPOSAL_20260926.md](ETF_IC_CAMPAIGN20_R04_PROPOSAL_20260926.md) | 历史原文，按原日期与合同解释 |
+| [docs/ETF_IC_CAMPAIGN20_R05_PROPOSAL_20260926.md](ETF_IC_CAMPAIGN20_R05_PROPOSAL_20260926.md) | 历史原文，按原日期与合同解释 |
+| [docs/ETF_IC_CAMPAIGN20_R06_PROPOSAL_20260926.md](ETF_IC_CAMPAIGN20_R06_PROPOSAL_20260926.md) | 历史原文，按原日期与合同解释 |
+| [docs/ETF_IC_CAMPAIGN20_R07_PROPOSAL_20260926.md](ETF_IC_CAMPAIGN20_R07_PROPOSAL_20260926.md) | 历史原文，按原日期与合同解释 |
+| [docs/ETF_IC_CAMPAIGN20_R08_PROPOSAL_20260926.md](ETF_IC_CAMPAIGN20_R08_PROPOSAL_20260926.md) | 历史原文，按原日期与合同解释 |
+| [docs/ETF_IC_CAMPAIGN20_R09_PROPOSAL_20260926.md](ETF_IC_CAMPAIGN20_R09_PROPOSAL_20260926.md) | 历史原文，按原日期与合同解释 |
+| [docs/ETF_IC_CAMPAIGN20_R10_PROPOSAL_20260926.md](ETF_IC_CAMPAIGN20_R10_PROPOSAL_20260926.md) | 历史原文，按原日期与合同解释 |
+| [docs/ETF_LUNA_DAGU_OPERATIONS.md](ETF_LUNA_DAGU_OPERATIONS.md) | 现行入口/合同 |
+| [docs/HISTORICAL_DOCUMENTS.md](HISTORICAL_DOCUMENTS.md) | 现行入口/合同 |
+| [docs/HOLDOUT_RELEASE_CFLOW60_20260924.md](HOLDOUT_RELEASE_CFLOW60_20260924.md) | 历史原文，按原日期与合同解释 |
+| [docs/IC_COMBINATION_RESEARCH.md](IC_COMBINATION_RESEARCH.md) | 辅助资料/独立研究，不作当前启动要求 |
+| [docs/IC_INVENTORY.md](IC_INVENTORY.md) | 现行入口/合同 |
+| [docs/IC_MINING_RULES.md](IC_MINING_RULES.md) | 现行入口/合同 |
+| [docs/INVESTOR_BACKGROUND.md](INVESTOR_BACKGROUND.md) | 辅助资料/独立研究，不作当前启动要求 |
+| [docs/PREREG_LONGHISTORY_DISCOVERY_20260924.md](PREREG_LONGHISTORY_DISCOVERY_20260924.md) | 历史原文，按原日期与合同解释 |
+| [docs/RESEARCH_BASELINE.md](RESEARCH_BASELINE.md) | 现行入口/合同 |
+| [docs/RETROSPECTIVE_20260923.md](RETROSPECTIVE_20260923.md) | 历史原文，按原日期与合同解释 |
+| [docs/RETROSPECTIVE_20260925.md](RETROSPECTIVE_20260925.md) | 历史原文，按原日期与合同解释 |
+| [docs/all_etf_daily_factor_mining_v1.md](all_etf_daily_factor_mining_v1.md) | 历史原文，按原日期与合同解释 |
+| [docs/archive/20261003/ETF_AUTORESEARCH_PROGRAM.md](archive/20261003/ETF_AUTORESEARCH_PROGRAM.md) | 历史原文，按原日期与合同解释 |
+| [docs/archive/20261003/ETF_DEVELOPMENT_GUIDE.md](archive/20261003/ETF_DEVELOPMENT_GUIDE.md) | 历史原文，按原日期与合同解释 |
+| [docs/archive/20261003/ETF_LUNA_DAGU_OPERATIONS.md](archive/20261003/ETF_LUNA_DAGU_OPERATIONS.md) | 历史原文，按原日期与合同解释 |
+| [docs/archive/20261003/ETF_ROTATION_METHODOLOGY.md](archive/20261003/ETF_ROTATION_METHODOLOGY.md) | 历史原文，按原日期与合同解释 |
+| [docs/archive/20261003/IC_INVENTORY.md](archive/20261003/IC_INVENTORY.md) | 历史原文，按原日期与合同解释 |
+| [docs/archive/20261003/IC_MINING_RULES.md](archive/20261003/IC_MINING_RULES.md) | 历史原文，按原日期与合同解释 |
+| [docs/archive/20261003/README.md](archive/20261003/README.md) | 归档导航 |
+| [docs/archive/20261003/RESEARCH_GUIDE.md](archive/20261003/RESEARCH_GUIDE.md) | 历史原文，按原日期与合同解释 |
+| [docs/archive/20261003/document_status.md](archive/20261003/document_status.md) | 历史原文，按原日期与合同解释 |
+| [docs/candidate14_economic_groups_v1.md](candidate14_economic_groups_v1.md) | 现行入口/合同 |
+| [docs/document_status.md](document_status.md) | 现行入口/合同 |
+| [docs/group_discovery_runner.md](group_discovery_runner.md) | 历史原文，按原日期与合同解释 |
+| [legacy/autoresearch_20261003/README.md](../legacy/autoresearch_20261003/README.md) | 归档导航 |
+| [scripts/research/HISTORICAL_INDEX.md](../scripts/research/HISTORICAL_INDEX.md) | 归档导航 |
+| [scripts/research/pi_glm_mining/README.md](../scripts/research/pi_glm_mining/README.md) | 归档导航 |

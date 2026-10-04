@@ -1,0 +1,90 @@
+version: group_ic_batch67_luna_ten_20260924
+source_type: daily_rounds
+purpose: seen_history_discovery_only
+campaign_extension: true
+discovery_surface: IC_DISCOVERY_ONLY
+data_root: /home/sensen/dev/projects/gpu_ml/data/etf_rotation_v1
+as_of: '2026-09-17'
+start: '2023-07-27'
+evaluation_start: '2025-01-01'
+groups: frameworks/etf_rotation/configs/etf_candidate14_economic_groups_v1.yaml
+universe: config/etf_rotation_universe_v1.json
+calendar_symbol: 510300.SH
+entry_lag: 2
+horizon: 5
+top_k: 2
+warmup: 60
+hac_lag: 10
+max_leads: 3
+external_registered_definitions: 8
+windows:
+- 20
+screens:
+  min_days: 360
+  min_year_days: 40
+  min_positive_years: 2
+  min_ic: 0.01
+  min_ic_hac_t: 2.0
+  min_ic_block_t: 2.0
+  min_excess8_hac_t: 2.0
+  alpha: 0.05
+  max_abs_rank_corr: 0.7
+notes:
+  fixed_population: 14 ETFs / 8 economic groups
+  timing: close(D) signal; open(D+2) to open(D+7) H5 research label contract
+  evaluation_surface: previously-seen history, signal_date 2025-01-01 through 2026-09-17;
+    discovery, not OOS
+  direction_status: economic sign frozen before evaluation; no sign selection or automatic
+    flip
+  complete_input_windows_only: true
+  member_aggregation: each member atom computed independently, then existing fixed
+    group aggregation
+  source_vintage: canonical daily bars; no additional information sources
+  research_lineage: SEEN_2026_ADAPTIVE_NOT_CONFIRMATION; mechanism discovery informed
+    by existing historical research; sign frozen before this batch only
+  deduplication: Formula and mechanism review; correlations are report-only, not IC
+    gates
+prior_registered: 511
+budget_cap: 514
+new_definitions: 3
+mechanisms:
+  l67_median_residual_return:
+    direction: 1
+    raw_formula: m_{-i,t}=mean_{j≠i}(r_j,t), e_i,t=r_i,t−m_{-i,t}; factor=median(e_i,t
+      over the 20 consecutive trading dates ending at D). Any missing required return
+      in the contiguous window invalidates the factor.
+    hypothesis: Typical relative performance resists domination by a few extreme sessions.
+    family: robust_relative_return_location
+    nearest_previous: market_residual_mean_20 (arithmetic mean, not temporal median);
+      l37_central_return_bias (median-minus-mean own-return distribution statistic).
+    distinction: The target is the median of daily fixed-pool residuals, not the cross-sectional
+      median benchmark (which would preserve the same per-date rank as market_residual_mean).
+      Each factor uses a fixed contiguous 20-row trailing window; missing required
+      inputs invalidate that window rather than compressing dates.
+  l67_trimmed_peer_relative_return:
+    direction: 1
+    raw_formula: For each t and i, trim the highest and lowest of the other 13 ETF
+      close-to-close returns; q_i,t=r_i,t−mean(trimmed 11 peers); factor=mean(q_i,t
+      over 20 dates).
+    hypothesis: A relative return signal benchmarked against the broad peer body is
+      less distorted by one peer's extreme move.
+    family: robust_relative_return_location
+    nearest_previous: market_residual_mean_20 / median_residual_return; leave-one-out
+      peer return mean differs from a trimmed-peer benchmark.
+    distinction: Peer-tail trimming changes the daily comparison basket; this is not
+      a window substitution. Signed mean margin rather than event frequency. Each
+      factor uses a fixed contiguous 20-row trailing window; missing required inputs
+      invalidate that window rather than compressing dates.
+  l67_cross_sectional_relative_zscore:
+    direction: 1
+    raw_formula: z_i,t=(r_i,t−mean_{14}(r_t))/std0_{14}(r_t); factor=mean(z_i,t over
+      20 dates), requiring positive cross-sectional std.
+    hypothesis: Repeated strong placement after scaling each day's relative move by
+      that day's fixed-pool dispersion measures standardized leadership.
+    family: robust_relative_return_location
+    nearest_previous: market_residual_mean_20 (unscaled residual); vol_scaled_momentum_60
+      (own time-series risk scaling).
+    distinction: Normalizes by same-date cross-sectional dispersion rather than own
+      historical volatility or a rolling window. Each factor uses a fixed contiguous
+      20-row trailing window; missing required inputs invalidate that window rather
+      than compressing dates.

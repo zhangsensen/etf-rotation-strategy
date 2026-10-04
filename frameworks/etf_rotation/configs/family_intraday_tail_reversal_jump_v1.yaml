@@ -1,0 +1,8 @@
+domain: etf_rotation
+grammar_version: etf_family_intraday_tail_reversal_jump_v1
+factor_source: intraday_tail_reversal_jump
+frequency: 5m
+available_frequencies: [1m, 5m, 15m, 30m, 60m]
+atoms:
+  - {name: INTRADAY_TAIL_JUMP_ASYMMETRY, family: intraday_tail_reversal_jump}
+grammar: {operators: [atomic], pair_policy: cross_family_only, max_atoms: 1}

@@ -1,0 +1,44 @@
+purpose: historical_protocol_robustness_only_not_independent_oos
+min_train_days: 360
+candidate_policy: all_columns_of_frozen_input_no_global_selection
+folds:
+- fold_id: 2023Q2
+  train_start: '2021-08-09'
+  train_end: '2023-03-31'
+  test_start: '2023-04-01'
+  test_end: '2023-06-30'
+- fold_id: 2023Q3
+  train_start: '2021-08-09'
+  train_end: '2023-06-30'
+  test_start: '2023-07-01'
+  test_end: '2023-09-30'
+- fold_id: 2023Q4
+  train_start: '2021-08-09'
+  train_end: '2023-09-30'
+  test_start: '2023-10-01'
+  test_end: '2023-12-31'
+- fold_id: 2024Q1
+  train_start: '2021-08-09'
+  train_end: '2023-12-31'
+  test_start: '2024-01-01'
+  test_end: '2024-03-31'
+- fold_id: 2024Q2
+  train_start: '2021-08-09'
+  train_end: '2024-03-31'
+  test_start: '2024-04-01'
+  test_end: '2024-06-30'
+- fold_id: 2024Q3
+  train_start: '2021-08-09'
+  train_end: '2024-06-30'
+  test_start: '2024-07-01'
+  test_end: '2024-09-30'
+- fold_id: 2024Q4
+  train_start: '2021-08-09'
+  train_end: '2024-09-30'
+  test_start: '2024-10-01'
+  test_end: '2024-12-31'
+- fold_id: 2025Q1
+  train_start: '2021-08-09'
+  train_end: '2024-12-31'
+  test_start: '2025-01-01'
+  test_end: '2025-03-31'

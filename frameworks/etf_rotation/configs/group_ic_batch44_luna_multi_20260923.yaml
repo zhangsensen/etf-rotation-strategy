@@ -1,0 +1,94 @@
+version: group_ic_batch44_luna_multi_20260923
+source_type: daily_rounds
+purpose: seen_history_discovery_only
+campaign_extension: true
+discovery_surface: IC_DISCOVERY_ONLY
+data_root: /home/sensen/dev/projects/gpu_ml/data/etf_rotation_v1
+as_of: '2026-09-17'
+start: '2023-07-27'
+evaluation_start: '2025-01-01'
+groups: frameworks/etf_rotation/configs/etf_candidate14_economic_groups_v1.yaml
+universe: config/etf_rotation_universe_v1.json
+calendar_symbol: 510300.SH
+entry_lag: 2
+horizon: 5
+top_k: 2
+warmup: 60
+hac_lag: 10
+max_leads: 4
+external_registered_definitions: 8
+windows:
+- 20
+screens:
+  min_days: 360
+  min_year_days: 40
+  min_positive_years: 2
+  min_ic: 0.01
+  min_ic_hac_t: 2.0
+  min_ic_block_t: 2.0
+  min_excess8_hac_t: 2.0
+  alpha: 0.05
+  max_abs_rank_corr: 0.7
+notes:
+  fixed_population: 14 ETFs / 8 economic groups
+  timing: close(D) signal; open(D+2) to open(D+7) H5 research label contract
+  evaluation_surface: previously-seen history, signal_date 2025-01-01 through 2026-09-17;
+    discovery, not OOS
+  direction_status: economic sign frozen before evaluation; no sign selection or automatic
+    flip
+  complete_input_windows_only: true
+  member_aggregation: each member atom computed independently, then existing fixed
+    group aggregation
+  source_vintage: canonical daily bars; no additional information sources
+prior_registered: 427
+budget_cap: 431
+new_definitions: 4
+mechanisms:
+  l44_peer_flow_rank_persistence:
+    direction: 1
+    raw_formula: Rank all 14 members’ activity innovations cross-sectionally each
+      day using stable 12-significant-digit canonical scores, average ties, percentile
+      ranks. Score each member by Pearson correlation over 20 complete date pairs
+      of its consecutive cross-sectional percentile-rank series (ddof=0); zero variance
+      => NaN; group fixed-member mean.
+    hypothesis: Persistent relative flow leadership is consistent with continuing
+      allocation preference rather than transitory rotation.
+    family: activity_rank_dynamics
+    nearest_previous: amount_concentration_20; amount_innovation_sign_entropy_20
+    distinction: Uses relative rank persistence across the fixed pool; the old measures
+      summarize one ETF's amount concentration or sign entropy.
+  l44_peer_return_flow_confirmation:
+    direction: 1
+    raw_formula: For each i,t, x^-i_t=mean(r_j,t:j!=i); compute corr_20(e_i,t,x^-i_t)
+      using 20 complete pairs; group fixed-member mean.
+    hypothesis: A member's capital inflow confirmed by concurrent peer-market price
+      strength may indicate durable thematic demand.
+    family: activity_rank_dynamics
+    nearest_previous: market_coskewness_20; amount_return_asymmetry_20
+    distinction: Linear correlation of own amount innovation with leave-one-out peer
+      return, distinct from nonlinear return coskewness and own flow/own return asymmetry.
+  l44_peer_flow_lead_confirmation:
+    direction: 1
+    raw_formula: For each i,t calculate corr_20(e_i,t, mean(r_j,t-1:j!=i)); group
+      fixed-member mean; all 14 returns/amounts complete.
+    hypothesis: Own flow following a rise in peer prices is a follower-confirmation
+      mechanism for continuing rotation.
+    family: activity_rank_dynamics
+    nearest_previous: peer_lag_return_beta_20; lagged_volume_return_corr_20
+    distinction: Direction is peer return leading own flow, opposite variable roles
+      to peer return beta and own lag-volume/return correlation.
+  l44_peer_flow_rank_reversal:
+    direction: -1
+    raw_formula: Rank all 14 members’ activity innovations cross-sectionally each
+      day using stable 12-significant-digit canonical scores, average ties, percentile
+      ranks. On each complete 20-date grid, retain dates where member rank rose from
+      t-2 to t-1, average its following rank change (rank_t-rank_(t-1)); require at
+      least 4 eligible rises. Direction -1 rewards subsequent rank reversal after
+      an activity-rank rise.
+    hypothesis: After an ETF has risen in relative activity rank, a subsequent rank
+      fall is treated as mean reversion; the frozen -1 direction rewards that reversal
+      rather than penalizing deterioration in general.
+    family: activity_rank_dynamics
+    nearest_previous: amount_innovation_abs_change_20; return_acceleration_5
+    distinction: Measures change in fixed-pool relative amount-flow rank, not own
+      amount magnitude changes or price acceleration.

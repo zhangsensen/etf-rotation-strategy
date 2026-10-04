@@ -1,0 +1,41 @@
+schema_version: external_non_etf_fund_candidates_v1
+selection_author: codex_from_sealed_etf_forward_near_gate_set
+selection_surface: etf_forward_2025_05_01_to_2026_09_17_only
+selection_evidence: runtime_outputs/etf_all_daily_forward_verdict_20260922_v1/candidate_metrics.csv
+external_population_outcomes_loaded_before_freeze: false
+candidate_count: 5
+
+candidates:
+  - id: EX001
+    source_id: LDE048
+    operator: rank_spread
+    left: {source: volume_at_price_memory, name: TRADED_MEDIAN_DISTANCE_20}
+    right: {source: price_volume_coupling, name: PRICE_AMOUNT_CORR_60}
+    expected_sign: 1
+    mechanism: traded_price_distance_minus_activity_confirmation
+  - id: EX002
+    source_id: LDE041
+    operator: atomic
+    left: {source: price_location, name: DIST_HIGH_20_VOLADJ}
+    expected_sign: 1
+    mechanism: short_horizon_distance_to_high
+  - id: EX003
+    source_id: LDE057
+    operator: rank_spread
+    left: {source: price_location, name: BREAKOUT_ATR_20}
+    right: {source: drawdown_duration, name: UNDERWATER_FRACTION_20}
+    expected_sign: 1
+    mechanism: atr_breakout_minus_short_underwater_fraction
+  - id: EX004
+    source_id: LDE042
+    operator: atomic
+    left: {source: serial_dependence, name: VAR_RATIO_20_120}
+    expected_sign: 1
+    mechanism: long_aggregation_return_memory
+  - id: EX005
+    source_id: LDE009
+    operator: atomic
+    left: {source: range_memory, name: RANGE_ACF1_20}
+    expected_sign: -1
+    mechanism: low_volatility_clustering
+

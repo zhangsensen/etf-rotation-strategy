@@ -1,0 +1,74 @@
+version: all_etf_daily_discovery_v1
+
+data:
+  cache_root: /home/sensen/dev/projects/gpu_ml/data/etf_all_daily_v1
+  start: '2020-01-02'
+  as_of: '2025-04-30'
+
+population:
+  identity_rule: exchange_fund_name_contains_ETF_and_exchange_qualified_code
+  min_history_sessions: 120
+  liquidity_window: 20
+  # TuShare fund_daily amount is in CNY thousands: 10,000 = CNY 10m.
+  min_median_amount_thousand: 10000.0
+  require_positive_ohlcv: true
+
+execution:
+  signal_time: D_CLOSE
+  entry_lag_sessions: 2
+  horizon: 5
+
+surfaces:
+  direction_start: '2021-08-09'
+  direction_end: '2022-06-30'
+  discovery_start: '2022-07-01'
+  discovery_end: '2023-12-31'
+  validation_start: '2024-01-01'
+  validation_end: '2025-04-30'
+  forward_start: '2025-05-01'
+  forward_end: '2026-09-17'
+
+discovery_gates:
+  min_names: 100
+  min_direction_days: 150
+  min_discovery_days: 300
+  min_validation_days: 250
+  min_abs_controlled_ic: 0.005
+  min_discovery_hac_t: 2.0
+  min_validation_hac_t: 2.0
+
+controls:
+  - {source: directional_trend, atom: RET_20}
+  - {source: downside_risk, atom: REALIZED_VOL_20}
+  - {source: trading_activity, atom: AMOUNT_Z_20}
+
+# Only families computable from same-day and trailing daily OHLCV.  Fixed-14
+# peer/category families and every intraday family are excluded from this run.
+sources:
+  - directional_trend
+  - price_location
+  - downside_risk
+  - daily_candle
+  - path_efficiency
+  - return_tail_shape
+  - trading_activity
+  - price_volume_coupling
+  - market_sensitivity
+  - serial_dependence
+  - range_memory
+  - gap_response
+  - gap_volatility
+  - liquidity_variability
+  - transaction_friction
+  - conditional_activity
+  - return_concentration
+  - auction_range_overlap
+  - activity_response
+  - uncertainty_activity
+  - volume_at_price_memory
+  - drawdown_duration
+  - swing_topology
+  - volatility_feedback
+  - gap_repair
+
+family_catalog: configs/family_catalog_v3.yaml

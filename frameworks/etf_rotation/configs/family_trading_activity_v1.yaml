@@ -1,0 +1,13 @@
+domain: etf_rotation
+grammar_version: etf_family_trading_activity_v1
+factor_source: trading_activity
+atoms:
+  - {name: AMOUNT_RATIO_5_20, family: trading_activity}
+  - {name: AMOUNT_RATIO_20_60, family: trading_activity}
+  - {name: AMOUNT_Z_20, family: trading_activity}
+  - {name: AMOUNT_Z_60, family: trading_activity}
+  - {name: VOLUME_RATIO_5_20, family: trading_activity}
+  - {name: VOLUME_RATIO_20_60, family: trading_activity}
+  - {name: VOLUME_Z_20, family: trading_activity}
+  - {name: VOLUME_Z_60, family: trading_activity}
+grammar: {operators: [atomic], pair_policy: cross_family_only, max_atoms: 1}

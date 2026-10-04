@@ -1,0 +1,35 @@
+domain: etf_rotation
+grammar_version: etf_family_volume_time_drawdown_v1
+factor_source: volume_time_drawdown
+frequency: 1m
+# Literature provenance (directive: no citation, no atom):
+# VT_UNDERWATER_FRAC_20: Grossman & Zhou (1993) underwater-time framing,
+#   applied to a 1m price path resampled into 50 equal-volume buckets/day
+#   (Ane-Geman 2000; Easley-Lopez de Prado-O'Hara 2012 volume clock)
+#   instead of calendar time, 20d mean.
+# VT_UNDERWATER_FRAC_CHG_20: 20-day change of the above.
+# VT_MAXDD_20: Magdon-Ismail & Atiya (2004) maximum drawdown on the
+#   volume-time bucket path, 20d mean.
+# VT_MAXDD_CHG_20: 20-day change of the above.
+# VT_RECOVERY_FRAC_20: buckets from the day's deepest volume-time
+#   drawdown trough to first recovery to the pre-trough peak, as a
+#   fraction of buckets remaining after the trough (1.0 if unrecovered),
+#   20d mean.
+# CAL_VT_UF_DIFF_20: calendar-time underwater fraction (same definition
+#   as S7's UNDERWATER_FRAC_20) minus volume-time underwater fraction,
+#   same day, 20d mean -- tests whether drawdowns concentrate in
+#   high-volume periods.
+# VT_PATH_EFFICIENCY_20: |net displacement| / path length on the
+#   volume-time bucket path, 20d mean.
+# VT_TROUGH_VOL_POS_20: position (0=early cumulative volume, 1=late) of
+#   the day's deepest volume-time drawdown trough, 20d mean.
+atoms:
+  - {name: VT_UNDERWATER_FRAC_20, family: volume_time_drawdown}
+  - {name: VT_UNDERWATER_FRAC_CHG_20, family: volume_time_drawdown}
+  - {name: VT_MAXDD_20, family: volume_time_drawdown}
+  - {name: VT_MAXDD_CHG_20, family: volume_time_drawdown}
+  - {name: VT_RECOVERY_FRAC_20, family: volume_time_drawdown}
+  - {name: CAL_VT_UF_DIFF_20, family: volume_time_drawdown}
+  - {name: VT_PATH_EFFICIENCY_20, family: volume_time_drawdown}
+  - {name: VT_TROUGH_VOL_POS_20, family: volume_time_drawdown}
+grammar: {operators: [atomic], pair_policy: cross_family_only, max_atoms: 1}

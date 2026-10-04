@@ -1,0 +1,28 @@
+domain: etf_rotation
+grammar_version: etf_family_overnight_return_distribution_v1
+factor_source: overnight_return_distribution
+frequency: 1d
+# Literature provenance (directive: no citation, no atom):
+# OVERNIGHT_SKEW_60 / OVERNIGHT_KURTOSIS_60: Aboody-Even-Tov-Lehavy-
+#   Trueman (2018) overnight return distribution shape as sentiment;
+#   60d rolling skew / excess kurtosis of overnight_ret = open(D)/
+#   close(D-1) - 1.
+# OVERNIGHT_DOWNSIDE_VAR_SHARE_60: Bollerslev-Li-Zhao (2020) good/bad
+#   variance decomposition applied to overnight_ret; downside variance /
+#   total variance, 60d rolling.
+# OVERNIGHT_TAIL_RATIO_60: 60d rolling 5th/95th percentile ratio of
+#   overnight_ret (tail asymmetry).
+# OVERNIGHT_ACTIVITY_RATIO_20_60: 20d/60d rolling mean(|overnight_ret|)
+#   ratio (recent overnight activity vs baseline).
+# OVERNIGHT_PRIOR_INTRADAY_CORR_20: 20d rolling correlation between
+#   overnight_ret(D) and the PRIOR day's own intraday return (Lou-Polk-
+#   Skouras 2019 tug-of-war framing: does the gap continue yesterday's
+#   intraday move).
+atoms:
+  - {name: OVERNIGHT_SKEW_60, family: overnight_return_distribution}
+  - {name: OVERNIGHT_KURTOSIS_60, family: overnight_return_distribution}
+  - {name: OVERNIGHT_DOWNSIDE_VAR_SHARE_60, family: overnight_return_distribution}
+  - {name: OVERNIGHT_TAIL_RATIO_60, family: overnight_return_distribution}
+  - {name: OVERNIGHT_ACTIVITY_RATIO_20_60, family: overnight_return_distribution}
+  - {name: OVERNIGHT_PRIOR_INTRADAY_CORR_20, family: overnight_return_distribution}
+grammar: {operators: [atomic], pair_policy: cross_family_only, max_atoms: 1}

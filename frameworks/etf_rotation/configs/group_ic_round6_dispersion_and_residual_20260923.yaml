@@ -1,0 +1,109 @@
+version: group_ic_round6_dispersion_and_residual_20260923
+source_type: claude_rounds
+purpose: seen_history_discovery_only
+campaign_extension: true
+discovery_surface: IC_DISCOVERY_ONLY
+data_root: /home/sensen/dev/projects/gpu_ml/data/etf_rotation_v1
+as_of: '2026-09-17'
+start: '2023-07-27'
+evaluation_start: '2025-01-01'
+groups: frameworks/etf_rotation/configs/etf_candidate14_economic_groups_v1.yaml
+universe: config/etf_rotation_universe_v1.json
+calendar_symbol: 510300.SH
+entry_lag: 2
+horizon: 5
+top_k: 2
+warmup: 60
+hac_lag: 10
+max_leads: 4
+external_registered_definitions: 8
+screens:
+  min_days: 360
+  min_year_days: 40
+  min_positive_years: 2
+  min_ic: 0.01
+  min_ic_hac_t: 2.0
+  min_ic_block_t: 2.0
+  min_excess8_hac_t: 2.0
+  alpha: 0.05
+  max_abs_rank_corr: 0.7
+prior_registered: 483
+budget_cap: 487
+new_definitions: 4
+mechanisms:
+  dispersion_conditional_beta_gap:
+    direction: -1
+    window: 60
+    hypothesis: "beta(r_i,r_m) on the 8-economic-group cross-sectional return-dispersion top tercile days minus the same beta on the bottom tercile days, within the trailing 60-day window; dispersion is the daily std across the 8 groups' own equal-weight mean returns (all 8 groups valid that day). Same conditional-beta-difference construction as beta_asymmetry/high_low_vol_beta_gap/quantile_beta_gap, conditioning on USER's own cross-sectional-dispersion regime instead of return sign or volatility level. direction -1: amplified beta specifically in high-dispersion regimes is a risk-concentration signal, predicting relative weakness."
+    raw_formula: "dispersion(t) = std_8(group_mean_return_g(t)); tercile thresholds are dispersion's own trailing-60-day rolling 1/3 and 2/3 quantiles (causal); conditional min_periods=10 (tercile subset, same floor as quantile_beta_gap); beta via the same raw-moment covariance/variance formula used throughout this module."
+  residual_variance_ratio_1_5:
+    direction: 1
+    window: 60
+    hypothesis: "Variance-ratio-test style statistic: Var(5-day overlapping cumulative market-residual return)/(5*Var(1-day residual return)), both variances over the trailing 60-day window. VR>1 marks trending/positively-autocorrelated residual returns; VR<1 marks mean-reversion. direction +1: residual trendiness predicts continuation."
+    raw_formula: "residual=r_i-r_m; residual_5d=rolling_sum(residual,5); VR=rolling_var(residual_5d,60)/(5*rolling_var(residual,60)); dense, min_periods=60 both variances."
+  residual_sign_run:
+    direction: 1
+    window: 60
+    hypothesis: "Average run length of consecutive same-sign market-residual days within the trailing 60-day window: (count of valid days)/(1+count of sign flips between consecutive valid days). direction +1: longer average sign persistence marks a trending residual, predicting continuation."
+    raw_formula: "Computed via rolling().apply() per column; requires >=30 valid days in the window or NaN; sign flips counted between consecutive non-NaN residual values only."
+  residual_drawdown:
+    direction: -1
+    window: 60
+    hypothesis: "Maximum drawdown (most negative trough-minus-running-peak, always <=0) of the cumulative market-residual-return PATH, computed fresh within each trailing 60-day window (the path restarts at its own first value each window, no implicit pre-existing peak, no cross-window path dependence). A different object from the already-closed own-drawdown family (daily_rounds:close_drawdown_topology, DO_NOT_REPEAT): this is drawdown of the MARKET RESIDUAL path (r_i-r_m cumulated), not the member's own raw price path -- confirmed distinct by the no-label dedup precheck below (max 0.6235, well under 0.7), not assumed a priori. direction -1: master's own spec."
+    raw_formula: "residual=r_i-r_m; per 60-day window (full window required, any gap -> NaN): cum=cumsum(residual_window); running_max=running maximum of cum; max_drawdown=min(cum-running_max) (always <=0)."
+notes:
+  fixed_population: 14 ETFs / 8 economic groups
+  timing: close(D) signal; open(D+2) to open(D+7) H5 research label contract
+  evaluation_surface: previously-seen history, signal_date 2025-01-01 through 2026-09-17; discovery, not OOS
+  direction_status: economic sign frozen before evaluation; no sign selection or automatic flip
+  complete_input_windows_only: true
+  member_aggregation: each member atom computed independently, then existing fixed group aggregation
+  source_vintage: canonical daily bars; no additional information sources
+  engine: >-
+    frameworks/etf_rotation/src/etf_strategy/core/etf_group_claude_rounds.py, source_type=claude_rounds. The
+    two dispersion-conditional candidates additionally hardcode the fixed 8-economic-group membership
+    (_ECONOMIC_GROUPS, matching frameworks/etf_rotation/configs/etf_candidate14_economic_groups_v1.yaml
+    verbatim) to build their regime label -- the first candidates in this module to use group structure, not
+    just the raw 14-name pool; every other candidate remains generic.
+  campaign: >-
+    Round 6 of the USER 2026-09-23 50-round sub-agent mining campaign. Rounds 1-5 registered 18 candidates (1
+    HAS_IC: peer_corr_network_change_60, round 3); 5-round ic_inventory snapshot built at
+    runtime_outputs/etf_rotation_research/ic_inventory_20260923_claude_5rounds/. Round 6 opens Theme M (USER's
+    own dispersion framework, 2026-09-22: high cross-sectional dispersion across the 8 groups = a meaningful
+    differentiation regime), Theme R (residual time-series structure), Theme U (residual path), and Theme I
+    (residual distribution shape, second attempt after round 5's residual_kurtosis).
+  originally_proposed: >-
+    6 candidates: dispersion_conditional_relative_return_60, dispersion_conditional_beta_gap_60,
+    residual_variance_ratio_1_5_60, residual_sign_run_60, residual_drawdown_60, residual_tail_ratio_60. 2
+    dropped -- 1 on the no-label dedup precheck, 1 on the structural precheck -- below.
+  family_precheck: >-
+    checked against runtime_outputs/etf_rotation_research/ic_inventory_20260923_claude_5rounds/families.csv
+    (freshest snapshot, post round 1-5). No exact-duplicate under source_type=claude_rounds for any of the 6
+    originally-proposed candidates. Adjacencies found and resolved by the no-label dedup precheck rather than a
+    priori exclusion: claude_rounds:peer_corr_dispersion (dispersion of pairwise peer CORRELATIONS, a different
+    object from dispersion_conditional_*'s cross-sectional GROUP-RETURN dispersion regime label);
+    daily_rounds:close_drawdown_topology (DO_NOT_REPEAT, the member's OWN price drawdown, not
+    residual_drawdown's market-residual-path drawdown).
+  no_label_dedup_precheck: >-
+    computed group scores only (no forward return/H5 label), 2025-01-01..2026-09-23, against 451 saved
+    scores_*.csv files across the whole runs/ library (deduped to latest per candidate id, now including rounds
+    1-5's 18 registered candidates). Registered candidates' max mean(abs(daily cross-sectional rank corr)):
+    dispersion_conditional_beta_gap_60 0.5551, residual_variance_ratio_1_5_60 0.4499, residual_sign_run_60
+    0.5307, residual_drawdown_60 0.6235 (all <0.7, all clean). Dropped (>=0.7):
+    dispersion_conditional_relative_return_60 0.7389 (vs vol_scaled_momentum_60, a Batch B candidate,
+    ic_supported=False but still a real saved definition in the library). residual_tail_ratio_60 was clean on
+    dedup (max 0.5065) but dropped on the structural precheck instead, see below. See
+    runtime_outputs/etf_rotation_research/diagnostics/round6_20260923/dedup_precheck.csv.
+  eval_window_structural_precheck: >-
+    2025-01-01..2026-09-23 (420 days), read-only feature check, no labels read. 5 of 6 originally-proposed
+    candidates: every single-member group nan_rate 0.0-0.0833 (all <=0.20), mode_value_rate<=0.1976 (no
+    near-constant group), days_all_8_valid ranging 385-420/420. Dropped:
+    residual_tail_ratio_60 -- 3 of 6 single-member groups STRUCTURALLY_INVALID
+    (us_large_growth/metals_equity/dividend_low_vol, nan_rate up to 0.3071 or mode_value_rate up to 0.3844),
+    and critically days_all_8_valid=60/420 (only 14% of the evaluation window has all 8 groups simultaneously
+    valid) -- the +-2sigma tail-event frequency ratio is too sparse at window=60 to be usable at the
+    group-aggregation level, confirmed structurally rather than assumed from the synthetic smoke test's own
+    NaN-rate warning signs. See
+    runtime_outputs/etf_rotation_research/diagnostics/round6_20260923/structural_diagnostics.csv.
+  no_label_read: true
+  no_formal_evaluation_in_implementation_task: true

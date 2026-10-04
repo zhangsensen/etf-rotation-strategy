@@ -1,0 +1,13 @@
+domain: etf_rotation
+grammar_version: etf_family_gap_repair_v1
+factor_source: gap_repair
+atoms:
+- name: GAP_FILL_FRACTION_20
+  family: gap_repair
+- name: GAP_FILL_FRACTION_60
+  family: gap_repair
+grammar:
+  operators:
+  - atomic
+  pair_policy: cross_family_only
+  max_atoms: 1

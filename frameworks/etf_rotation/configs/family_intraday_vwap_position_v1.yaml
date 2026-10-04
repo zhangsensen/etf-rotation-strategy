@@ -1,0 +1,14 @@
+domain: etf_rotation
+grammar_version: etf_family_intraday_vwap_position_v1
+factor_source: intraday_vwap_position
+frequency: 60m
+available_frequencies: [1m, 5m, 15m, 30m, 60m]
+atoms:
+  - {name: CLOSE_VWAP_DEVIATION, family: intraday_vwap_position}
+  - {name: FIRST_HOUR_VWAP_DEVIATION, family: intraday_vwap_position}
+  - {name: VWAP_HALFDAY_SLOPE, family: intraday_vwap_position}
+  - {name: MORNING_VWAP_DEVIATION, family: intraday_vwap_position}
+  - {name: AFTERNOON_VWAP_DEVIATION, family: intraday_vwap_position}
+  - {name: CLOSE_VWAP_DEV_Z_20, family: intraday_vwap_position}
+  - {name: CLOSE_VWAP_DEV_Z_60, family: intraday_vwap_position}
+grammar: {operators: [atomic], pair_policy: cross_family_only, max_atoms: 1}

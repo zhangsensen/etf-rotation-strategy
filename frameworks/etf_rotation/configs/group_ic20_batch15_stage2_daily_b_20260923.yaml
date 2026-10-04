@@ -1,0 +1,58 @@
+version: group_ic20_batch15_stage2_daily_b_20260923
+source_type: daily_rounds
+purpose: seen_history_discovery_only
+campaign_extension: true
+discovery_surface: 2025_POST_IC_DIRECTION
+data_root: /home/sensen/dev/projects/gpu_ml/data/etf_rotation_v1
+as_of: '2026-09-17'
+start: '2023-07-27'
+evaluation_start: '2025-01-01'
+groups: frameworks/etf_rotation/configs/etf_candidate14_economic_groups_v1.yaml
+universe: config/etf_rotation_universe_v1.json
+calendar_symbol: 510300.SH
+entry_lag: 2
+horizon: 5
+top_k: 2
+warmup: 60
+hac_lag: 10
+max_leads: 6
+prior_registered: 212
+budget_cap: 218
+new_definitions: 6
+external_registered_definitions: 8
+windows: [20]
+mechanisms:
+  d2025_clv_abs_tail_share:
+    direction: -1
+    raw_formula: clv_abs_tail_share_20
+  d2025_body_sign_entropy:
+    direction: -1
+    raw_formula: body_sign_entropy_20
+  d2025_gap_sign_entropy:
+    direction: -1
+    raw_formula: gap_sign_entropy_20
+  d2025_clv_sign_transition_rate:
+    direction: -1
+    raw_formula: clv_sign_transition_rate_20
+  d2025_amount_innovation_sign_entropy:
+    direction: 1
+    raw_formula: amount_innovation_sign_entropy_20
+  d2025_range_share_entropy:
+    direction: -1
+    raw_formula: range_share_entropy_20
+screens:
+  min_days: 360
+  min_year_days: 40
+  min_positive_years: 2
+  min_ic: 0.01
+  min_ic_hac_t: 2.0
+  min_ic_block_t: 2.0
+  min_excess8_hac_t: 2.0
+  alpha: 0.05
+  max_abs_rank_corr: 0.7
+notes:
+  fixed_population: 14 ETFs / 8 economic groups
+  timing: close(D) signal; open(D+2) to open(D+7) H5 research label
+  alias_contract: d2025 alias equals the corresponding raw atom multiplied by the supplied 2025 raw-IC sign
+  no_t_filter: true
+  no_real_market_run_in_implementation_task: true

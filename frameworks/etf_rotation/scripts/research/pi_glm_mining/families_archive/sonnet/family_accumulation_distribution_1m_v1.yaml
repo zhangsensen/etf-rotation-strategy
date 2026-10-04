@@ -1,0 +1,29 @@
+domain: etf_rotation
+grammar_version: etf_family_accumulation_distribution_1m_v1
+factor_source: accumulation_distribution_1m
+frequency: 1m
+# Literature provenance (directive: no citation, no atom):
+# AD_NET_FLOW_20: Chaikin (1966/1982) Close Location Value (CLV) weighted
+#   by volume, sum(CLV*volume)/sum(volume) per day, 20d mean.
+# AD_NET_FLOW_SLOPE_20: 20d OLS trend of AD_NET_FLOW_20's own daily level.
+# AD_NET_FLOW_CHG_20: 20d change of AD_NET_FLOW_20.
+# OBV_SLOPE_20: Granville (1963) On Balance Volume, intraday cumulative
+#   signed-volume OLS slope against bar index, normalized by day volume,
+#   20d mean.
+# OBV_SLOPE_CHG_20: 20d change of OBV_SLOPE_20.
+# MFI_14_MEAN_20: Quong & Soudack (1989) Money Flow Index, trailing-14-bar
+#   intraday MFI, daily mean, 20d mean.
+# MFI_EXTREME_FRAC_20: fraction of a day's 1m bars with MFI>80 or MFI<20
+#   (overbought/oversold volume-flow extremes), 20d mean.
+# AD_PRICE_CORR_20: Blume-Easley-O'Hara (1994) volume-as-signal-quality,
+#   20d rolling correlation of daily AD_NET_FLOW with same-day return.
+atoms:
+  - {name: AD_NET_FLOW_20, family: accumulation_distribution_1m}
+  - {name: AD_NET_FLOW_SLOPE_20, family: accumulation_distribution_1m}
+  - {name: AD_NET_FLOW_CHG_20, family: accumulation_distribution_1m}
+  - {name: OBV_SLOPE_20, family: accumulation_distribution_1m}
+  - {name: OBV_SLOPE_CHG_20, family: accumulation_distribution_1m}
+  - {name: MFI_14_MEAN_20, family: accumulation_distribution_1m}
+  - {name: MFI_EXTREME_FRAC_20, family: accumulation_distribution_1m}
+  - {name: AD_PRICE_CORR_20, family: accumulation_distribution_1m}
+grammar: {operators: [atomic], pair_policy: cross_family_only, max_atoms: 1}

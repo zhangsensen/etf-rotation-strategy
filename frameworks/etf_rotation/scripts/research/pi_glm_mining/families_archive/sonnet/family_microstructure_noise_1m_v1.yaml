@@ -1,0 +1,29 @@
+domain: etf_rotation
+grammar_version: etf_family_microstructure_noise_1m_v1
+factor_source: microstructure_noise_1m
+frequency: 1m
+# Literature provenance (directive: no citation, no atom):
+# NOISE_VAR_20: Bandi & Russell (2008) noise variance, (RV_1m-RV_5m)/(2n),
+#   20d mean.
+# NOISE_SIGNAL_RATIO_20: Hansen & Lunde (2006) noise-to-signal framing,
+#   noise variance / coarse-scale (5m) realized variance proxy, 20d mean.
+# SIG_PLOT_SLOPE_20: Andersen-Bollerslev-Diebold-Labys (2000) realized-
+#   variance signature plot, OLS slope of log(RV) on log(sampling
+#   interval) across {1m,5m,15m}, 20d mean.
+# TSRV_RV1M_RATIO_20: Zhang-Mykland-Ait-Sahalia (2005) two-time-scale
+#   intuition, coarse/fine RV ratio (simplified single-coarse-scale
+#   proxy), 20d mean.
+# ROLL_NOISE_PROXY_20: Roll (1984) bid-ask-bounce noise proxy applied to
+#   full-day 1m returns (negative first-order autocovariance), 20d mean.
+# *_CHG_20: 20-day change of the corresponding level atom (noise regime
+#   shift).
+atoms:
+  - {name: NOISE_VAR_20, family: microstructure_noise_1m}
+  - {name: NOISE_SIGNAL_RATIO_20, family: microstructure_noise_1m}
+  - {name: SIG_PLOT_SLOPE_20, family: microstructure_noise_1m}
+  - {name: TSRV_RV1M_RATIO_20, family: microstructure_noise_1m}
+  - {name: ROLL_NOISE_PROXY_20, family: microstructure_noise_1m}
+  - {name: NOISE_VAR_CHG_20, family: microstructure_noise_1m}
+  - {name: NOISE_SIGNAL_RATIO_CHG_20, family: microstructure_noise_1m}
+  - {name: ROLL_NOISE_PROXY_CHG_20, family: microstructure_noise_1m}
+grammar: {operators: [atomic], pair_policy: cross_family_only, max_atoms: 1}

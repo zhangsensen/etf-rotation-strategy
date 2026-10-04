@@ -1,0 +1,75 @@
+version: group_ic_batch46_luna_five_20260923
+source_type: daily_rounds
+purpose: seen_history_discovery_only
+campaign_extension: true
+discovery_surface: IC_DISCOVERY_ONLY
+data_root: /home/sensen/dev/projects/gpu_ml/data/etf_rotation_v1
+as_of: '2026-09-17'
+start: '2023-07-27'
+evaluation_start: '2025-01-01'
+groups: frameworks/etf_rotation/configs/etf_candidate14_economic_groups_v1.yaml
+universe: config/etf_rotation_universe_v1.json
+calendar_symbol: 510300.SH
+entry_lag: 2
+horizon: 5
+top_k: 2
+warmup: 60
+hac_lag: 10
+max_leads: 4
+external_registered_definitions: 8
+windows:
+- 20
+screens:
+  min_days: 360
+  min_year_days: 40
+  min_positive_years: 2
+  min_ic: 0.01
+  min_ic_hac_t: 2.0
+  min_ic_block_t: 2.0
+  min_excess8_hac_t: 2.0
+  alpha: 0.05
+  max_abs_rank_corr: 0.7
+notes:
+  fixed_population: 14 ETFs / 8 economic groups
+  timing: close(D) signal; open(D+2) to open(D+7) H5 research label contract
+  evaluation_surface: previously-seen history, signal_date 2025-01-01 through 2026-09-17;
+    discovery, not OOS
+  direction_status: economic sign frozen before evaluation; no sign selection or automatic
+    flip
+  complete_input_windows_only: true
+  member_aggregation: each member atom computed independently, then existing fixed
+    group aggregation
+  source_vintage: canonical daily bars; no additional information sources
+prior_registered: 435
+budget_cap: 439
+new_definitions: 4
+mechanisms:
+  l46_prior_channel_close_position:
+    direction: 1
+    raw_formula: 对每个t，以t-20..t-1合法完整OHLC的最高High与最低Low构成旧区间；p_t=(Close_t-旧Low)/(旧High-旧Low)。最近20个t的p_t均值；任一旧窗口/current
+      OHLC缺失或非法、零宽度时当日缺失，滚动20日期须完整。
+    hypothesis: 持续收在既有区间较高位置表示相对需求占优。
+    family: prior_range_boundary_acceptance
+    nearest_previous: underwater_time_share_20; close_location_dispersion_20
+    distinction: 位置参照是前20日形成的区间边界，不是相对过去峰值的水下日数，也不是单日High-Low区间内的CLV离散。
+  l46_intraday_upper_channel_penetration:
+    direction: 1
+    raw_formula: 对每个t，以t-20..t-1的最高High与最低Low构成旧区间；若High_t/旧High>1+1e-12，u_t=(High_t-旧High)/旧区间宽度，否则u_t=0；最近20个t的u_t算术均值。旧区间须20根完整合法OHLC、宽度>0，当前bar合法；零突破日保留0。
+    hypothesis: 向上穿越旧区间的幅度越大，买方接受新价格的证据越强。
+    family: prior_range_boundary_acceptance
+    nearest_previous: range_expansion_20; close_extrema_time_order_20
+    distinction: 测高点超越事前区间上界的穿透深度，不测当前区间总宽度或窗口内极值先后。
+  l46_upper_channel_close_acceptance:
+    direction: 1
+    raw_formula: 相同前20日旧区间；若Close_t/旧High>1+1e-12，c_t=(Close_t-旧High)/旧区间宽度，否则c_t=0；最近20日均值。价格边界使用相对比值精度，窗口/当前OHLC完整合法。
+    hypothesis: 收盘站上旧上界表示突破获得收盘确认。
+    family: prior_range_boundary_acceptance
+    nearest_previous: l46_intraday_upper_channel_penetration; close_location_dispersion_20
+    distinction: 观察收盘越界幅度；与同组高点探出但收盘未确认的日子形成不同的接受信息。
+  l46_lower_channel_close_penetration:
+    direction: -1
+    raw_formula: 相同前20日旧区间；若Close_t/旧Low<1-1e-12，d_t=(旧Low-Close_t)/旧区间宽度，否则d_t=0；最近20日均值，方向-1。使用相对价格精度边界，窗口/当前OHLC完整合法。
+    hypothesis: 收盘向下跌破既有区间，表示相对价格结构走弱。
+    family: prior_range_boundary_acceptance
+    nearest_previous: underwater_time_share_20; downside_semivariance_share_20
+    distinction: 事前横向交易区间的收盘失守，不是收盘相对运行峰值的回撤时间或负收益方差占比。

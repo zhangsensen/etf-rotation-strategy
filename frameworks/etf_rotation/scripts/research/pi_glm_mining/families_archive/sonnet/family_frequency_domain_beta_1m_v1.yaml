@@ -1,0 +1,27 @@
+domain: etf_rotation
+grammar_version: etf_family_frequency_domain_beta_1m_v1
+factor_source: frequency_domain_beta_1m
+frequency: 1m
+benchmark_symbols: [510300.SH, 510500.SH]
+# Literature provenance (directive: no citation, no atom):
+# BETA_HF_20 / BETA_MF_20 / BETA_LF_20: Engle (1974) band-spectrum
+#   regression beta to the 510300/510500 market proxy, computed within
+#   high (period<15min) / mid (15-60min) / low (>60min) frequency bands
+#   via real FFT of the day's 1m returns, 20d mean.
+# BETA_FREQ_SLOPE_20: Bandi-Perron (2008) long-run-minus-short-run beta
+#   gap, BETA_LF - BETA_HF, 20d mean.
+# COHERENCE_LF_HF_DIFF_20: Dew-Becker-Giglio (2016) frequency-domain
+#   co-movement framing, band coherence (Cauchy-Schwarz-bounded [0,1])
+#   difference low-minus-high frequency, 20d mean.
+# BETA_HF_CHG_20 / BETA_LF_CHG_20 / BETA_FREQ_SLOPE_CHG_20: 20-day change
+#   of the corresponding level atom.
+atoms:
+  - {name: BETA_HF_20, family: frequency_domain_beta_1m}
+  - {name: BETA_MF_20, family: frequency_domain_beta_1m}
+  - {name: BETA_LF_20, family: frequency_domain_beta_1m}
+  - {name: BETA_FREQ_SLOPE_20, family: frequency_domain_beta_1m}
+  - {name: COHERENCE_LF_HF_DIFF_20, family: frequency_domain_beta_1m}
+  - {name: BETA_HF_CHG_20, family: frequency_domain_beta_1m}
+  - {name: BETA_LF_CHG_20, family: frequency_domain_beta_1m}
+  - {name: BETA_FREQ_SLOPE_CHG_20, family: frequency_domain_beta_1m}
+grammar: {operators: [atomic], pair_policy: cross_family_only, max_atoms: 1}

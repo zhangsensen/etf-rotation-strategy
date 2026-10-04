@@ -1,0 +1,43 @@
+version: group_ic_batch2_20260922
+source_type: daily_mechanisms
+purpose: seen_history_discovery_only
+data_root: /home/sensen/dev/projects/gpu_ml/data/etf_rotation_v1
+as_of: '2026-09-17'
+start: '2023-07-27'
+evaluation_start: '2025-01-01'
+groups: frameworks/etf_rotation/configs/etf_candidate14_economic_groups_v1.yaml
+universe: config/etf_rotation_universe_v1.json
+calendar_symbol: 510300.SH
+entry_lag: 2
+horizon: 5
+top_k: 2
+warmup: 60
+hac_lag: 10
+budget_cap: 106
+prior_registered: 104
+new_definitions: 2
+external_registered_definitions: 8
+max_leads: 6
+windows: [20]
+mechanisms:
+  shock_session_response:
+    direction: 1
+    hypothesis: larger overnight shocks followed by stronger same-session buyer response predict relative strength
+  downshock_recovery:
+    direction: 1
+    hypothesis: stronger next-session recovery after downside shocks predicts relative strength
+screens:
+  min_days: 360
+  min_year_days: 40
+  min_positive_years: 2
+  min_ic: 0.01
+  min_ic_hac_t: 2.0
+  min_ic_block_t: 2.0
+  min_excess8_hac_t: 2.0
+  alpha: 0.05
+  max_abs_rank_corr: 0.7
+notes:
+  budget: '104 prior plus 2 approved definitions; cumulative historical search total remains unknown'
+  seen_history: true
+  no_effect_prediction: true
+  no_direction_flip: true

@@ -1,0 +1,12 @@
+domain: etf_rotation
+grammar_version: etf_family_price_location_v1
+factor_source: price_location
+atoms:
+  - {name: PRICE_POSITION_20, family: price_location}
+  - {name: PRICE_POSITION_60, family: price_location}
+  - {name: PRICE_POSITION_120, family: price_location}
+  - {name: DIST_HIGH_20_VOLADJ, family: price_location}
+  - {name: DIST_HIGH_60_VOLADJ, family: price_location}
+  - {name: BREAKOUT_ATR_20, family: price_location}
+  - {name: BREAKOUT_ATR_60, family: price_location}
+grammar: {operators: [atomic], pair_policy: cross_family_only, max_atoms: 1}

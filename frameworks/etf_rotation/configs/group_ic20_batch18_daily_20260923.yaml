@@ -1,0 +1,51 @@
+version: group_ic20_batch18_daily_20260923
+source_type: daily_rounds
+purpose: seen_history_discovery_only
+campaign_extension: true
+discovery_surface: 2025_DIRECTION_DISCOVERY_ONLY
+data_root: /home/sensen/dev/projects/gpu_ml/data/etf_rotation_v1
+as_of: '2025-12-31'
+start: '2023-07-27'
+evaluation_start: '2025-01-01'
+groups: frameworks/etf_rotation/configs/etf_candidate14_economic_groups_v1.yaml
+universe: config/etf_rotation_universe_v1.json
+calendar_symbol: 510300.SH
+entry_lag: 2
+horizon: 5
+top_k: 2
+warmup: 60
+hac_lag: 10
+max_leads: 10
+prior_registered: 286
+budget_cap: 296
+new_definitions: 10
+external_registered_definitions: 8
+windows: [20]
+mechanisms:
+  market_residual_mean: {direction: 1, hypothesis: mean member return residual versus the complete 14-ETF pool}
+  market_residual_upside_mean: {direction: 1, hypothesis: positive-side relative-strength magnitude}
+  market_residual_downside_mean: {direction: 1, hypothesis: negative-side relative-weakness magnitude}
+  market_residual_sign_imbalance: {direction: 1, hypothesis: persistence of positive versus negative relative strength}
+  market_residual_path_efficiency: {direction: 1, hypothesis: net relative move per absolute residual path}
+  market_residual_sign_persistence: {direction: 1, hypothesis: day-to-day persistence of residual direction}
+  market_residual_turning_rate: {direction: 1, hypothesis: day-to-day residual direction turning frequency}
+  market_residual_tail_share: {direction: 1, hypothesis: share of residual observations beyond their trailing absolute baseline}
+  market_residual_market_beta: {direction: 1, hypothesis: rolling covariance of residual with the common market return}
+  market_residual_range_absorption: {direction: 1, hypothesis: relative residual return per daily price range}
+screens:
+  min_days: 360
+  min_year_days: 40
+  min_positive_years: 2
+  min_ic: 0.01
+  min_ic_hac_t: 2.0
+  min_ic_block_t: 2.0
+  min_excess8_hac_t: 2.0
+  alpha: 0.05
+  max_abs_rank_corr: 0.7
+notes:
+  fixed_population: 14 ETFs / 8 economic groups
+  timing: close(D) signal; open(D+2) to open(D+7) H5 label contract
+  complete_pool_rule: any missing member return makes all 14 residuals missing for that date
+  raw_direction_status: all ten Stage1 definitions fixed at +1
+  no_label_read: true
+  no_real_market_run_in_implementation_task: true

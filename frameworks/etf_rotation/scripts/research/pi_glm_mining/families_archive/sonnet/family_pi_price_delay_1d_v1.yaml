@@ -1,0 +1,11 @@
+domain: etf_rotation
+grammar_version: etf_family_pi_price_delay_1d_v1
+factor_source: pi_price_delay_1d
+frequency: 1m
+# S14 cross-lane replication (directive 2026-09-20 round_569): Hou-Moskowitz
+# (2005) price delay D1, 60d rolling daily OLS vs 14-ETF equal-weight
+# basket (contemporaneous vs +4 lags), 20d change. Independently built from
+# the directive's literature definition; pi workspace code not read.
+atoms:
+  - {name: PD_D1_CHG_20, family: pi_price_delay_1d}
+grammar: {operators: [atomic, rank_spread], pair_policy: cross_family_only, max_atoms: 1}

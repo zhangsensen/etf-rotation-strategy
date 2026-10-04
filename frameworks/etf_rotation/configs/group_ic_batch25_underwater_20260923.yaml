@@ -1,0 +1,47 @@
+version: group_ic_batch25_underwater_20260923
+source_type: daily_rounds
+purpose: seen_history_discovery_only
+campaign_extension: true
+discovery_surface: IC_DISCOVERY_ONLY
+data_root: /home/sensen/dev/projects/gpu_ml/data/etf_rotation_v1
+as_of: '2026-09-17'
+start: '2023-07-27'
+evaluation_start: '2025-01-01'
+groups: frameworks/etf_rotation/configs/etf_candidate14_economic_groups_v1.yaml
+universe: config/etf_rotation_universe_v1.json
+calendar_symbol: 510300.SH
+entry_lag: 2
+horizon: 5
+top_k: 2
+warmup: 60
+hac_lag: 10
+max_leads: 1
+prior_registered: 384
+budget_cap: 385
+new_definitions: 1
+external_registered_definitions: 8
+windows: [20]
+mechanisms:
+  underwater_time_share:
+    direction: -1
+    hypothesis: fewer closes below their prior 20-session peak indicate more persistent relative strength
+    raw_formula: mean_{s=t-19..t}(1[close_s < max(close_{s-20..s-1})])
+screens:
+  min_days: 360
+  min_year_days: 40
+  min_positive_years: 2
+  min_ic: 0.01
+  min_ic_hac_t: 2.0
+  min_ic_block_t: 2.0
+  min_excess8_hac_t: 2.0
+  alpha: 0.05
+  max_abs_rank_corr: 0.7
+notes:
+  fixed_population: 14 ETFs / 8 economic groups
+  timing: close(D) signal; open(D+2) to open(D+7) H5 label contract
+  information_source: canonical daily close only
+  formula: per member, for each s in D-19..D compare close_s with max(close_{s-20..s-1}); average the 20 indicators, then existing fixed group aggregation
+  direction_status: economically frozen before evaluation; direction=-1 on raw underwater share
+  evaluation_surface: full seen history from 2025-01-01 through 2026-09-17; discovery, not OOS
+  no_label_read: true
+  no_real_market_run_in_implementation_task: true

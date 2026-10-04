@@ -1,0 +1,6 @@
+domain: etf_rotation
+grammar_version: etf_family_liquidity_variability_v1
+factor_source: liquidity_variability
+atoms:
+  - {name: LOG_AMOUNT_VOL_20, family: liquidity_variability}
+grammar: {operators: [atomic], pair_policy: cross_family_only, max_atoms: 1}

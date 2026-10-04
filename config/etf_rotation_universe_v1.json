@@ -1,0 +1,429 @@
+{
+  "schema_version": "etf_rotation_universe_v1",
+  "scope": "data_maintenance_and_candidate_classification",
+  "maintenance_count": 20,
+  "role_counts": {
+    "candidate": 14,
+    "observation": 2,
+    "defensive_tool": 2,
+    "benchmark": 2
+  },
+  "daily_required_for_all": true,
+  "notes": [
+    "Names are readable labels, not guaranteed current exchange abbreviations.",
+    "Roles define maintenance scope, not scoring rules or trading eligibility.",
+    "All twenty ETFs are included in the daily and minute backfill scope.",
+    "The five-year government bond ETF is an interest-rate exposure, not cash.",
+    "2026-09-18: technology candidates grouped by economic exposure; 159819 demoted to observation due to composite overlap.",
+    "Eight core technology representatives are not eight independent risk factors.",
+    "2026-09-18: replace 513310.SH with 513100.SH; retired history archived; AI retained as observation."
+  ],
+  "etfs": [
+    {
+      "ts_code": "159995.SZ",
+      "name": "芯片ETF",
+      "theme": "芯片综合（设计/制造/存储，兼含设备）",
+      "role": "candidate",
+      "maintain_intraday": true,
+      "sleeve": "technology",
+      "tracking_index": "国证半导体芯片指数",
+      "coverage_bucket": "semiconductor_broad",
+      "risk_family": "semiconductors",
+      "technology_role": "core",
+      "core_technology_representative": true,
+      "exposure_tags": [
+        "国产算力芯片",
+        "芯片设计",
+        "晶圆制造",
+        "存储及接口",
+        "设备",
+        "光芯片"
+      ],
+      "known_overlap_with": [
+        "159516.SZ",
+        "159819.SZ",
+        "159732.SZ"
+      ],
+      "classification_reason": "综合半导体代表；不能同时视为纯GPU、纯存储、纯光芯片三个独立标的。",
+      "classification_review_date": "2026-09-18",
+      "overlap_assessment_status": "partial_top10_lower_bound"
+    },
+    {
+      "ts_code": "159516.SZ",
+      "name": "半导体设备ETF",
+      "theme": "半导体设备与材料",
+      "role": "candidate",
+      "maintain_intraday": true,
+      "sleeve": "technology",
+      "tracking_index": "中证半导体材料设备主题指数",
+      "coverage_bucket": "semiconductor_equipment_materials",
+      "risk_family": "semiconductors",
+      "technology_role": "core",
+      "core_technology_representative": true,
+      "exposure_tags": [
+        "制造设备",
+        "检测量测",
+        "半导体材料"
+      ],
+      "known_overlap_with": [
+        "159995.SZ"
+      ],
+      "classification_reason": "上游设备材料代表，与综合芯片有实际重合；不是额外一份独立半导体风险。",
+      "classification_review_date": "2026-09-18",
+      "overlap_assessment_status": "partial_top10_lower_bound"
+    },
+    {
+      "ts_code": "515880.SH",
+      "name": "通信ETF",
+      "theme": "光互连与通信设备（含服务器/光纤）",
+      "role": "candidate",
+      "maintain_intraday": true,
+      "sleeve": "technology",
+      "tracking_index": "中证全指通信设备指数",
+      "coverage_bucket": "optical_interconnect_communications",
+      "risk_family": "communications_hardware",
+      "technology_role": "core",
+      "core_technology_representative": true,
+      "exposure_tags": [
+        "光模块",
+        "光器件",
+        "通信设备",
+        "光纤光缆",
+        "服务器制造"
+      ],
+      "known_overlap_with": [
+        "159819.SZ",
+        "159206.SZ"
+      ],
+      "classification_reason": "光互连主代表；不是纯光芯片基金，也不是只投光模块。",
+      "classification_review_date": "2026-09-18",
+      "overlap_assessment_status": "partial_top10_lower_bound"
+    },
+    {
+      "ts_code": "159819.SZ",
+      "name": "人工智能ETF",
+      "theme": "AI综合篮子（算力芯片/光模块重复）",
+      "role": "observation",
+      "maintain_intraday": true,
+      "sleeve": "technology",
+      "tracking_index": "中证人工智能主题指数",
+      "coverage_bucket": "ai_composite",
+      "risk_family": "cross_theme_composite",
+      "technology_role": "composite_reference",
+      "core_technology_representative": false,
+      "exposure_tags": [
+        "算力芯片",
+        "光模块",
+        "服务器",
+        "软件"
+      ],
+      "known_overlap_with": [
+        "159995.SZ",
+        "515880.SH"
+      ],
+      "classification_reason": "从candidate调为observation；作为AI综合参考/备选，不再计入核心科技方向。",
+      "classification_review_date": "2026-09-18",
+      "overlap_assessment_status": "partial_top10_lower_bound"
+    },
+    {
+      "ts_code": "159852.SZ",
+      "name": "软件ETF",
+      "theme": "软件服务与应用（含金融IT）",
+      "role": "candidate",
+      "maintain_intraday": true,
+      "sleeve": "technology",
+      "tracking_index": "中证软件服务指数",
+      "coverage_bucket": "software_services",
+      "risk_family": "software",
+      "technology_role": "core",
+      "core_technology_representative": true,
+      "exposure_tags": [
+        "办公软件",
+        "企业软件",
+        "金融IT",
+        "信息安全",
+        "AI应用"
+      ],
+      "known_overlap_with": [
+        "562500.SH"
+      ],
+      "classification_reason": "软件应用代表；不是纯AI应用，也不能等同纯国产基础软件或EDA。",
+      "classification_review_date": "2026-09-18",
+      "overlap_assessment_status": "partial_top10_lower_bound"
+    },
+    {
+      "ts_code": "562500.SH",
+      "name": "机器人ETF",
+      "theme": "机器人与工业自动化",
+      "role": "candidate",
+      "maintain_intraday": true,
+      "sleeve": "technology",
+      "tracking_index": "中证机器人指数",
+      "coverage_bucket": "robotics_automation",
+      "risk_family": "industrial_automation",
+      "technology_role": "core",
+      "core_technology_representative": true,
+      "exposure_tags": [
+        "工业自动化",
+        "机器人零部件",
+        "机器视觉",
+        "控制软件"
+      ],
+      "known_overlap_with": [
+        "159852.SZ"
+      ],
+      "classification_reason": "保留工业自动化方向；含科大讯飞等软件，不称纯人形机器人。",
+      "classification_review_date": "2026-09-18",
+      "overlap_assessment_status": "partial_top10_lower_bound"
+    },
+    {
+      "ts_code": "159732.SZ",
+      "name": "消费电子ETF",
+      "theme": "消费电子与硬件制造（含PCB/存储）",
+      "role": "candidate",
+      "maintain_intraday": true,
+      "sleeve": "technology",
+      "tracking_index": "国证消费电子主题指数",
+      "coverage_bucket": "electronics_manufacturing",
+      "risk_family": "electronics_manufacturing",
+      "technology_role": "core",
+      "core_technology_representative": true,
+      "exposure_tags": [
+        "终端制造",
+        "显示面板",
+        "PCB",
+        "电子元器件",
+        "存储"
+      ],
+      "known_overlap_with": [
+        "159995.SZ",
+        "159819.SZ"
+      ],
+      "classification_reason": "终端制造代表；芯片/存储敞口必须合并识别，不再按纯消费电子解释。",
+      "classification_review_date": "2026-09-18",
+      "overlap_assessment_status": "partial_top10_lower_bound"
+    },
+    {
+      "ts_code": "513130.SH",
+      "name": "恒生科技ETF",
+      "theme": "港股科技综合",
+      "role": "candidate",
+      "maintain_intraday": true,
+      "sleeve": "technology",
+      "tracking_index": "恒生科技指数",
+      "coverage_bucket": "hong_kong_technology",
+      "risk_family": "hong_kong_technology",
+      "technology_role": "core",
+      "core_technology_representative": true,
+      "exposure_tags": [
+        "港股科技综合"
+      ],
+      "known_overlap_with": [],
+      "classification_reason": "保留市场与指数维度；本次未取得完整穿透持仓，不虚构零重合或纯互联网。",
+      "classification_review_date": "2026-09-18",
+      "overlap_assessment_status": "unknown_without_lookthrough"
+    },
+    {
+      "ts_code": "159992.SZ",
+      "name": "创新药ETF",
+      "theme": "A股创新药",
+      "role": "candidate",
+      "maintain_intraday": true,
+      "sleeve": "auxiliary_rotation"
+    },
+    {
+      "ts_code": "513120.SH",
+      "name": "港股创新药ETF",
+      "theme": "港股创新药",
+      "role": "candidate",
+      "maintain_intraday": true,
+      "sleeve": "auxiliary_rotation"
+    },
+    {
+      "ts_code": "518880.SH",
+      "name": "黄金ETF",
+      "theme": "黄金现货",
+      "role": "candidate",
+      "maintain_intraday": true,
+      "sleeve": "auxiliary_rotation"
+    },
+    {
+      "ts_code": "512400.SH",
+      "name": "有色金属ETF",
+      "theme": "有色金属股票",
+      "role": "candidate",
+      "maintain_intraday": true,
+      "sleeve": "auxiliary_rotation"
+    },
+    {
+      "ts_code": "512890.SH",
+      "name": "红利低波ETF",
+      "theme": "红利低波",
+      "role": "candidate",
+      "maintain_intraday": true,
+      "sleeve": "auxiliary_rotation"
+    },
+    {
+      "ts_code": "159611.SZ",
+      "name": "电力ETF",
+      "theme": "电力公用事业",
+      "role": "candidate",
+      "maintain_intraday": true,
+      "sleeve": "auxiliary_rotation"
+    },
+    {
+      "ts_code": "511010.SH",
+      "name": "五年国债ETF",
+      "theme": "五年期国债",
+      "role": "defensive_tool",
+      "maintain_intraday": true,
+      "sleeve": "auxiliary_rotation"
+    },
+    {
+      "ts_code": "511880.SH",
+      "name": "银华日利ETF",
+      "theme": "货币市场",
+      "role": "defensive_tool",
+      "maintain_intraday": true,
+      "sleeve": "auxiliary_rotation"
+    },
+    {
+      "ts_code": "510300.SH",
+      "name": "沪深300ETF",
+      "theme": "大盘宽基",
+      "role": "benchmark",
+      "maintain_intraday": true,
+      "sleeve": "benchmark"
+    },
+    {
+      "ts_code": "510500.SH",
+      "name": "中证500ETF",
+      "theme": "中盘宽基",
+      "role": "benchmark",
+      "maintain_intraday": true,
+      "sleeve": "benchmark"
+    },
+    {
+      "ts_code": "159206.SZ",
+      "name": "卫星ETF",
+      "theme": "商用卫星通信与相关电子",
+      "role": "observation",
+      "maintain_intraday": true,
+      "sleeve": "technology",
+      "tracking_index": "国证商用卫星通信产业指数",
+      "coverage_bucket": "satellite_communications",
+      "risk_family": "satellite_communications",
+      "technology_role": "emerging_observation",
+      "core_technology_representative": false,
+      "exposure_tags": [
+        "卫星通信",
+        "航天电子",
+        "射频与感知"
+      ],
+      "known_overlap_with": [
+        "515880.SH"
+      ],
+      "classification_reason": "继续观察；不是全航天或纯卫星制造，历史较短。",
+      "classification_review_date": "2026-09-18",
+      "overlap_assessment_status": "partial_top10_lower_bound"
+    },
+    {
+      "ts_code": "513100.SH",
+      "name": "纳指ETF",
+      "theme": "美国大型成长与科技综合",
+      "role": "candidate",
+      "maintain_intraday": true,
+      "sleeve": "technology",
+      "tracking_index": "纳斯达克100指数",
+      "coverage_bucket": "us_large_cap_growth",
+      "risk_family": "us_growth",
+      "technology_role": "core",
+      "core_technology_representative": true,
+      "exposure_tags": [
+        "美国科技",
+        "大型成长",
+        "美元汇率"
+      ],
+      "known_overlap_with": [],
+      "classification_reason": "补充美国大型成长市场；不是纯科技指数，也不代表已证实低相关。",
+      "classification_review_date": "2026-09-18",
+      "overlap_assessment_status": "full_holdings_not_reviewed",
+      "source_url": "https://www.gtfund.com/product/productlist/haiwai/513100/index.html",
+      "execution_data_limitations": [
+        "QDII premium/discount and FX exposure",
+        "China-US market timing mismatch",
+        "NAV premium checks not implemented; maintenance is not execution permission"
+      ]
+    }
+  ],
+  "maintenance_periods": [
+    "1d",
+    "1m",
+    "5m",
+    "15m",
+    "30m",
+    "60m"
+  ],
+  "classification_revision": "2026-09-18-tech-coverage-v3",
+  "investment_focus": "technology_primary_rotation_auxiliary",
+  "classification_effective_from": "2026-09-18",
+  "technology_role_counts": {
+    "core": 8,
+    "composite_reference": 1,
+    "emerging_observation": 1
+  },
+  "technology_core_symbols": [
+    "159995.SZ",
+    "159516.SZ",
+    "515880.SH",
+    "159852.SZ",
+    "562500.SH",
+    "159732.SZ",
+    "513130.SH",
+    "513100.SH"
+  ],
+  "classification_contract": {
+    "purpose": "coverage and candidate-role metadata only; not allocation weights or execution rules",
+    "bucket_semantics": "primary purpose, non-exclusive exposure; different labels do not establish low correlation",
+    "evidence": "2026-06-30 disclosed top-ten holdings reviewed 2026-09-18; partial lower-bound overlap; 513130 look-through unavailable",
+    "maintenance_rule": "20 active ETFs updated; retired ETFs excluded; history preserved",
+    "historical_use": "current classification must not be retroactively presented as a historical point-in-time universe",
+    "review_on": "new semiannual/annual holdings, index methodology change, or constituent change; currently manual review, not automatic",
+    "remaining_gaps": [
+      "pure optical-chip proxy not established",
+      "pure domestic storage proxy not established",
+      "513130 full look-through missing",
+      "full-portfolio overlap not yet certified",
+      "513100 full holdings overlap and contemporaneous NAV premium not certified"
+    ]
+  },
+  "retired_etfs": [
+    {
+      "ts_code": "513310.SH",
+      "name": "中韩半导体ETF",
+      "theme": "中韩半导体（含韩国存储，非纯存储）",
+      "role": "observation",
+      "maintain_intraday": true,
+      "sleeve": "technology",
+      "tracking_index": "中证韩交所中韩半导体指数",
+      "coverage_bucket": "cross_market_semiconductor",
+      "risk_family": "semiconductors",
+      "technology_role": "cross_market_observation",
+      "core_technology_representative": false,
+      "exposure_tags": [
+        "韩国存储相关",
+        "A股半导体综合"
+      ],
+      "known_overlap_with": [
+        "159995.SZ",
+        "159516.SZ",
+        "159819.SZ"
+      ],
+      "classification_reason": "继续观察；韩国存储为补充，但与A股芯片持仓也明显重复，不自动升级为独立核心方向。",
+      "classification_review_date": "2026-09-18",
+      "overlap_assessment_status": "partial_top10_lower_bound",
+      "retired_on": "2026-09-18",
+      "retirement_reason": "Overlap with domestic semiconductor core; preserve history outside active universe"
+    }
+  ]
+}

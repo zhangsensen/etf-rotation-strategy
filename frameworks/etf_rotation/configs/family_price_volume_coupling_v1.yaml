@@ -1,0 +1,12 @@
+domain: etf_rotation
+grammar_version: etf_family_price_volume_coupling_v1
+factor_source: price_volume_coupling
+atoms:
+  - {name: AMIHUD_20, family: price_volume_coupling}
+  - {name: AMIHUD_60, family: price_volume_coupling}
+  - {name: PRICE_AMOUNT_CORR_20, family: price_volume_coupling}
+  - {name: PRICE_AMOUNT_CORR_60, family: price_volume_coupling}
+  - {name: MONEY_PRESSURE_5, family: price_volume_coupling}
+  - {name: MONEY_PRESSURE_20, family: price_volume_coupling}
+  - {name: MONEY_PRESSURE_60, family: price_volume_coupling}
+grammar: {operators: [atomic], pair_policy: cross_family_only, max_atoms: 1}

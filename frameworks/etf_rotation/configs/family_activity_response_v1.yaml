@@ -1,0 +1,14 @@
+domain: etf_rotation
+grammar_version: etf_family_activity_response_v1
+factor_source: activity_response
+mechanism: lagged absolute-price shock followed by turnover change
+atoms:
+- name: SHOCK_ACTIVITY_RESPONSE_20
+  family: activity_response
+- name: SHOCK_ACTIVITY_RESPONSE_60
+  family: activity_response
+grammar:
+  operators:
+  - atomic
+  pair_policy: cross_family_only
+  max_atoms: 1

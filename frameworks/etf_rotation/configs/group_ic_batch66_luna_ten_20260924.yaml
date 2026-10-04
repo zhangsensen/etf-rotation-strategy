@@ -1,0 +1,85 @@
+version: group_ic_batch66_luna_ten_20260924
+source_type: daily_rounds
+purpose: seen_history_discovery_only
+campaign_extension: true
+discovery_surface: IC_DISCOVERY_ONLY
+data_root: /home/sensen/dev/projects/gpu_ml/data/etf_rotation_v1
+as_of: '2026-09-17'
+start: '2023-07-27'
+evaluation_start: '2025-01-01'
+groups: frameworks/etf_rotation/configs/etf_candidate14_economic_groups_v1.yaml
+universe: config/etf_rotation_universe_v1.json
+calendar_symbol: 510300.SH
+entry_lag: 2
+horizon: 5
+top_k: 2
+warmup: 60
+hac_lag: 10
+max_leads: 3
+external_registered_definitions: 8
+windows:
+- 20
+screens:
+  min_days: 360
+  min_year_days: 40
+  min_positive_years: 2
+  min_ic: 0.01
+  min_ic_hac_t: 2.0
+  min_ic_block_t: 2.0
+  min_excess8_hac_t: 2.0
+  alpha: 0.05
+  max_abs_rank_corr: 0.7
+notes:
+  fixed_population: 14 ETFs / 8 economic groups
+  timing: close(D) signal; open(D+2) to open(D+7) H5 research label contract
+  evaluation_surface: previously-seen history, signal_date 2025-01-01 through 2026-09-17;
+    discovery, not OOS
+  direction_status: economic sign frozen before evaluation; no sign selection or automatic
+    flip
+  complete_input_windows_only: true
+  member_aggregation: each member atom computed independently, then existing fixed
+    group aggregation
+  source_vintage: canonical daily bars; no additional information sources
+  research_lineage: SEEN_2026_ADAPTIVE_NOT_CONFIRMATION; mechanism discovery informed
+    by existing historical research; sign frozen before this batch only
+  deduplication: Formula and mechanism review; correlations are report-only, not IC
+    gates
+prior_registered: 508
+budget_cap: 511
+new_definitions: 3
+mechanisms:
+  l66_relative_rank_persistence:
+    direction: 1
+    raw_formula: R_i,t=average_rank_14(close_i,t/close_i,t-1−1)/14; factor=PearsonCorr(R_i,t,R_i,t-1)
+      over the 20 20 consecutive valid daily transitions.
+    hypothesis: Persistent relative leadership may indicate durable information diffusion.
+    family: cross_sectional_rank_dynamics
+    nearest_previous: peer_flow_rank_persistence (amount rank, not return rank); rank_persistence_60
+      (mean rank level, not lag correlation; prior definition was dropped after high
+      redundancy with vol_scaled_momentum).
+    distinction: This is a temporal autocorrelation of daily cross-sectional ranks,
+      not a trailing average rank or raw-return momentum. Each factor uses a fixed
+      contiguous 20-row trailing window; missing required inputs invalidate that window
+      rather than compressing dates.
+  l66_rank_upgrade_rate:
+    direction: 1
+    raw_formula: R_i,t as above; factor=mean_{20 transitions}(1[R_i,t>R_i,t-1]).
+    hypothesis: Frequent movement up the fixed-pool return ordering marks improving
+      leadership breadth.
+    family: cross_sectional_rank_dynamics
+    nearest_previous: relative_rank_persistence; group_return_autocorrelation_relative_60
+      (within-group return time series, not changes in member cross-sectional ranks).
+    distinction: A directional transition probability, not rank-level mean or rank
+      autocorrelation. Each factor uses a fixed contiguous 20-row trailing window;
+      missing required inputs invalidate that window rather than compressing dates.
+  l66_rank_mobility:
+    direction: -1
+    raw_formula: R_i,t as above; factor=mean_{20 transitions}(|R_i,t−R_i,t-1|).
+    hypothesis: Large rank jumps indicate unstable leadership and weak persistence
+      of relative demand.
+    family: cross_sectional_rank_dynamics
+    nearest_previous: relative_rank_persistence / rank_upgrade_rate.
+    distinction: Absolute step size measures rank instability regardless of whether
+      rank moves up or down; no window-only variation. Each factor uses a fixed contiguous
+      20-row trailing window; missing required inputs invalidate that window rather
+      than compressing dates.

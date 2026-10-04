@@ -1,0 +1,14 @@
+domain: etf_rotation
+grammar_version: etf_family_repl_overnight_core_v2a_v1
+factor_source: repl_overnight_core_v2a
+frequency: 1m
+# Sub-family A of repl_overnight_core_v2 (see repl_overnight_core_v2.py
+# module docstring for full reproduction definitions). Split into
+# v2a/v2b so R2_CZ01/CY07/CY17 satisfy cross_family_only.
+# R2_ON_PREM_20: overnight_ret = open(D)/close(D-1)-1, 20d mean.
+# R2_GAP_FILL_RATE_20: gap-up (open-low)/(open-prev_close) clipped [0,1]
+#   / gap-down (high-open)/(prev_close-open) clipped [0,1], 20d mean.
+atoms:
+  - {name: R2_ON_PREM_20, family: repl_overnight_core_v2a}
+  - {name: R2_GAP_FILL_RATE_20, family: repl_overnight_core_v2a}
+grammar: {operators: [atomic], pair_policy: cross_family_only, max_atoms: 1}

@@ -1,0 +1,17 @@
+domain: etf_rotation
+grammar_version: etf_family_category_state_v1
+factor_source: category_state
+asset_class_config: configs/etf_asset_classes_current20_v1.yaml
+atoms:
+  - {name: CATEGORY_MOM_5, family: category_state}
+  - {name: CATEGORY_MOM_20, family: category_state}
+  - {name: CATEGORY_MOM_60, family: category_state}
+  - {name: CATEGORY_CURRENT_DD_20, family: category_state}
+  - {name: CATEGORY_CURRENT_DD_60, family: category_state}
+  - {name: CATEGORY_VOL_20, family: category_state}
+  - {name: CATEGORY_VOL_60, family: category_state}
+  - {name: CATEGORY_BREADTH_MA20, family: category_state}
+  - {name: CATEGORY_BREADTH_MA60, family: category_state}
+  - {name: CATEGORY_DISPERSION_20, family: category_state}
+  - {name: CATEGORY_DISPERSION_60, family: category_state}
+grammar: {operators: [atomic], pair_policy: cross_family_only, max_atoms: 1}

@@ -1,0 +1,12 @@
+description: "Daily Tushare fund_share + fund_nav refresh for the 14 candidate ETFs (PIT usable_from_date). Linux-side ETF data; feeds fund_flow / nav_premium families and the forward ledger."
+group: Research
+type: graph
+working_dir: /home/sensen/dev/projects/-0927
+schedule: "0 19 * * 1-5"
+max_active_runs: 1
+timeout_sec: 900
+log_output: merged
+steps:
+  - id: pull
+    name: Refresh fund_share and nav
+    run: /home/sensen/dev/projects/-0927/frameworks/etf_rotation/.venv/bin/python frameworks/etf_rotation/scripts/research/pi_glm_mining/audit/update_etf_fund_share_nav.py

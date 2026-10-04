@@ -1,0 +1,74 @@
+version: group_ic_batch40_luna_multi_20260923
+source_type: daily_rounds
+purpose: seen_history_discovery_only
+campaign_extension: true
+discovery_surface: IC_DISCOVERY_ONLY
+data_root: /home/sensen/dev/projects/gpu_ml/data/etf_rotation_v1
+as_of: '2026-09-17'
+start: '2023-07-27'
+evaluation_start: '2025-01-01'
+groups: frameworks/etf_rotation/configs/etf_candidate14_economic_groups_v1.yaml
+universe: config/etf_rotation_universe_v1.json
+calendar_symbol: 510300.SH
+entry_lag: 2
+horizon: 5
+top_k: 2
+warmup: 60
+hac_lag: 10
+max_leads: 4
+external_registered_definitions: 8
+windows:
+- 20
+screens:
+  min_days: 360
+  min_year_days: 40
+  min_positive_years: 2
+  min_ic: 0.01
+  min_ic_hac_t: 2.0
+  min_ic_block_t: 2.0
+  min_excess8_hac_t: 2.0
+  alpha: 0.05
+  max_abs_rank_corr: 0.7
+notes:
+  fixed_population: 14 ETFs / 8 economic groups
+  timing: close(D) signal; open(D+2) to open(D+7) H5 research label contract
+  evaluation_surface: previously-seen history, signal_date 2025-01-01 through 2026-09-17;
+    discovery, not OOS
+  direction_status: economic sign frozen before evaluation; no sign selection or automatic
+    flip
+  complete_input_windows_only: true
+  member_aggregation: each member atom computed independently, then existing fixed
+    group aggregation
+  source_vintage: canonical daily bars; no additional information sources
+prior_registered: 411
+budget_cap: 415
+new_definitions: 4
+mechanisms:
+  l40_gap_range_absorption:
+    direction: 1
+    raw_formula: g_t=Open_t-Close_(t-1), b_t=Close_t-Open_t；20日均值 sign(g_t)*b_t/(High_t-Low_t)。零gap记0（没有缺口方向确认）；零区间缺失。要求连续20日有效合法OHLC及前收。
+    hypothesis: 实体沿缺口方向收盘，表示当日价格发现确认隔夜方向。
+    family: gap_range_price_discovery
+    nearest_previous: gap_repair_signed_magnitude / overnight_intraday_switch_rate
+    distinction: 衡量当日实体沿隔夜缺口方向的区间内确认，不是缺口修复幅度/切换率
+  l40_gap_range_extension:
+    direction: 1
+    raw_formula: g_t=Open_t-Close_{t-1}；对g>0取max(High-Open,0)/|g|；对g<0取max(Open-Low,0)/|g|。20日均值；零gap缺失。
+    hypothesis: 当日区间沿gap方向延伸的幅度相对缺口越大，开盘跳变后价格发现越强。
+    family: gap_range_price_discovery
+    nearest_previous: gap_repair_signed_magnitude / gap_shock_range_recovery
+    distinction: 仅测open之后朝缺口方向的high/low延伸距离相对初始gap，不看回补比例或close修复。
+  l40_gap_fill_fraction_capped:
+    direction: 1
+    raw_formula: 20日均值：gap>0时clip((Open-Low)/gap,0,1)，gap<0时clip((High-Open)/abs(gap),0,1)；零gap缺失
+    hypothesis: 缺口在当日交易区间中得到部分回补，表示开盘跳变被吸收；方向+1表示回补比例高。
+    family: gap_range_price_discovery
+    nearest_previous: gap_repair_signed_magnitude
+    distinction: 按当日高低区间截断的比例，不采用超额或signed gap修复金额
+  l40_gap_overshoot_frequency:
+    direction: -1
+    raw_formula: 连续20日有效合法OHLC及前收窗口中，mean(1[(gap>0 and Low<前收) or (gap<0 and High>前收)])；零gap为非事件，分母固定20；窗口输入缺失或非法则缺失。
+    hypothesis: gap方向被当日区间完全反穿的频率高，表示开盘跳变质量低。
+    family: gap_range_price_discovery
+    nearest_previous: gap_repair_completion_rate / gap_shock_range_recovery
+    distinction: 计数区间跨越前收事件，不衡量收盘完成修复或区间恢复

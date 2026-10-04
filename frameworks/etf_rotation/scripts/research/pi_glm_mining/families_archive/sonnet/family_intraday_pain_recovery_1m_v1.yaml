@@ -1,0 +1,28 @@
+domain: etf_rotation
+grammar_version: etf_family_intraday_pain_recovery_1m_v1
+factor_source: intraday_pain_recovery_1m
+frequency: 1m
+# Literature provenance (directive: no citation, no atom):
+# ULCER_INDEX_20 / ULCER_INDEX_CHG_20: Martin-McCann (1989) Ulcer Index,
+#   RMS of intraday fractional drawdown, 20d mean and 20d change.
+# PAIN_INDEX_20 / PAIN_INDEX_CHG_20: Zephyr Pain Index, mean intraday
+#   fractional drawdown, 20d mean and 20d change.
+# RECOVERY_TIME_FRAC_20 / RECOVERY_TIME_FRAC_CHG_20: Bacon (2008)
+#   recovery-time framing, bars from the day's max-drawdown trough back to
+#   the pre-drawdown high / total bars (unrecovered by day-end = 1.0),
+#   20d mean and 20d change.
+# DD_RECOVERY_SPEED_RATIO_20: Magdon-Ismail-Atiya (2004) drawdown-episode
+#   framing, peak-to-trough price speed divided by trough-to-recovery
+#   price speed, 20d mean.
+# UNDERWATER_FRAC_Z_60: Grossman-Zhou (1993) underwater-time framing,
+#   60-day rolling z-score of the daily underwater-bar fraction.
+atoms:
+  - {name: ULCER_INDEX_20, family: intraday_pain_recovery_1m}
+  - {name: PAIN_INDEX_20, family: intraday_pain_recovery_1m}
+  - {name: ULCER_INDEX_CHG_20, family: intraday_pain_recovery_1m}
+  - {name: PAIN_INDEX_CHG_20, family: intraday_pain_recovery_1m}
+  - {name: RECOVERY_TIME_FRAC_20, family: intraday_pain_recovery_1m}
+  - {name: DD_RECOVERY_SPEED_RATIO_20, family: intraday_pain_recovery_1m}
+  - {name: UNDERWATER_FRAC_Z_60, family: intraday_pain_recovery_1m}
+  - {name: RECOVERY_TIME_FRAC_CHG_20, family: intraday_pain_recovery_1m}
+grammar: {operators: [atomic], pair_policy: cross_family_only, max_atoms: 1}

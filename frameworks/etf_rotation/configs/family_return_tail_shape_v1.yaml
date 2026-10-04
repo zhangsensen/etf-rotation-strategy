@@ -1,0 +1,11 @@
+domain: etf_rotation
+grammar_version: etf_family_return_tail_shape_v1
+factor_source: return_tail_shape
+atoms:
+  - {name: RETURN_SKEW_20, family: return_tail_shape}
+  - {name: RETURN_SKEW_60, family: return_tail_shape}
+  - {name: WORST_DAY_20, family: return_tail_shape}
+  - {name: WORST_DAY_60, family: return_tail_shape}
+  - {name: TAIL_Q10_20, family: return_tail_shape}
+  - {name: TAIL_Q10_60, family: return_tail_shape}
+grammar: {operators: [atomic], pair_policy: cross_family_only, max_atoms: 1}

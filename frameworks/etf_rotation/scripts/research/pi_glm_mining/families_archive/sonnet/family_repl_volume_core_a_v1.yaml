@@ -1,0 +1,18 @@
+domain: etf_rotation
+grammar_version: etf_family_repl_volume_core_a_v1
+factor_source: repl_volume_core_a
+frequency: 1m
+# S26 stage (corrected, round_612): independent re-implementation, part
+# A of 2 (split from repl_volume_core_v1.py so the 4 directive pair
+# reproductions satisfy cross_family_only -- the original pi-side atoms
+# these replace were themselves in separate shelf families).
+# R_VOL_SPIKE_FREQ_20: Gervais-Kaniel-Mingelgrin (2001); fraction of 1m
+#   bars whose volume exceeds mean+3*std of that day's own bars, 20d mean.
+# R_BIGBAR_DIR_SKEW_20: fraction of top-10%-volume bars with a positive
+#   bar return, minus 0.5, 20d mean.
+# R_LOG_AMOUNT_VOL_20: 20-day rolling std of log(daily amount).
+atoms:
+  - {name: R_VOL_SPIKE_FREQ_20, family: repl_volume_core_a}
+  - {name: R_BIGBAR_DIR_SKEW_20, family: repl_volume_core_a}
+  - {name: R_LOG_AMOUNT_VOL_20, family: repl_volume_core_a}
+grammar: {operators: [atomic], pair_policy: cross_family_only, max_atoms: 1}

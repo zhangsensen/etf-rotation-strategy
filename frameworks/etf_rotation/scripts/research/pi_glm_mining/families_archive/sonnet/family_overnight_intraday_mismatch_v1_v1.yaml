@@ -1,0 +1,27 @@
+domain: etf_rotation
+grammar_version: etf_family_overnight_intraday_mismatch_v1_v1
+factor_source: overnight_intraday_mismatch_v1
+frequency: 1m
+# Literature provenance (directive: no citation, no atom):
+# ON_TROUGH_RECOVERY_MATCH_20: Lou-Polk-Skouras (2019) overnight/
+#   intraday tug-of-war; fraction of trailing-20 days where the day
+#   dips/pops against the overnight gap direction then recovers toward
+#   it, 20d mean.
+# GAP_DD_CONSUMPTION_RATIO_20: |intraday max drawdown from the day's
+#   own open| / |overnight gap|, clipped [0,3], 20d mean -- how much of
+#   the overnight signal gets consumed by the day's own drawdown.
+# ON_STREAK_UF_COV_20: single-statistic 20-day rolling covariance
+#   between the daily overnight-sign-streak series and the daily
+#   intraday-underwater-fraction series (not a product-of-atoms pairing).
+# ON_SIGN_UF_DIFF_20: within a trailing 20-day window, mean(intraday
+#   underwater fraction | overnight up) minus mean(... | overnight down).
+# *_CHG_20: 20-day change of ON_TROUGH_RECOVERY_MATCH_20 and
+#   GAP_DD_CONSUMPTION_RATIO_20.
+atoms:
+  - {name: ON_TROUGH_RECOVERY_MATCH_20, family: overnight_intraday_mismatch_v1}
+  - {name: GAP_DD_CONSUMPTION_RATIO_20, family: overnight_intraday_mismatch_v1}
+  - {name: ON_STREAK_UF_COV_20, family: overnight_intraday_mismatch_v1}
+  - {name: ON_SIGN_UF_DIFF_20, family: overnight_intraday_mismatch_v1}
+  - {name: ON_TROUGH_RECOVERY_MATCH_CHG_20, family: overnight_intraday_mismatch_v1}
+  - {name: GAP_DD_CONSUMPTION_RATIO_CHG_20, family: overnight_intraday_mismatch_v1}
+grammar: {operators: [atomic], pair_policy: cross_family_only, max_atoms: 1}

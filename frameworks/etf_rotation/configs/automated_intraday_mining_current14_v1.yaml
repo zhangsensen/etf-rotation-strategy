@@ -1,0 +1,20 @@
+domain: etf_rotation
+grammar_version: etf_candidate14_intraday_atomic_v1
+factor_source: intraday_path
+availability_lag_sessions: 0
+frequency: 60m
+atoms:
+  - {name: FIRST_HOUR_RET, family: intraday_path}
+  - {name: LAST_HOUR_RET, family: intraday_path}
+  - {name: MORNING_AFTERNOON_SPREAD, family: intraday_path}
+  - {name: INTRADAY_REALIZED_VOL, family: intraday_path}
+  - {name: INTRADAY_RANGE, family: intraday_path}
+  - {name: CLOSE_LOCATION, family: intraday_path}
+  - {name: FIRST_HOUR_TURNOVER_SHARE, family: intraday_path}
+  - {name: LAST_HOUR_TURNOVER_SHARE, family: intraday_path}
+  - {name: FIRST_HOUR_SHARE_REL_20, family: intraday_path}
+  - {name: FIRST_HOUR_SHARE_REL_60, family: intraday_path}
+grammar:
+  operators: [atomic]
+  pair_policy: cross_family_only
+  max_atoms: 1

@@ -1,0 +1,9 @@
+domain: etf_rotation
+grammar_version: etf_family_within_category_selection_v1
+factor_source: within_category_selection
+asset_class_config: configs/etf_asset_classes_current20_v1.yaml
+atoms:
+  - {name: WITHIN_CATEGORY_MOM_5, family: within_category_selection}
+  - {name: WITHIN_CATEGORY_MOM_20, family: within_category_selection}
+  - {name: WITHIN_CATEGORY_MOM_60, family: within_category_selection}
+grammar: {operators: [atomic], pair_policy: cross_family_only, max_atoms: 1}

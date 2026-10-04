@@ -1,0 +1,94 @@
+version: group_ic_batch43_luna_multi_20260923
+source_type: daily_rounds
+purpose: seen_history_discovery_only
+campaign_extension: true
+discovery_surface: IC_DISCOVERY_ONLY
+data_root: /home/sensen/dev/projects/gpu_ml/data/etf_rotation_v1
+as_of: '2026-09-17'
+start: '2023-07-27'
+evaluation_start: '2025-01-01'
+groups: frameworks/etf_rotation/configs/etf_candidate14_economic_groups_v1.yaml
+universe: config/etf_rotation_universe_v1.json
+calendar_symbol: 510300.SH
+entry_lag: 2
+horizon: 5
+top_k: 2
+warmup: 60
+hac_lag: 10
+max_leads: 4
+external_registered_definitions: 8
+windows:
+- 20
+screens:
+  min_days: 360
+  min_year_days: 40
+  min_positive_years: 2
+  min_ic: 0.01
+  min_ic_hac_t: 2.0
+  min_ic_block_t: 2.0
+  min_excess8_hac_t: 2.0
+  alpha: 0.05
+  max_abs_rank_corr: 0.7
+notes:
+  fixed_population: 14 ETFs / 8 economic groups
+  timing: close(D) signal; open(D+2) to open(D+7) H5 research label contract
+  evaluation_surface: previously-seen history, signal_date 2025-01-01 through 2026-09-17;
+    discovery, not OOS
+  direction_status: economic sign frozen before evaluation; no sign selection or automatic
+    flip
+  complete_input_windows_only: true
+  member_aggregation: each member atom computed independently, then existing fixed
+    group aggregation
+  source_vintage: canonical daily bars; no additional information sources
+prior_registered: 423
+budget_cap: 427
+new_definitions: 4
+mechanisms:
+  l43_peer_amount_inflow_breadth:
+    direction: 1
+    raw_formula: b_i,t=(sum over all14 of 1[e_j,t>0] - 1[e_i,t>0])/13; mean over20
+      complete dates, then fixed-member group mean. Thus cross-sectional relative
+      score is inverse own positive-activity frequency plus a common pool term; amount
+      is trading activity, not capital inflow.
+    hypothesis: This is a leave-one-out inverse own positive-activity frequency plus
+      a common pool-breadth term, not an independent cross-sectional breadth measure.
+      Positive direction predicts stronger relative scores for members with fewer
+      positive-activity dates.
+    family: relative_activity_breadth
+    nearest_previous: daily:breadth; amount_innovation_sign_entropy_20
+    distinction: 'Not an exact repeat: prior breadth uses return-sign breadth, while
+      this uses fixed-pool amount-innovation sign and leave-one-out construction;
+      prior amount sign entropy is symmetric binary entropy, not positive-sign frequency.
+      Interpretation is explicitly inverse own positive-activity frequency after the
+      common term.'
+  l43_peer_amount_inflow_disagreement:
+    direction: -1
+    raw_formula: For each i,t compute population std of the 13 leave-one-out peer
+      amount innovations e_j,t; score mean over previous 20 dates; group fixed-member
+      mean.
+    hypothesis: High disagreement among peer ETF capital flows indicates fragmented
+      rotation and weak common validation of a member's demand environment.
+    family: relative_activity_breadth
+    nearest_previous: amount_concentration_20; market_residual_abs_cluster_20
+    distinction: Dispersion across contemporaneous fixed-pool peer ETFs, not concentration
+      of one ETF's own amounts through time or residual return clustering.
+  l43_peer_flow_breadth_change:
+    direction: 1
+    raw_formula: Score mean of b^-i_t - b^-i_(t-1) over 20 complete dates, with b^-i
+      as the peer amount-inflow fraction; aggregate fixed-member mean.
+    hypothesis: Rising participation breadth signals diffusion of capital inflows
+      across competing ETFs.
+    family: relative_activity_breadth
+    nearest_previous: amount_innovation_abs_change_20; breadth
+    distinction: This is change in fixed-pool peer sign breadth, not own absolute
+      amount innovation change or positive-return breadth.
+  l43_peer_flow_dispersion_change:
+    direction: -1
+    raw_formula: For each member compute d^-i_t=std0(e_j,t:j!=i); score mean(d^-i_t-d^-i_(t-1))
+      over 20 pairs; group fixed-member mean.
+    hypothesis: Widening cross-ETF flow disagreement implies rotation fragmentation,
+      expected to weaken persistent group leadership.
+    family: relative_activity_breadth
+    nearest_previous: amount_innovation_abs_change_20; amount_concentration_20
+    distinction: Change in cross-sectional peer dispersion, not temporal absolute
+      change in one instrument's amount innovation or own amount concentration.

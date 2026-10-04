@@ -1,0 +1,9 @@
+domain: etf_rotation
+grammar_version: etf_family_category_leadership_v1
+factor_source: category_leadership
+asset_class_config: configs/etf_asset_classes_current20_v1.yaml
+atoms:
+  - {name: CATEGORY_MOM_5, family: category_leadership}
+  - {name: CATEGORY_MOM_20, family: category_leadership}
+  - {name: CATEGORY_MOM_60, family: category_leadership}
+grammar: {operators: [atomic], pair_policy: cross_family_only, max_atoms: 1}

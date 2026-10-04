@@ -1,0 +1,21 @@
+domain: etf_rotation
+grammar_version: etf_family_coskewness_risk_v1
+factor_source: coskewness_risk
+benchmark_symbols: [510300.SH, 510500.SH]
+# Literature provenance (directive: no citation, no atom):
+# COSKEW_20 / COSKEW_60: Harvey & Siddique (2000, JF) coskewness vs the
+#   benchmark, E[(r_i-mu_i)(r_m-mu_m)^2] / (sigma_i * var_m); daily rolling
+#   window, no additional smoothing.
+# COSKEW_CHG_20: 20d change of COSKEW_60 (coskewness-risk regime shift).
+# DOWNSIDE_COSKEW_60: Ang, Chen & Xing (2006, RFS) "Downside Risk"
+#   conditional coskewness, computed only over market-down days within the
+#   trailing 60-day window (requires >=15 down-days, else NaN).
+# COKURT_60: Dittmar (2002, JF) cokurtosis, E[(r_i-mu_i)(r_m-mu_m)^3] /
+#   (sigma_i * sigma_m^3).
+atoms:
+  - {name: COSKEW_20, family: coskewness_risk}
+  - {name: COSKEW_60, family: coskewness_risk}
+  - {name: COSKEW_CHG_20, family: coskewness_risk}
+  - {name: DOWNSIDE_COSKEW_60, family: coskewness_risk}
+  - {name: COKURT_60, family: coskewness_risk}
+grammar: {operators: [atomic], pair_policy: cross_family_only, max_atoms: 1}

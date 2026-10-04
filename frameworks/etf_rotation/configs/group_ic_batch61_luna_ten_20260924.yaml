@@ -1,0 +1,85 @@
+version: group_ic_batch61_luna_ten_20260924
+source_type: daily_rounds
+purpose: seen_history_discovery_only
+campaign_extension: true
+discovery_surface: IC_DISCOVERY_ONLY
+data_root: /home/sensen/dev/projects/gpu_ml/data/etf_rotation_v1
+as_of: '2026-09-17'
+start: '2023-07-27'
+evaluation_start: '2025-01-01'
+groups: frameworks/etf_rotation/configs/etf_candidate14_economic_groups_v1.yaml
+universe: config/etf_rotation_universe_v1.json
+calendar_symbol: 510300.SH
+entry_lag: 2
+horizon: 5
+top_k: 2
+warmup: 60
+hac_lag: 10
+max_leads: 3
+external_registered_definitions: 8
+windows:
+- 20
+screens:
+  min_days: 360
+  min_year_days: 40
+  min_positive_years: 2
+  min_ic: 0.01
+  min_ic_hac_t: 2.0
+  min_ic_block_t: 2.0
+  min_excess8_hac_t: 2.0
+  alpha: 0.05
+  max_abs_rank_corr: 0.7
+notes:
+  fixed_population: 14 ETFs / 8 economic groups
+  timing: close(D) signal; open(D+2) to open(D+7) H5 research label contract
+  evaluation_surface: previously-seen history, signal_date 2025-01-01 through 2026-09-17;
+    discovery, not OOS
+  direction_status: economic sign frozen before evaluation; no sign selection or automatic
+    flip
+  complete_input_windows_only: true
+  member_aggregation: each member atom computed independently, then existing fixed
+    group aggregation
+  source_vintage: canonical daily bars; no additional information sources
+  research_lineage: SEEN_2026_ADAPTIVE_NOT_CONFIRMATION; mechanism discovery informed
+    by existing historical research; sign frozen before this batch only
+  deduplication: Formula and mechanism review; correlations are report-only, not IC
+    gates
+prior_registered: 497
+budget_cap: 500
+new_definitions: 3
+mechanisms:
+  l61_upper_breakout_rejection_depth:
+    direction: -1
+    raw_formula: D_t=1[High_t>U_t and Close_t<=U_t]*(U_t-Close_t)/(U_t-L_t), else
+      0; U/L are max High/min Low over the 20 prior valid bars, using relative-ratio
+      strictness 1e-12 at boundaries; score is strict mean over the last 20 consecutive
+      valid sessions, with non-events contributing zero.
+    hypothesis: A close rejection after an upper 20-day range breach records failed
+      upside price discovery; deeper rejection predicts weaker relative returns.
+    family: prior_range_failed_break_geometry
+    nearest_previous: l46_intraday_upper_channel_penetration_20; wick_rejection_range_compression_20
+    distinction: Joint prior-channel breach plus close back inside, measuring rejection
+      depth; prior penetration is unconditional.
+  l61_lower_breakdown_reclaim_depth:
+    direction: 1
+    raw_formula: D_t=1[Low_t<L_t and Close_t>=L_t]*(Close_t-L_t)/(U_t-L_t), else 0;
+      U/L are max High/min Low over the 20 prior valid bars, using relative-ratio
+      strictness 1e-12 at boundaries; score is strict mean over the last 20 consecutive
+      valid sessions, with non-events contributing zero.
+    hypothesis: A low below the prior range floor followed by a close reclaim records
+      rejection of downside supply; greater reclaim depth predicts strength.
+    family: prior_range_failed_break_geometry
+    nearest_previous: l46_lower_channel_close_penetration_20; l46_prior_channel_close_position_20
+    distinction: Requires an intraday breakdown and same-day close reclaim; existing
+      lower penetration records a close below the floor.
+  l61_failed_break_directional_balance:
+    direction: 1
+    raw_formula: Over the last 20 valid dates, mean(1[Low_t<L_t and Close_t>=L_t]
+      - 1[High_t>U_t and Close_t<=U_t]); U/L use the prior 20 valid OHLC bars.
+    hypothesis: More rejected downside breaks than rejected upside breaks indicate
+      demand is winning failed auctions.
+    family: prior_range_failed_break_geometry
+    nearest_previous: l61_upper_breakout_rejection_depth; l61_lower_breakdown_reclaim_depth;
+      l48_inside_day_rate_20
+    distinction: Event-count asymmetry, rather than mean boundary penetration depth
+      or generic range-state frequency.

@@ -1,0 +1,13 @@
+domain: etf_rotation
+grammar_version: etf_family_swing_topology_v1
+factor_source: swing_topology
+atoms:
+- name: SWING_COUNT_20
+  family: swing_topology
+- name: SWING_COUNT_60
+  family: swing_topology
+grammar:
+  operators:
+  - atomic
+  pair_policy: cross_family_only
+  max_atoms: 1

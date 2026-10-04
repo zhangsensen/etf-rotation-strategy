@@ -1,0 +1,13 @@
+domain: etf_rotation
+grammar_version: etf_family_capital_gains_overhang_1d_v1
+factor_source: capital_gains_overhang_1d
+frequency: 1d
+asset_class_config: configs/etf_asset_classes_current20_v1.yaml
+atoms:
+  - {name: CGO_60, family: capital_gains_overhang_1d}
+  - {name: CGO_120, family: capital_gains_overhang_1d}
+  - {name: CGO_250, family: capital_gains_overhang_1d}
+  - {name: GAIN_OVERHANG_60, family: capital_gains_overhang_1d}
+  - {name: LOSS_OVERHANG_60, family: capital_gains_overhang_1d}
+  - {name: RP_CHANGE_20, family: capital_gains_overhang_1d}
+grammar: {operators: [atomic, rank_spread, rank_interaction], pair_policy: cross_family_only, max_atoms: 6}

@@ -1,0 +1,71 @@
+version: group_discovery_self_state_v1
+purpose: seen_history_discovery_only
+source_type: self_state
+availability_status: INHERITS_PARENT_PUBLICATION_AND_VINTAGE_LIMITATIONS
+mechanism_source: runtime_outputs/etf_rotation_research/profiles/identity_gap_profile_v1_20260922
+data_root: /home/sensen/dev/projects/gpu_ml/data/etf_rotation_v1
+as_of: '2026-09-17'
+start: '2023-07-27'
+groups: frameworks/etf_rotation/configs/etf_candidate14_economic_groups_v1.yaml
+universe: config/etf_rotation_universe_v1.json
+calendar_symbol: 510300.SH
+entry_lag: 2
+horizon: 5
+top_k: 2
+warmup: 60
+hac_lag: 10
+budget_cap: 96
+max_leads: 6
+# Exactly one transformation, not a normalization-window search.
+windows: [60]
+mechanisms:
+  own_entropy_5:
+    direction: 1
+    parent_run: group_minute_v1_batch_20260922
+    parent_candidate: minute_volume_entropy_5
+    hypothesis: participation concentration relative to the group's own norm signals repricing
+  own_entropy_20:
+    direction: 1
+    parent_run: group_minute_v1_batch_20260922
+    parent_candidate: minute_volume_entropy_20
+    hypothesis: persistent concentration relative to own norm signals repricing
+  own_volatility_5:
+    direction: 1
+    parent_run: group_daily_v1_batch_20260922
+    parent_candidate: volatility_5
+    hypothesis: risk compression relative to own norm rather than permanently low group risk
+  own_volatility_20:
+    direction: 1
+    parent_run: group_daily_v1_batch_20260922
+    parent_candidate: volatility_20
+    hypothesis: persistent risk compression relative to own norm
+  own_downside_5:
+    direction: 1
+    parent_run: group_daily_v1_batch_20260922
+    parent_candidate: downside_5
+    hypothesis: declining downside risk relative to own norm indicates selling exhaustion
+  own_downside_20:
+    direction: 1
+    parent_run: group_daily_v1_batch_20260922
+    parent_candidate: downside_20
+    hypothesis: persistent decline of downside risk relative to own norm
+  own_redemption_20:
+    direction: 1
+    parent_run: group_share_v1_loaderfix_20260922
+    parent_candidate: share_redemption_20
+    hypothesis: unusual redemption relative to own norm indicates supply exhaustion
+  own_redemption_40:
+    direction: 1
+    parent_run: group_share_v1_loaderfix_20260922
+    parent_candidate: share_redemption_40
+    hypothesis: persistent unusual redemption relative to own norm
+screens:
+  min_days: 360
+  min_year_days: 40
+  min_positive_years: 2
+  min_ic: 0.01
+  min_ic_hac_t: 2.0
+  min_ic_block_t: 2.0
+  min_excess8_hac_t: 2.0
+  alpha: 0.05
+  max_abs_rank_corr: 0.7

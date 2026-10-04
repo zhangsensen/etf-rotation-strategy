@@ -1,0 +1,51 @@
+version: external_non_etf_fund_validation_v1
+
+data:
+  cache_root: /home/sensen/dev/projects/gpu_ml/data/etf_all_daily_v1
+  start: '2020-01-02'
+  as_of: '2026-09-17'
+
+population:
+  identity_rule: exchange_fund_name_excludes_ETF_and_fund_type_in_equity_or_mixed
+  allowed_fund_types: [股票型, 混合型]
+  min_history_sessions: 120
+  liquidity_window: 20
+  # External-mechanism validation only.  TuShare amount is CNY thousands.
+  min_median_amount_thousand: 100.0
+  minimum_observed_eligible: 60
+  deployment_liquidity_permission: false
+
+execution:
+  signal_time: D_CLOSE
+  entry_lag_sessions: 2
+  horizon: 5
+  label: open(D+7)/open(D+2)-1
+
+confirmation:
+  start: '2021-08-09'
+  end: '2026-09-17'
+  population_was_excluded_from_etf_discovery_and_forward_referee: true
+  temporal_regimes_overlap_etf_discovery: true
+
+controls:
+  - {source: directional_trend, atom: RET_20}
+  - {source: downside_risk, atom: REALIZED_VOL_20}
+  - {source: trading_activity, atom: AMOUNT_Z_20}
+
+gates:
+  fixed_campaign_budget: 5
+  alpha: 0.05
+  min_names: 60
+  min_confirmation_days: 1000
+  min_signed_mean_ic: 0.01
+  min_hac_t: 2.0
+  top_fraction: 0.10
+  min_top_label_coverage: 0.95
+  min_top_excess_bp: 5.0
+  min_top_excess_hac_t: 1.5
+  max_abs_rank_corr: 0.75
+  min_residual_mean_ic: 0.005
+  min_residual_hac_t: 1.5
+
+family_catalog: configs/family_catalog_v3.yaml
+

@@ -1,0 +1,35 @@
+domain: etf_rotation
+grammar_version: etf_family_lunch_break_1m_v1
+factor_source: lunch_break_1m
+frequency: 1m
+# Literature provenance (directive: no citation, no atom):
+# LUNCH_GAP_20 / LUNCH_GAP_ABS_20 / LUNCH_GAP_CHG_20: Barclay-Hendershott
+#   (2003/2004) price discovery around trading halts, applied to the
+#   A-share 11:30-13:00 midday recess (distinct from the overnight
+#   close-to-open gap already studied in S21).
+# LUNCH_GAP_FILL_15M_20: whether the midday-recess gap retraces within
+#   the first 15 minutes of the PM session, 20d mean (event-conditional,
+#   days with a near-zero gap excluded).
+# AM_PM_RV_RATIO_20: Hong-Wang (2000) periodic-closure volatility
+#   asymmetry, morning-vs-afternoon-session realized variance ratio.
+# LUNCH_POST_RUN_20: 13:00-13:10 volume share of the day's total volume,
+#   20d mean, symmetric to the pre-existing pi_lunch_prerun_1m:
+#   LUNCH_PRE_RUN_20 (11:20-11:30 window) -- that atom is reused as-is
+#   for pairing, not rebuilt here.
+# LUNCH_PRERUN_POSTRUN_RATIO_20: pre-recess (11:20-11:30) vs post-recess
+#   (13:00-13:10) volume-share ratio, 20d mean -- anticipation vs
+#   continuation.
+# AM_PM_RET_CORR_20: 20d rolling correlation between the day's morning-
+#   session and afternoon-session returns (cross-day persistence,
+#   distinct from the pre-existing same-day
+#   intraday_return_path:MORNING_AFTERNOON_SPREAD level).
+atoms:
+  - {name: LUNCH_GAP_20, family: lunch_break_1m}
+  - {name: LUNCH_GAP_ABS_20, family: lunch_break_1m}
+  - {name: LUNCH_GAP_CHG_20, family: lunch_break_1m}
+  - {name: LUNCH_GAP_FILL_15M_20, family: lunch_break_1m}
+  - {name: AM_PM_RV_RATIO_20, family: lunch_break_1m}
+  - {name: LUNCH_POST_RUN_20, family: lunch_break_1m}
+  - {name: LUNCH_PRERUN_POSTRUN_RATIO_20, family: lunch_break_1m}
+  - {name: AM_PM_RET_CORR_20, family: lunch_break_1m}
+grammar: {operators: [atomic], pair_policy: cross_family_only, max_atoms: 1}

@@ -1,0 +1,14 @@
+description: ETF独立更新：20只，TuShare日线及CMES分钟线；不依赖QMT个股任务
+group: ETFData
+type: chain
+working_dir: /home/sensen/dev/projects/-0927
+skip_if_successful: false
+schedule:
+  - "30 18 * * 1-5"
+  - "30 22 * * 1-5"
+retry_policy:
+  limit: 0
+steps:
+  - name: etf-only-update
+    run: /home/sensen/.local/bin/uv run --project frameworks/etf_rotation --no-sync --with cmesdata==1.2.30 python scripts/update_etf_rotation.py
+    timeout_sec: 6500

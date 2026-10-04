@@ -1,0 +1,12 @@
+domain: etf_rotation
+grammar_version: etf_family_intraday_volume_profile_1m_v1
+factor_source: intraday_volume_profile_1m
+frequency: 1m
+atoms:
+  - {name: OPEN30_VOL_SHARE_20, family: intraday_volume_profile_1m}
+  - {name: CLOSE30_VOL_SHARE_20, family: intraday_volume_profile_1m}
+  - {name: VOL_AUTOCORR_20, family: intraday_volume_profile_1m}
+  - {name: VOL_SPIKE_FREQ_20, family: intraday_volume_profile_1m}
+  - {name: VOL_ENTROPY_20, family: intraday_volume_profile_1m}
+grammar: {operators: [atomic], pair_policy: cross_family_only, max_atoms: 1}
+note: 1m volume time distribution; dedup vs 60m intraday_turnover_shape handled by gate 4

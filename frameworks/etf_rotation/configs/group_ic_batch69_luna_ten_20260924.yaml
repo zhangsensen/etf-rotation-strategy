@@ -1,0 +1,89 @@
+version: group_ic_batch69_luna_ten_20260924
+source_type: daily_rounds
+purpose: seen_history_discovery_only
+campaign_extension: true
+discovery_surface: IC_DISCOVERY_ONLY
+data_root: /home/sensen/dev/projects/gpu_ml/data/etf_rotation_v1
+as_of: '2026-09-17'
+start: '2023-07-27'
+evaluation_start: '2025-01-01'
+groups: frameworks/etf_rotation/configs/etf_candidate14_economic_groups_v1.yaml
+universe: config/etf_rotation_universe_v1.json
+calendar_symbol: 510300.SH
+entry_lag: 2
+horizon: 5
+top_k: 2
+warmup: 60
+hac_lag: 10
+max_leads: 3
+external_registered_definitions: 8
+windows:
+- 20
+screens:
+  min_days: 360
+  min_year_days: 40
+  min_positive_years: 2
+  min_ic: 0.01
+  min_ic_hac_t: 2.0
+  min_ic_block_t: 2.0
+  min_excess8_hac_t: 2.0
+  alpha: 0.05
+  max_abs_rank_corr: 0.7
+notes:
+  fixed_population: 14 ETFs / 8 economic groups
+  timing: close(D) signal; open(D+2) to open(D+7) H5 research label contract
+  evaluation_surface: previously-seen history, signal_date 2025-01-01 through 2026-09-17;
+    discovery, not OOS
+  direction_status: economic sign frozen before evaluation; no sign selection or automatic
+    flip
+  complete_input_windows_only: true
+  member_aggregation: each member atom computed independently, then existing fixed
+    group aggregation
+  source_vintage: canonical daily bars; no additional information sources
+  research_lineage: SEEN_2026_ADAPTIVE_NOT_CONFIRMATION; mechanism discovery informed
+    by existing historical research; sign frozen before this batch only
+  deduplication: Formula and mechanism review; correlations are report-only, not IC
+    gates
+prior_registered: 517
+budget_cap: 520
+new_definitions: 3
+mechanisms:
+  l69_post_long_break_relative_return:
+    direction: 1
+    raw_formula: For each session t with calendar date gap date_t−date_{t−1}≥3 days,
+      e_i,t=r_i,t−mean_{j≠i}(r_j,t); factor=mean(e_i,t over qualifying dates among
+      the 20 consecutive trading sessions ending at D); NaN if none.
+    hypothesis: Price discovery following an extended nontrading interval may continue
+      into the close.
+    family: post_long_break_price_discovery
+    nearest_previous: month_end_calendar_relative_return_120; gap repair measures.
+      This is post-long-break close-to-close relative return, not a month-end calendar
+      window or all-day gap-repair statistic.
+    distinction: Break length is calendar-date gap ≥3, covering weekends and exchange
+      holidays; formula uses only information available at close D. Each factor uses
+      a fixed contiguous 20-row trailing window; missing required inputs invalidate
+      that window rather than compressing dates.
+  l69_post_long_break_gap_excess:
+    direction: 1
+    raw_formula: On the same qualifying t, g_i,t=open_i,t/close_i,t−1−1; factor=mean(g_i,t−mean_{j≠i}(g_j,t))
+      over qualifying dates among latest 20 sessions; NaN if none.
+    hypothesis: Peer-relative overnight repricing after a longer information gap marks
+      delayed market assimilation.
+    family: post_long_break_price_discovery
+    nearest_previous: overnight_intraday_beta_gap_60; gap repair measures.
+    distinction: Calendar-conditioned peer-relative open gap level; no response slope
+      or intraday gap-fill fraction. Each factor uses a fixed contiguous 20-row trailing
+      window; missing required inputs invalidate that window rather than compressing
+      dates.
+  l69_post_long_break_body_excess:
+    direction: 1
+    raw_formula: On the same qualifying t, b_i,t=close_i,t/open_i,t−1; factor=mean(b_i,t−mean_{j≠i}(b_j,t))
+      over qualifying dates among latest 20 sessions; NaN if none.
+    hypothesis: Intraday follow-through after a long break distinguishes durable repricing
+      from an opening-only response.
+    family: post_long_break_price_discovery
+    nearest_previous: gap repair / l49 peer-gap-to-member-body beta.
+    distinction: Calendar-conditioned same-session peer-relative body, not a rolling
+      peer-gap response coefficient. Each factor uses a fixed contiguous 20-row trailing
+      window; missing required inputs invalidate that window rather than compressing
+      dates.

@@ -1,0 +1,13 @@
+domain: etf_rotation
+grammar_version: etf_family_price_position_controls_v1
+factor_source: price_position_controls
+frequency: 1d
+asset_class_config: configs/etf_asset_classes_current20_v1.yaml
+atoms:
+  - {name: RET_20, family: price_position_controls}
+  - {name: RET_60, family: price_position_controls}
+  - {name: PRICE_POSITION_250, family: price_position_controls}
+  - {name: NEG_RET_20, family: price_position_controls}
+  - {name: NEG_RET_250, family: price_position_controls}
+  - {name: NEG_PRICE_POSITION_250, family: price_position_controls}
+grammar: {operators: [atomic, rank_spread, rank_interaction], pair_policy: cross_family_only, max_atoms: 6}

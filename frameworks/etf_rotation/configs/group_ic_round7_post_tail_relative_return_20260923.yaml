@@ -1,0 +1,112 @@
+version: group_ic_round7_post_tail_relative_return_20260923
+source_type: claude_rounds
+purpose: seen_history_discovery_only
+campaign_extension: true
+discovery_surface: IC_DISCOVERY_ONLY
+data_root: /home/sensen/dev/projects/gpu_ml/data/etf_rotation_v1
+as_of: '2026-09-17'
+start: '2023-07-27'
+evaluation_start: '2025-01-01'
+groups: frameworks/etf_rotation/configs/etf_candidate14_economic_groups_v1.yaml
+universe: config/etf_rotation_universe_v1.json
+calendar_symbol: 510300.SH
+entry_lag: 2
+horizon: 5
+top_k: 2
+warmup: 60
+hac_lag: 10
+max_leads: 4
+external_registered_definitions: 8
+screens:
+  min_days: 360
+  min_year_days: 40
+  min_positive_years: 2
+  min_ic: 0.01
+  min_ic_hac_t: 2.0
+  min_ic_block_t: 2.0
+  min_excess8_hac_t: 2.0
+  alpha: 0.05
+  max_abs_rank_corr: 0.7
+prior_registered: 487
+budget_cap: 489
+new_definitions: 2
+mechanisms:
+  post_market_tail_relative_return:
+    direction: 1
+    window: 60
+    hypothesis: "MY_ASSUMPTION: mean(r_i - r_m) on the day immediately AFTER a market-wide tail event (the market itself was in its own trailing-window top-20%-by-|return| the PRIOR day), within the trailing 60-day window. Mechanism: shock absorption / recovery the day after a common market shock is read as resilience, the same 'confirmation/resilience predicts continuation' narrative already used for market_tail_relative_return and volume_surge_relative_return, but shifted to the day AFTER the event (neither of those prior, dedup-dropped candidates looked at next-day dynamics). direction +1."
+    raw_formula: "market_tail_day(t) = |r_m(t)| >= rolling_quantile(|r_m|, 0.80, w=60) (causal); post_tail_day(t) = market_tail_day(t-1) (fully causal, no leakage: yesterday's classification only used data through yesterday); mean(r_i-r_m | post_tail_day, w=60, min_periods=3)."
+  post_own_tail_relative_return:
+    direction: 1
+    window: 60
+    hypothesis: "MY_ASSUMPTION: same 'day after an extreme, resilience predicts continuation' mechanism as post_market_tail_relative_return, but conditioned on the MEMBER'S OWN extreme residual day instead of the market's -- a different conditioning variable, the same distinction the campaign has already treated as legitimately separate candidates (beta_asymmetry vs high_low_vol_beta_gap vs quantile_beta_gap vs dispersion_conditional_beta_gap, all conditional-beta-gap on different regime variables). direction +1."
+    raw_formula: "own_tail_day(t) = |residual(t)| >= rolling_quantile(|residual|, 0.80, w=60) (causal, residual=r_i-r_m); post_own_tail_day(t) = own_tail_day(t-1); mean(residual | post_own_tail_day, w=60, min_periods=3)."
+notes:
+  fixed_population: 14 ETFs / 8 economic groups
+  timing: close(D) signal; open(D+2) to open(D+7) H5 research label contract
+  evaluation_surface: previously-seen history, signal_date 2025-01-01 through 2026-09-17; discovery, not OOS
+  direction_status: economic sign frozen before evaluation; no sign selection or automatic flip
+  complete_input_windows_only: true
+  member_aggregation: each member atom computed independently, then existing fixed group aggregation
+  source_vintage: canonical daily bars; no additional information sources
+  engine: frameworks/etf_rotation/src/etf_strategy/core/etf_group_claude_rounds.py, source_type=claude_rounds.
+  campaign: >-
+    Round 7 of the USER 2026-09-23 50-round sub-agent mining campaign. Rounds 1-6 registered 22 candidates (1
+    HAS_IC: peer_corr_network_change_60, round 3). Round 7 attempted Theme H a second time (master's own
+    roll_spread formula, then master's own beta_to_leader_group formula as a replacement) plus 3 self-devised
+    MY_ASSUMPTION candidates (mechanism written before definition, each flagged as such, master's cap: <=3 per
+    round). ALL THREE non-MY_ASSUMPTION-survivor candidates this round were dropped: roll_spread_60 (structural
+    precheck), gap_fill_completion_relative_market_60 (dedup), beta_to_leader_group_20 (dedup) -- see below.
+    Master approved running this round with 2 registered candidates (master's own rule: minimum survivors per
+    round is 3, but explicitly waived it for this round given both of the H-theme replacement attempts also
+    failed for reasons unrelated to formula correctness).
+  originally_proposed: >-
+    5 candidates across this round's attempts: roll_spread_60 (Theme H, master's formula, Roll 1984),
+    gap_fill_completion_relative_market_60/post_market_tail_relative_return_60/
+    post_own_tail_relative_return_60 (3 self-devised MY_ASSUMPTION candidates), beta_to_leader_group_20 (Theme
+    H replacement, master's formula, rotation-leader co-movement). 3 dropped, 2 registered below.
+  dropped_candidates_and_observation: >-
+    roll_spread_60 (Roll 1984 bid-ask spread estimator, direction -1): no-label dedup clean (max 0.4840), but
+    STRUCTURALLY INVALID -- 2 of 6 single-member groups (hk_technology mode_value_rate=0.5810, metals_equity
+    mode_value_rate=0.5024) have >50% identical values, because Roll's estimator clips to exactly 0 whenever
+    the rolling covariance is non-negative (no detectable bid-ask bounce), which happens on more than half the
+    days for these two relatively liquid, lower-microstructure-noise names -- an inherent property of the
+    estimator, not a code defect. gap_fill_completion_relative_market_60 (MY_ASSUMPTION, own gap-fill-
+    completion rate minus the market's own rate, direction -1): dedup-dropped, 0.7742 vs the already-tested
+    daily_rounds:gap_repair_completion_rate_20 (an absolute own-name level with no market benchmark) and 0.7556
+    vs its d2025 variant, plus 0.7004 vs ohlc_range_overlap_20 -- unlike round 4's overnight_intraday_sign_
+    consistency_relative_market, the "subtract the market's own rate" framing did not create enough
+    differentiation from the pre-existing absolute-level family this time. beta_to_leader_group_20 (master's
+    own formula, rotation-leader co-movement, direction +1): dedup-dropped, 0.7335 vs market_residual_market_
+    beta_20 and 0.7266 vs its d2025 variant -- "beta to whichever economic group is currently leading" appears
+    to correlate heavily with plain unconditional market beta, since the leader group's returns still carry a
+    large common-market component; structurally clean (420/420 group coverage) but not information-additive
+    over the already-tested market-beta family. OBSERVATION: across rounds 5-7, the dedup-exclusion rate on
+    newly-proposed candidates has been elevated relative to rounds 1-4 (round 5: 4 of 7 dropped across 3
+    passes; round 6: 2 of 6 dropped; round 7: 3 of 5 dropped) as the saved-scores library has grown past ~450
+    entries -- later rounds are proposing into an increasingly dense existing coverage of "co-movement to some
+    reference series" (market, peer group, leader group, anchor) and "liquidity/range/impact" constructions;
+    future rounds may need to keep favoring genuinely different statistical objects (temporal precedence,
+    joint-tail/conditional-event timing, path-dependent statistics, higher moments) over new reference-series
+    variants of an already-well-covered comparison type.
+  family_precheck: >-
+    checked against runtime_outputs/etf_rotation_research/ic_inventory_20260923_claude_5rounds/families.csv
+    (freshest snapshot, post round 1-5; rounds 6's 4 registered candidates not yet reflected as rows, but their
+    real saved scores ARE in the dedup library below). No exact-duplicate under source_type=claude_rounds for
+    either of the 2 registered candidates.
+  no_label_dedup_precheck: >-
+    computed group scores only (no forward return/H5 label), 2025-01-01..2026-09-23, against the full saved
+    scores_*.csv library (deduped to latest per candidate id, now including rounds 1-6's 22 registered
+    candidates) plus the other candidates from each of this round's attempts. Registered candidates' max
+    mean(abs(daily cross-sectional rank corr)): post_market_tail_relative_return_60 0.4610,
+    post_own_tail_relative_return_60 0.5620 (both <0.7, both clean). See
+    runtime_outputs/etf_rotation_research/diagnostics/round7_20260923/dedup_precheck.csv (and this directory's
+    earlier passes for the 3 dropped candidates' full numbers).
+  eval_window_structural_precheck: >-
+    2025-01-01..2026-09-23 (420 days), read-only feature check, no labels read. Both registered candidates:
+    every single-member group nan_rate 0.0 (well under 0.20), mode_value_rate<=0.0405 (no near-constant
+    group). Group coverage: post_market_tail_relative_return_60 420/420; post_own_tail_relative_return_60
+    406/420. See
+    runtime_outputs/etf_rotation_research/diagnostics/round7_20260923/structural_diagnostics.csv.
+  no_label_read: true
+  no_formal_evaluation_in_implementation_task: true

@@ -1,0 +1,431 @@
+schema_version: all_etf_daily_luna_candidates_v2
+selection_author: openai/gpt-5.6-luna
+selection_surface: mixed_existing20_mechanism_only_plus_44_outcome_selected_on_preforward_surfaces
+population_contract: all_etf_daily_discovery_v1
+signal_time: D_CLOSE
+entry_time: open_D_plus_2
+exit_time: open_D_plus_7
+return_label: open(D+7)/open(D+2)-1
+formula_inputs: causal_daily_atom_ranks_only
+
+forward_gates:
+  fixed_campaign_budget: 64
+  alpha: 0.05
+  min_names: 100
+  min_forward_days: 250
+  min_signed_mean_ic: 0.01
+  min_forward_hac_t: 2.0
+  top_fraction: 0.10
+  min_top_label_coverage: 0.95
+  min_top_excess_bp: 5.0
+  min_top_excess_hac_t: 1.5
+  max_abs_rank_corr: 0.75
+  min_residual_mean_ic: 0.005
+  min_residual_hac_t: 1.5
+
+preforward_selection:
+  outcome_selected_on_preforward_surfaces: true
+  evidence_artifact: runtime_outputs/etf_all_daily_discovery_20260921_v1/atom_profiles.csv
+  evidence_surfaces: [direction, controlled_discovery, controlled_validation]
+  selection_basis: direction_surface_sign_plus_preforward_evidence_and_mechanism_diversity
+  mechanism_prior_claim: false
+  forward_results_loaded: false
+  new_candidate_count: 44
+
+candidates:
+  - id: LDE001
+    operator: atomic
+    left: {source: directional_trend, name: TREND_RET_VOLADJ_20}
+    expected_sign: 1
+    mechanism: risk_adjusted_directional_drift
+  - id: LDE002
+    operator: atomic
+    left: {source: price_location, name: PRICE_POSITION_60}
+    expected_sign: 1
+    mechanism: medium_horizon_breakout_state
+  - id: LDE003
+    operator: atomic
+    left: {source: downside_risk, name: DOWNSIDE_DEV_20}
+    expected_sign: -1
+    mechanism: low_downside_risk
+  - id: LDE004
+    operator: atomic
+    left: {source: path_efficiency, name: PATH_EFFICIENCY_20}
+    expected_sign: 1
+    mechanism: continuous_price_discovery
+  - id: LDE005
+    operator: atomic
+    left: {source: gap_response, name: GAP_SESSION_CORR_20}
+    expected_sign: 1
+    mechanism: overnight_session_continuation
+  - id: LDE006
+    operator: atomic
+    left: {source: trading_activity, name: AMOUNT_RATIO_5_20}
+    expected_sign: 1
+    mechanism: attention_and_capacity_expansion
+  - id: LDE007
+    operator: atomic
+    left: {source: price_volume_coupling, name: PRICE_AMOUNT_CORR_20}
+    expected_sign: 1
+    mechanism: price_activity_confirmation
+  - id: LDE008
+    operator: atomic
+    left: {source: serial_dependence, name: VAR_RATIO_5_60}
+    expected_sign: 1
+    mechanism: directional_return_memory
+  - id: LDE009
+    operator: atomic
+    left: {source: range_memory, name: RANGE_ACF1_20}
+    expected_sign: -1
+    mechanism: low_volatility_clustering
+  - id: LDE010
+    operator: atomic
+    left: {source: gap_volatility, name: GAP_VOL_RATIO_20}
+    expected_sign: -1
+    mechanism: low_overnight_jump_uncertainty
+  - id: LDE011
+    operator: atomic
+    left: {source: transaction_friction, name: RETURN_REVERSAL_COV_20}
+    expected_sign: -1
+    mechanism: low_reversal_friction
+  - id: LDE012
+    operator: atomic
+    left: {source: volume_at_price_memory, name: OVERHEAD_TURNOVER_60}
+    expected_sign: -1
+    mechanism: low_overhead_supply
+  - id: LDE013
+    operator: rank_spread
+    left: {source: directional_trend, name: TREND_RET_VOLADJ_20}
+    right: {source: downside_risk, name: DOWNSIDE_DEV_20}
+    expected_sign: 1
+    mechanism: drift_minus_downside_risk
+  - id: LDE014
+    operator: rank_spread
+    left: {source: path_efficiency, name: PATH_EFFICIENCY_20}
+    right: {source: price_volume_coupling, name: AMIHUD_20}
+    expected_sign: 1
+    mechanism: price_discovery_minus_impact
+  - id: LDE015
+    operator: rank_spread
+    left: {source: daily_candle, name: GAP_MEAN_20}
+    right: {source: gap_volatility, name: GAP_VOL_RATIO_20}
+    expected_sign: 1
+    mechanism: overnight_drift_minus_jump_instability
+  - id: LDE016
+    operator: rank_spread
+    left: {source: price_volume_coupling, name: PRICE_AMOUNT_CORR_20}
+    right: {source: transaction_friction, name: RETURN_REVERSAL_COV_20}
+    expected_sign: 1
+    mechanism: activity_confirmation_minus_reversal
+  - id: LDE017
+    operator: rank_spread
+    left: {source: serial_dependence, name: RET_ACF1_20}
+    right: {source: range_memory, name: RANGE_ACF1_20}
+    expected_sign: 1
+    mechanism: return_continuation_minus_range_clustering
+  - id: LDE018
+    operator: rank_spread
+    left: {source: trading_activity, name: AMOUNT_RATIO_5_20}
+    right: {source: liquidity_variability, name: LOG_AMOUNT_VOL_20}
+    expected_sign: 1
+    mechanism: activity_expansion_minus_activity_instability
+  - id: LDE019
+    operator: rank_spread
+    left: {source: price_location, name: PRICE_POSITION_60}
+    right: {source: drawdown_duration, name: UNDERWATER_FRACTION_60}
+    expected_sign: 1
+    mechanism: range_strength_minus_underwater_duration
+  - id: LDE020
+    operator: rank_spread
+    left: {source: return_tail_shape, name: TAIL_Q10_20}
+    right: {source: volatility_feedback, name: VOL_RESPONSE_ASYMMETRY_20}
+    expected_sign: 1
+    mechanism: resilient_left_tail_minus_downside_volatility_response
+
+  - id: LDE021
+    operator: atomic
+    left: {source: downside_risk, name: REALIZED_VOL_60}
+    expected_sign: -1
+    mechanism: medium_horizon_total_risk
+    selection_metadata: {outcome_selected_on_preforward_surfaces: true}
+  - id: LDE022
+    operator: atomic
+    left: {source: market_sensitivity, name: UPSIDE_BETA_60}
+    expected_sign: -1
+    mechanism: upside_market_exposure
+    selection_metadata: {outcome_selected_on_preforward_surfaces: true}
+  - id: LDE023
+    operator: atomic
+    left: {source: price_volume_coupling, name: AMIHUD_60}
+    expected_sign: -1
+    mechanism: medium_horizon_price_impact
+    selection_metadata: {outcome_selected_on_preforward_surfaces: true}
+  - id: LDE024
+    operator: atomic
+    left: {source: auction_range_overlap, name: RANGE_OVERLAP_60}
+    expected_sign: -1
+    mechanism: adjacent_range_overlap
+    selection_metadata: {outcome_selected_on_preforward_surfaces: true}
+  - id: LDE025
+    operator: atomic
+    left: {source: gap_repair, name: GAP_FILL_FRACTION_20}
+    expected_sign: -1
+    mechanism: short_horizon_gap_repair
+    selection_metadata: {outcome_selected_on_preforward_surfaces: true}
+  - id: LDE026
+    operator: atomic
+    left: {source: return_tail_shape, name: RETURN_SKEW_60}
+    expected_sign: -1
+    mechanism: medium_horizon_return_asymmetry
+    selection_metadata: {outcome_selected_on_preforward_surfaces: true}
+  - id: LDE027
+    operator: atomic
+    left: {source: return_tail_shape, name: TAIL_Q10_60}
+    expected_sign: 1
+    mechanism: medium_horizon_lower_tail_resilience
+    selection_metadata: {outcome_selected_on_preforward_surfaces: true}
+  - id: LDE028
+    operator: atomic
+    left: {source: serial_dependence, name: RET_ACF1_5}
+    expected_sign: 1
+    mechanism: short_horizon_return_continuation
+    selection_metadata: {outcome_selected_on_preforward_surfaces: true}
+  - id: LDE029
+    operator: atomic
+    left: {source: serial_dependence, name: SIGN_ACF1_5}
+    expected_sign: 1
+    mechanism: short_horizon_sign_persistence
+    selection_metadata: {outcome_selected_on_preforward_surfaces: true}
+  - id: LDE030
+    operator: atomic
+    left: {source: trading_activity, name: VOLUME_RATIO_5_20}
+    expected_sign: 1
+    mechanism: short_horizon_volume_expansion
+    selection_metadata: {outcome_selected_on_preforward_surfaces: true}
+  - id: LDE031
+    operator: atomic
+    left: {source: conditional_activity, name: DOWN_UP_ACTIVITY_60}
+    expected_sign: 1
+    mechanism: medium_horizon_down_up_activity_ratio
+    selection_metadata: {outcome_selected_on_preforward_surfaces: true}
+  - id: LDE032
+    operator: atomic
+    left: {source: volatility_feedback, name: LEVERAGE_CORR_60}
+    expected_sign: 1
+    mechanism: lagged_return_range_feedback
+    selection_metadata: {outcome_selected_on_preforward_surfaces: true}
+  - id: LDE033
+    operator: atomic
+    left: {source: downside_risk, name: ULCER_20}
+    expected_sign: 1
+    mechanism: short_horizon_drawdown_severity
+    selection_metadata: {outcome_selected_on_preforward_surfaces: true}
+  - id: LDE034
+    operator: atomic
+    left: {source: downside_risk, name: CURRENT_DD_20}
+    expected_sign: 1
+    mechanism: current_short_horizon_drawdown
+    selection_metadata: {outcome_selected_on_preforward_surfaces: true}
+  - id: LDE035
+    operator: atomic
+    left: {source: trading_activity, name: VOLUME_Z_20}
+    expected_sign: -1
+    mechanism: abnormal_volume_level
+    selection_metadata: {outcome_selected_on_preforward_surfaces: true}
+  - id: LDE036
+    operator: atomic
+    left: {source: return_concentration, name: RETURN_CONCENTRATION_60}
+    expected_sign: 1
+    mechanism: medium_horizon_return_concentration
+    selection_metadata: {outcome_selected_on_preforward_surfaces: true}
+  - id: LDE037
+    operator: atomic
+    left: {source: price_volume_coupling, name: MONEY_PRESSURE_60}
+    expected_sign: 1
+    mechanism: medium_horizon_signed_turnover_pressure
+    selection_metadata: {outcome_selected_on_preforward_surfaces: true}
+  - id: LDE038
+    operator: atomic
+    left: {source: daily_candle, name: SESSION_MEAN_60}
+    expected_sign: -1
+    mechanism: medium_horizon_session_drift
+    selection_metadata: {outcome_selected_on_preforward_surfaces: true}
+  - id: LDE039
+    operator: atomic
+    left: {source: return_tail_shape, name: WORST_DAY_60}
+    expected_sign: -1
+    mechanism: medium_horizon_worst_session
+    selection_metadata: {outcome_selected_on_preforward_surfaces: true}
+  - id: LDE040
+    operator: atomic
+    left: {source: market_sensitivity, name: BENCHMARK_RESIDUAL_VOL_20}
+    expected_sign: -1
+    mechanism: short_horizon_benchmark_residual_risk
+    selection_metadata: {outcome_selected_on_preforward_surfaces: true}
+  - id: LDE041
+    operator: atomic
+    left: {source: price_location, name: DIST_HIGH_20_VOLADJ}
+    expected_sign: 1
+    mechanism: short_horizon_distance_to_high
+    selection_metadata: {outcome_selected_on_preforward_surfaces: true}
+  - id: LDE042
+    operator: atomic
+    left: {source: serial_dependence, name: VAR_RATIO_20_120}
+    expected_sign: 1
+    mechanism: long_aggregation_return_memory
+    selection_metadata: {outcome_selected_on_preforward_surfaces: true}
+
+  - id: LDE043
+    operator: rank_spread
+    left: {source: volatility_feedback, name: LEVERAGE_CORR_20}
+    right: {source: serial_dependence, name: RET_ACF2_60}
+    expected_sign: 1
+    mechanism: leverage_feedback_minus_second_lag_reversal
+    selection_metadata: {outcome_selected_on_preforward_surfaces: true}
+  - id: LDE044
+    operator: rank_spread
+    left: {source: daily_candle, name: OVERNIGHT_GAP}
+    right: {source: downside_risk, name: DOWNSIDE_DEV_60}
+    expected_sign: 1
+    mechanism: overnight_move_minus_medium_downside_risk
+    selection_metadata: {outcome_selected_on_preforward_surfaces: true}
+  - id: LDE045
+    operator: rank_spread
+    left: {source: serial_dependence, name: SIGN_ACF1_60}
+    right: {source: gap_repair, name: GAP_FILL_FRACTION_60}
+    expected_sign: 1
+    mechanism: sign_memory_minus_gap_repair
+    selection_metadata: {outcome_selected_on_preforward_surfaces: true}
+  - id: LDE046
+    operator: rank_spread
+    left: {source: volatility_feedback, name: VOL_RESPONSE_ASYMMETRY_60}
+    right: {source: daily_candle, name: CLOSE_LOCATION_DAILY}
+    expected_sign: 1
+    mechanism: volatility_response_minus_daily_close_location
+    selection_metadata: {outcome_selected_on_preforward_surfaces: true}
+  - id: LDE047
+    operator: rank_spread
+    left: {source: path_efficiency, name: PATH_EFFICIENCY_60}
+    right: {source: daily_candle, name: BODY_TO_RANGE}
+    expected_sign: 1
+    mechanism: long_path_efficiency_minus_candle_body
+    selection_metadata: {outcome_selected_on_preforward_surfaces: true}
+  - id: LDE048
+    operator: rank_spread
+    left: {source: volume_at_price_memory, name: TRADED_MEDIAN_DISTANCE_20}
+    right: {source: price_volume_coupling, name: PRICE_AMOUNT_CORR_60}
+    expected_sign: 1
+    mechanism: traded_price_distance_minus_activity_confirmation
+    selection_metadata: {outcome_selected_on_preforward_surfaces: true}
+  - id: LDE049
+    operator: rank_spread
+    left: {source: price_location, name: PRICE_POSITION_20}
+    right: {source: downside_risk, name: VOL_ACCEL_5_20}
+    expected_sign: 1
+    mechanism: short_range_position_minus_volatility_acceleration
+    selection_metadata: {outcome_selected_on_preforward_surfaces: true}
+  - id: LDE050
+    operator: rank_spread
+    left: {source: directional_trend, name: RET_5}
+    right: {source: daily_candle, name: SESSION_RETURN}
+    expected_sign: 1
+    mechanism: close_to_close_move_minus_session_move
+    selection_metadata: {outcome_selected_on_preforward_surfaces: true}
+  - id: LDE051
+    operator: rank_spread
+    left: {source: price_location, name: PRICE_POSITION_120}
+    right: {source: return_tail_shape, name: RETURN_SKEW_20}
+    expected_sign: 1
+    mechanism: long_range_position_minus_short_tail_shape
+    selection_metadata: {outcome_selected_on_preforward_surfaces: true}
+  - id: LDE052
+    operator: rank_spread
+    left: {source: serial_dependence, name: RET_ACF1_60}
+    right: {source: directional_trend, name: RET_60}
+    expected_sign: 1
+    mechanism: long_return_memory_minus_long_return_level
+    selection_metadata: {outcome_selected_on_preforward_surfaces: true}
+  - id: LDE053
+    operator: rank_spread
+    left: {source: directional_trend, name: RET_120}
+    right: {source: price_volume_coupling, name: MONEY_PRESSURE_5}
+    expected_sign: 1
+    mechanism: long_return_level_minus_short_signed_pressure
+    selection_metadata: {outcome_selected_on_preforward_surfaces: true}
+  - id: LDE054
+    operator: rank_spread
+    left: {source: swing_topology, name: SWING_COUNT_20}
+    right: {source: auction_range_overlap, name: RANGE_OVERLAP_20}
+    expected_sign: 1
+    mechanism: short_swing_count_minus_range_overlap
+    selection_metadata: {outcome_selected_on_preforward_surfaces: true}
+  - id: LDE055
+    operator: rank_spread
+    left: {source: downside_risk, name: MAX_DD_20}
+    right: {source: volume_at_price_memory, name: OVERHEAD_TURNOVER_20}
+    expected_sign: 1
+    mechanism: short_max_drawdown_minus_overhead_turnover
+    selection_metadata: {outcome_selected_on_preforward_surfaces: true}
+  - id: LDE056
+    operator: rank_spread
+    left: {source: uncertainty_activity, name: RANGE_ACTIVITY_ELASTICITY_20}
+    right: {source: directional_trend, name: SKIP_RECENT_MOM_60_5}
+    expected_sign: 1
+    mechanism: uncertainty_activity_response_minus_skipped_momentum
+    selection_metadata: {outcome_selected_on_preforward_surfaces: true}
+  - id: LDE057
+    operator: rank_spread
+    left: {source: price_location, name: BREAKOUT_ATR_20}
+    right: {source: drawdown_duration, name: UNDERWATER_FRACTION_20}
+    expected_sign: 1
+    mechanism: atr_breakout_minus_short_underwater_fraction
+    selection_metadata: {outcome_selected_on_preforward_surfaces: true}
+  - id: LDE058
+    operator: rank_spread
+    left: {source: return_concentration, name: RETURN_CONCENTRATION_20}
+    right: {source: directional_trend, name: SKIP_RECENT_MOM_20_5}
+    expected_sign: 1
+    mechanism: short_return_concentration_minus_skipped_momentum
+    selection_metadata: {outcome_selected_on_preforward_surfaces: true}
+  - id: LDE059
+    operator: rank_spread
+    left: {source: price_volume_coupling, name: MONEY_PRESSURE_20}
+    right: {source: downside_risk, name: ULCER_60}
+    expected_sign: 1
+    mechanism: signed_pressure_minus_long_ulcer_risk
+    selection_metadata: {outcome_selected_on_preforward_surfaces: true}
+  - id: LDE060
+    operator: rank_spread
+    left: {source: market_sensitivity, name: UPSIDE_BETA_20}
+    right: {source: serial_dependence, name: RET_ACF2_20}
+    expected_sign: 1
+    mechanism: upside_beta_minus_second_lag_memory
+    selection_metadata: {outcome_selected_on_preforward_surfaces: true}
+  - id: LDE061
+    operator: rank_spread
+    left: {source: daily_candle, name: SESSION_MEAN_20}
+    right: {source: trading_activity, name: VOLUME_RATIO_20_60}
+    expected_sign: 1
+    mechanism: short_session_drift_minus_medium_volume_ratio
+    selection_metadata: {outcome_selected_on_preforward_surfaces: true}
+  - id: LDE062
+    operator: rank_spread
+    left: {source: market_sensitivity, name: MARKET_CORR_60}
+    right: {source: directional_trend, name: TREND_RET_VOLADJ_60}
+    expected_sign: 1
+    mechanism: market_correlation_minus_long_risk_adjusted_trend
+    selection_metadata: {outcome_selected_on_preforward_surfaces: true}
+  - id: LDE063
+    operator: rank_spread
+    left: {source: market_sensitivity, name: MARKET_BETA_60}
+    right: {source: trading_activity, name: AMOUNT_RATIO_20_60}
+    expected_sign: 1
+    mechanism: market_beta_minus_medium_activity_expansion
+    selection_metadata: {outcome_selected_on_preforward_surfaces: true}
+  - id: LDE064
+    operator: rank_spread
+    left: {source: market_sensitivity, name: DOWNSIDE_BETA_60}
+    right: {source: price_location, name: DIST_HIGH_60_VOLADJ}
+    expected_sign: 1
+    mechanism: downside_beta_minus_long_distance_to_high
+    selection_metadata: {outcome_selected_on_preforward_surfaces: true}

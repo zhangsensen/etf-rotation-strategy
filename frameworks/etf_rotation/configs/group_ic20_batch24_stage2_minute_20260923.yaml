@@ -1,0 +1,61 @@
+version: group_ic20_batch24_stage2_minute_20260923
+source_type: minute
+purpose: seen_history_discovery_only
+campaign_extension: true
+discovery_surface: 2025_POST_IC_DIRECTION
+data_root: /home/sensen/dev/projects/gpu_ml/data/etf_rotation_v1
+as_of: '2026-09-17'
+start: '2023-07-27'
+evaluation_start: '2025-01-01'
+groups: frameworks/etf_rotation/configs/etf_candidate14_economic_groups_v1.yaml
+universe: config/etf_rotation_universe_v1.json
+calendar_symbol: 510300.SH
+entry_lag: 2
+horizon: 5
+top_k: 2
+warmup: 60
+hac_lag: 10
+max_leads: 3
+prior_registered: 381
+budget_cap: 384
+new_definitions: 3
+external_registered_definitions: 8
+windows: [20]
+mechanisms:
+  d2025_minute_volume_return_concentration_lead:
+    direction: -1
+    raw_formula: minute_volume_return_concentration_lead_20
+  d2025_minute_volume_shape_persistence:
+    direction: -1
+    raw_formula: minute_volume_shape_persistence_20
+  d2025_minute_volume_midday_share:
+    direction: -1
+    raw_formula: minute_volume_midday_share_20
+screens:
+  min_days: 360
+  min_year_days: 40
+  min_positive_years: 2
+  min_ic: 0.01
+  min_ic_hac_t: 2.0
+  min_ic_block_t: 2.0
+  min_excess8_hac_t: 2.0
+  alpha: 0.05
+  max_abs_rank_corr: 0.7
+notes:
+  fixed_population: 14 ETFs / 8 economic groups
+  timing: close(D) signal; open(D+2) to open(D+7) H5 label contract
+  alias_contract: d2025 alias equals raw Stage1 atom multiplied by frozen direction
+  direction_source: >-
+    2026-09-23, master approved. All three Stage1 2025 IC signs were negative under the raw +1 freeze
+    (return_concentration_lead -0.0247, shape_persistence -0.0552, midday_share -0.0532), so all three d2025
+    directions here are -1, mechanically taken from the 2025 sign per IC_MINING_RULES.md's 2025-direction
+    convention, not from an independently argued economic direction. 2025 evidence for the sign itself was weak
+    (|HAC t| <= 1.25, n=236 < the 360-day coverage floor, COVERAGE_INSUFFICIENT on every other screen too); this
+    is a mechanical direction pick, not evidence that the sign is real.
+  judging_rule: >-
+    per IC_MINING_RULES.md section 3, d2025-direction candidates are judged only on the 2026-only single segment
+    (evaluation window here is 2025-01-01..2026-09-17 for computation, but the confirmation statistic reads only
+    the 2026 portion): n >= 120, IC mean > 0, HAC t >= 2, block t >= 2. The full 2025+2026 combined statistic is
+    reported for context but is not the pass/fail criterion.
+  parent_stage1_run: group_ic20_batch24_minute_20260923
+  no_real_market_run_in_implementation_task: true

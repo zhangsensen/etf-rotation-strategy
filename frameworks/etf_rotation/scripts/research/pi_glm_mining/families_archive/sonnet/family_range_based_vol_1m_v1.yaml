@@ -1,0 +1,29 @@
+domain: etf_rotation
+grammar_version: etf_family_range_based_vol_1m_v1
+factor_source: range_based_vol_1m
+frequency: 1m
+# Literature provenance (directive: no citation, no atom):
+# PARKINSON_RV_RATIO_20: Parkinson (1980) high-low range estimator summed
+#   over 1m bars within each day, ratio to close-to-close realized
+#   variance (RV), 20d mean.
+# GK_RV_RATIO_20: Garman-Klass (1980) range+open-close estimator, same
+#   ratio-to-RV framing, 20d mean.
+# RS_RV_RATIO_20: Rogers-Satchell (1991) drift-independent range
+#   estimator, same ratio-to-RV framing, 20d mean.
+# YZ_OVERNIGHT_SHARE_20: Yang-Zhang (2000) full decomposition (overnight +
+#   opening-session + Rogers-Satchell) on daily O/H/L/C over a rolling
+#   20-day window; share of total variance from the overnight component.
+# GK_RV_RATIO_CHG_20: 20-day change of GK_RV_RATIO_20.
+# GK_RV_RATIO_Z_60: 60-day rolling z-score of the raw daily gk_ratio.
+# WICK_SHARE_20: (upper wick + lower wick) / (H-L) on daily aggregate
+#   O/H/L/C, 20d mean (Alizadeh-Brandt-Diebold 2002 range-efficiency
+#   framing applied to bar-internal reversal strength).
+atoms:
+  - {name: PARKINSON_RV_RATIO_20, family: range_based_vol_1m}
+  - {name: GK_RV_RATIO_20, family: range_based_vol_1m}
+  - {name: RS_RV_RATIO_20, family: range_based_vol_1m}
+  - {name: YZ_OVERNIGHT_SHARE_20, family: range_based_vol_1m}
+  - {name: GK_RV_RATIO_CHG_20, family: range_based_vol_1m}
+  - {name: GK_RV_RATIO_Z_60, family: range_based_vol_1m}
+  - {name: WICK_SHARE_20, family: range_based_vol_1m}
+grammar: {operators: [atomic], pair_policy: cross_family_only, max_atoms: 1}

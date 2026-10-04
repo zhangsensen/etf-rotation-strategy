@@ -1,0 +1,123 @@
+version: group_ic_round4_amount_and_overnight_20260923
+source_type: claude_rounds
+purpose: seen_history_discovery_only
+campaign_extension: true
+discovery_surface: IC_DISCOVERY_ONLY
+data_root: /home/sensen/dev/projects/gpu_ml/data/etf_rotation_v1
+as_of: '2026-09-17'
+start: '2023-07-27'
+evaluation_start: '2025-01-01'
+groups: frameworks/etf_rotation/configs/etf_candidate14_economic_groups_v1.yaml
+universe: config/etf_rotation_universe_v1.json
+calendar_symbol: 510300.SH
+entry_lag: 2
+horizon: 5
+top_k: 2
+warmup: 60
+hac_lag: 10
+max_leads: 4
+external_registered_definitions: 8
+screens:
+  min_days: 360
+  min_year_days: 40
+  min_positive_years: 2
+  min_ic: 0.01
+  min_ic_hac_t: 2.0
+  min_ic_block_t: 2.0
+  min_excess8_hac_t: 2.0
+  alpha: 0.05
+  max_abs_rank_corr: 0.7
+prior_registered: 476
+budget_cap: 480
+new_definitions: 4
+mechanisms:
+  amount_beta_to_market_amount:
+    direction: -1
+    window: 60
+    hypothesis: "beta(amount_change_i, market_amount_change), dense rolling window, amount_change=amount.pct_change(), market_amount_change=fixed14 equal-weight mean on all-14-valid dates. A name whose trading-activity surges amplify in lockstep with aggregate market trading activity is treated as a liquidity-herding/crowding signal; direction -1."
+    raw_formula: "rolling_beta(market_amount_change, amount_change_i, w=60, min_periods=60); dense, no conditional masking."
+  volume_surge_relative_return:
+    direction: 1
+    window: 60
+    hypothesis: "mean(r_i-r_m) on the member's OWN high-trading-activity days (its own amount in the trailing window's own top 20%, a per-member threshold) minus the same conditional mean on its own ordinary-activity days: volume confirming price, a standard technical-analysis heuristic. direction +1: relative-return confirmation on the member's own high-activity days predicts continuation."
+    raw_formula: "surge_day = amount>=rolling_quantile(amount,0.80,w=60); mean(r_i-r_m | surge_day, min_periods=3) - mean(r_i-r_m | ~surge_day, min_periods=15); r_m as fixed14 leave-none equal-weight mean."
+  overnight_momentum_relative_market:
+    direction: 1
+    window: 60
+    hypothesis: "Rolling mean of (overnight_i - overnight_market), overnight=open/prev_close-1, overnight_market=fixed14 all-complete equal-weight mean of the overnight leg (same leg-specific market definition overnight_intraday_beta_gap already uses). A persistent positive relative overnight edge is treated as momentum; direction +1 expects persistence to predict continuation."
+    raw_formula: "rolling_mean(overnight_i - overnight_market, w=60, min_periods=60)."
+  overnight_intraday_sign_consistency_relative_market:
+    direction: 1
+    window: 60
+    hypothesis: "Rate at which this member's own overnight and intraday returns share the SAME sign (open-to-close trend continuation day) minus the analogous rate for the market itself (each leg's own fixed14 all-complete equal-weight mean). direction +1: a name whose overnight-to-intraday moves reinforce more often than the market's own baseline rate is treated as a trend-confirmation signal, predicting continuation."
+    raw_formula: "own_rate = rolling_mean(1[sign(overnight_i)==sign(intraday_i)], w=60, min_periods=60); market_rate = rolling_mean(1[sign(overnight_market)==sign(intraday_market)], w=60, min_periods=60); own_rate - market_rate. FAMILY-ADJACENCY CAVEAT (see notes.family_precheck): distinct from, but structurally close to, the already-tested daily_rounds:overnight_intraday_switch_rate (compares sign(FULL close-to-close return) vs sign(intraday), no market benchmark, absolute level not a relative rate)."
+notes:
+  fixed_population: 14 ETFs / 8 economic groups
+  timing: close(D) signal; open(D+2) to open(D+7) H5 research label contract
+  evaluation_surface: previously-seen history, signal_date 2025-01-01 through 2026-09-17; discovery, not OOS
+  direction_status: economic sign frozen before evaluation; no sign selection or automatic flip
+  complete_input_windows_only: true
+  member_aggregation: each member atom computed independently, then existing fixed group aggregation
+  source_vintage: canonical daily bars; no additional information sources
+  engine: >-
+    frameworks/etf_rotation/src/etf_strategy/core/etf_group_claude_rounds.py, source_type=claude_rounds (same
+    module as prior batches/rounds, extended with round 4's 5 originally-proposed mechanisms; only 4 survive
+    this round's no-label dedup precheck below).
+  campaign: >-
+    Round 4 of the USER 2026-09-23 50-round sub-agent mining campaign. Round 1 = Batch C (3 registered, 0
+    ic_supported). Round 2 = 4 registered (3 NOT_SUPPORTED_THIS_SCREEN, 1 COVERAGE_INSUFFICIENT). Round 3 = 4
+    registered (3 NOT_SUPPORTED_THIS_SCREEN, 1 IC_EVIDENCE_SUPPORTED -- peer_corr_network_change_60, registered
+    per master's 2026-09-23 ruling: core IC/HAC/block screens pass, economic/budget_diagnostic screens do not,
+    not shortlisted/certified; family closed, no variants). Round 4 opens Theme E (trading-activity relative to
+    market: amount_beta_to_market_amount, volume_surge_relative_return, amount_share_change -- all 3 of
+    master's originally-listed Theme E items) and Theme F (overnight information: overnight_momentum_relative_
+    market, overnight_intraday_sign_consistency_relative_market -- both of master's originally-listed Theme F
+    items). amount_share_change_60 was dropped on the no-label dedup precheck below (Theme E's other 2 items
+    survived), which alone left only 2 survivors; per the round rule (minimum 4 survivors per round from round
+    2 onward, filled with new families rather than variants), both Theme F items were added in the same round
+    (not a subsequent round) to restore the count to 4, since Theme E's 3 listed items were now fully spent.
+  originally_proposed: >-
+    5 candidates: amount_beta_to_market_amount_60, volume_surge_relative_return_60, amount_share_change_60,
+    overnight_momentum_relative_market_60, overnight_intraday_sign_consistency_relative_market_60. 1 dropped on
+    the no-label dedup precheck below (not on family collision, not on structural diagnostics -- all 5 passed
+    both of those, though overnight_intraday_sign_consistency_relative_market carries a flagged family-
+    adjacency caveat, see raw_formula above and family_precheck below).
+  family_precheck: >-
+    checked against runtime_outputs/etf_rotation_research/ic_inventory_20260923_claude_batchAB/families.csv
+    (freshest snapshot; a new snapshot is built only every 5 rounds per master's cadence decision, so rounds
+    1-3's 11 registered candidates are not yet reflected as families.csv rows, but their real saved scores ARE
+    in the dedup library below). No exact-duplicate under source_type=claude_rounds for any of the 5
+    originally-proposed candidates. Adjacencies found and resolved: daily_rounds:market_residual_amount_beta
+    (DO_NOT_REPEAT) regresses PRICE residual on the member's OWN amount innovation (price-vs-own-volume);
+    amount_beta_to_market_amount regresses member AMOUNT CHANGE on MARKET aggregate amount change
+    (amount-vs-amount cross-sectional elasticity) -- different statistic, not re-derived under a new name.
+    daily_rounds:overnight_intraday_switch_rate (DO_NOT_REPEAT) compares sign(full close-to-close return) vs
+    sign(intraday return), an absolute own-name level with no market benchmark; overnight_intraday_sign_
+    consistency_relative_market compares sign(OVERNIGHT alone) vs sign(intraday alone) and subtracts the
+    market's own rate -- flagged explicitly in its own hypothesis field for reviewer judgment rather than
+    silently treated as unambiguously distinct, per the "family-collision candidates must be reported"
+    standing rule. No existing family mentions "amount_share" or a cross-sectional trading-activity-share
+    construction (amount_share_change is genuinely novel in concept, but was still dropped below on the
+    numeric dedup precheck against a same-direction time-series proxy, amount_expansion).
+  no_label_dedup_precheck: >-
+    computed group scores only (no forward return/H5 label), 2025-01-01..2026-09-23, against 444 saved
+    scores_*.csv files across the whole runs/ library (deduped to latest per candidate id, now including
+    rounds 1-3's 11 registered candidates) plus the other originally-proposed round 4 candidates. Registered
+    candidates' max mean(abs(daily cross-sectional rank corr)): amount_beta_to_market_amount_60 0.6101,
+    volume_surge_relative_return_60 0.5807, overnight_momentum_relative_market_60 0.6789,
+    overnight_intraday_sign_consistency_relative_market_60 0.6196 (all <0.7, all clean). Dropped (>=0.7):
+    amount_share_change_60 0.8444 (vs amount_expansion_20, an existing daily_rounds own-history amount-vs-own-
+    trailing-average statistic; despite amount_share_change being a genuinely different, cross-sectional-share
+    construction, the two evidently pick up highly correlated common trading-activity trend components in
+    practice). See runtime_outputs/etf_rotation_research/diagnostics/round4_20260923/dedup_precheck.csv.
+  eval_window_structural_precheck: >-
+    2025-01-01..2026-09-23 (420 days), read-only feature check, no labels read. All 5 originally-proposed
+    candidates: every single-member group nan_rate 0.0-0.1238 (all <=0.20), mode_value_rate<=0.1119 (no
+    near-constant group). Group coverage: amount_beta_to_market_amount_60/amount_share_change_60/
+    overnight_momentum_relative_market_60/overnight_intraday_sign_consistency_relative_market_60 all
+    days_all_8_valid=420/420; volume_surge_relative_return_60 218/420 (lower because it requires a per-member
+    OWN volume-surge subset with min_periods=3 to be simultaneously satisfied across all 8 groups, not a
+    structural defect -- no candidate was dropped on this precheck). See
+    runtime_outputs/etf_rotation_research/diagnostics/round4_20260923/structural_diagnostics.csv.
+  no_label_read: true
+  no_formal_evaluation_in_implementation_task: true

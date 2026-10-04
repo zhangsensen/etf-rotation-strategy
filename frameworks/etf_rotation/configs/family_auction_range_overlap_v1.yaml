@@ -1,0 +1,14 @@
+domain: etf_rotation
+grammar_version: etf_family_auction_range_overlap_v1
+factor_source: auction_range_overlap
+mechanism: overlap of adjacent daily auction ranges
+atoms:
+- name: RANGE_OVERLAP_20
+  family: auction_range_overlap
+- name: RANGE_OVERLAP_60
+  family: auction_range_overlap
+grammar:
+  operators:
+  - atomic
+  pair_policy: cross_family_only
+  max_atoms: 1

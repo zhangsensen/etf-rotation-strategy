@@ -1,0 +1,101 @@
+version: external_index_native_h20_campaign_v1
+
+data:
+  daily_root: /home/sensen/dev/projects/gpu_ml/data/gold_standard/1d
+  start: '2020-01-02'
+  as_of: '2026-09-21'
+
+population:
+  asset_kind: index
+  research_population_label: A-share observed index cross-section
+  identity_rule: all_locally_observed_000_SH_and_399_SZ_index_files
+  point_in_time_identity_membership: false
+  min_history_sessions: 120
+  liquidity_window: 20
+  min_median_turnover_cny: 0.0
+  sector_neutralized: false
+  deployment_permission: false
+
+partition:
+  rule: sha256_ts_code_first_u32_modulo
+  modulus: 3
+  discovery_buckets: [1, 2]
+  confirmation_buckets: [0]
+  minimum_discovery_identities: 170
+  minimum_confirmation_identities: 100
+
+execution:
+  signal_time: D_CLOSE
+  entry_lag_sessions: 2
+  horizon: 20
+  label: open(D+22)/open(D+2)-1
+  explicit_transaction_cost_model: none_research_factor_only
+
+discovery:
+  start: '2021-08-09'
+  end: '2024-12-31'
+  min_names: 150
+  min_days: 750
+  max_selected_candidates: 48
+  minimum_candidates_to_continue: 10
+  ranking_score: minimum_of_forward_top_and_residual_hac_t
+  require_positive_signed_means: true
+
+confirmation:
+  start: '2025-01-02'
+  end: '2026-09-21'
+
+controls:
+  - {source: directional_trend, atom: RET_20}
+  - {source: downside_risk, atom: REALIZED_VOL_20}
+  - {source: trading_activity, atom: AMOUNT_Z_20}
+
+multiple_testing_family:
+  prior_stock_h20_candidate_budget: 96
+  prior_stock_h1_candidate_budget: 96
+  current_index_h20_candidate_count: 96
+  cumulative_candidate_budget: 288
+
+confirmation_gates:
+  candidate_count: 96
+  fixed_campaign_budget: 288
+  alpha: 0.05
+  min_names: 90
+  min_confirmation_days: 350
+  min_signed_mean_ic: 0.01
+  min_hac_t: 2.0
+  top_fraction: 0.10
+  min_top_label_coverage: 0.95
+  min_top_excess_bp: 20.0
+  min_top_excess_hac_t: 1.5
+  max_abs_rank_corr: 0.75
+  min_residual_mean_ic: 0.005
+  min_residual_hac_t: 1.5
+
+family_catalog: configs/family_catalog_v3.yaml
+
+candidate_source_allowlist:
+  - directional_trend
+  - price_location
+  - downside_risk
+  - daily_candle
+  - path_efficiency
+  - return_tail_shape
+  - trading_activity
+  - price_volume_coupling
+  - serial_dependence
+  - range_memory
+  - gap_response
+  - gap_volatility
+  - liquidity_variability
+  - transaction_friction
+  - conditional_activity
+  - return_concentration
+  - auction_range_overlap
+  - activity_response
+  - uncertainty_activity
+  - volume_at_price_memory
+  - drawdown_duration
+  - swing_topology
+  - volatility_feedback
+  - gap_repair

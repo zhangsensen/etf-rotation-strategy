@@ -1,0 +1,26 @@
+# ETF 专用项目规则
+
+当前 IC 挖掘在 `frameworks/etf_rotation/`；根 `src/etf_strategy/`、原策略脚本及 `sealed_strategies/` 保留各自历史合同，不把旧 49 ETF 的收益/执行门槛套到当前 14 ETF / 8 组 IC 发现。
+
+- 当前工程任务：ETF 已从 SmartMoney 迁回本项目。源码、配置、测试、独立环境、调度、行情、候选库与账本归本项目；个股研究继续归 SmartMoney，不导入其源码或解释其人口/结果。
+- 矿工使用 `gpt-6-luna`，ETF 审阅使用 `gpt-6.1-sol`；不因此增加代理调用或重启研究。
+- 用户当前仍暂停新因子挖掘；迁移和工程验证不授予新挖掘、开冷标签、订单或部署权限。
+- 使用当前独立锁环境：`uv sync --project frameworks/etf_rotation --frozen`；命令用 `uv run --project frameworks/etf_rotation --no-sync`。
+- 不覆盖无关工作区修改，不改写已打开历史配置、PLAN、登记、失败记录或结果。历史路径通过本地兼容链接或读取适配解析，冻结原文/哈希保留。
+- 提交仅含源码与必要测试、配置、锁文件、文档。数据、结果、账本、模型、实验源码快照、凭据和图片均仅留本地；不上传 GitHub、LFS、发布附件或其他外部目的地。
+- commit 前运行 `scripts/guard_no_data_in_git.sh`，push 前运行其 `--range BASE TIP`；预提交检查暂存区，预推送检查每个新增提交，禁止绕过钩子或削弱检查。
+- 涉及 QMT、持仓、桥接、VM、登录、止损或订单，先读 `/home/sensen/dev/projects/qmt-bridge-prod/AGENTS.md`。分析只读；订单、撤单、重启及 QMT 配置变更须明确授权。
+
+## ETF factor mining — persistent IC-first boundary (2026-09-22)
+- ETF research and individual-stock research are separate projects. This section applies only to the current ETF project, not to stock research. Maintain separate populations, configurations, methods, approvals, search/evaluation ledgers and results; do not merge factor counts or transfer validation claims between projects. Cross-project reuse or scope changes require explicit user direction.
+- Current ETF work is factor discovery, not strategy acceptance. Follow `frameworks/etf_rotation/docs/IC_MINING_RULES.md` for frozen scope, timing and numerical conditions.
+- Use cross-sectional signed Rank IC as the primary evidence for relative-return ranking. Report TopK/B8/B14 economics separately; economic failure must not erase an IC lead or become a hidden IC gate.
+- Persistent user direction (2026-09-23): ETF factor mining uses IC as its sole primary evaluation. Keep the frozen IC/coverage/stability rules and data/timing validity checks; do not add return, cost, certification, multiple-testing, redundancy or increment gates to retaining IC leads. Report those diagnostics separately when available. Do not require expected IC >= 0.1 to propose a mechanism, or add repeated reviews to ordinary mining. Deliver formula, direction, IC and evidence window; zero certified factors does not mean zero discovery output.
+- Persistent reporting preference (2026-09-23): separate cumulative historical IC leads from the latest batch. For each latest candidate report signed IC, HAC t, valid-day count and evaluation window under its frozen direction. State positive, negative or weak evidence plainly; retain weak/negative results without automatic direction flips. Do not replace these numbers with certification counts or a single pass/fail total.
+- Persistent inventory requirement (2026-09-23): maintain a searchable cumulative ETF IC inventory with HAS_IC and NO_IC views, plus a separate PENDING list for incomplete/invalid evidence. Before proposing a batch, inspect its family and definition history to avoid repeating tested variants without new information. After results change, rebuild a new local snapshot with `frameworks/etf_rotation/scripts/research/build_ic_inventory.py`; instructions and initial snapshot are in `frameworks/etf_rotation/docs/IC_INVENTORY.md`. Never infer an entire family's universal failure from a failed variant; retain scope, metrics and reasons. Unreconciled registration counts must stay visible.
+- Report basic IC leads, conditional multiple-testing results, redundancy/increment, and independent certification separately. A nonzero IC or a basic-screen pass alone is not a certified or tradable factor.
+- Read the inventory directional views as the primary discovery display. `ic_candidates` remains the basic-screen list for a separate diagnostic; neither that count nor legacy `screen_pass`/`shortlisted` joint gates replace signed IC findings. Preserve negative-direction watchlists without automatic flips.
+- Do not silently change the fixed 14-ETF/8-group scope, label, thresholds or evidence layers. Method changes require explicit user direction and a new version; never rewrite opened historical results to rescue a candidate.
+- Luna proposes and implements; master reviews before a frozen batch runs. External review is advisory: submitted/delivered is not reviewed/approved, and agreement is not empirical evidence.
+- User-authorized repair (2026-09-23): primary IC inventory views show POSITIVE_IC / NEGATIVE_IC / NEAR_ZERO / UNCOMPUTABLE; absolute 0.01 is a display band only, with exact signed IC, coverage and stability separate. Legacy HAS_IC/NO_IC/PENDING are screen diagnostics, not the main discovery count. Preserve valid sparse IC and negative direction. Record zero-rankable-date structural failures before formal IC evaluation and do not count them as evaluated candidates. Preserve frozen historical outputs.
+- User clarification (2026-09-23): use the explicit `gpt-6-luna` model for mining proposals and implementation. A round is a batch of multiple candidates, normally 4–8 with different stated hypotheses/statistics, not one single-factor invocation. Report round count and actual candidate count separately. Do not force filler definitions or relabel completed single-candidate runs as multi-candidate rounds.

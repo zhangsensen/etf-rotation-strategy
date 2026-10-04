@@ -1,0 +1,31 @@
+domain: etf_rotation
+grammar_version: etf_family_volume_time_1m_v1
+factor_source: volume_time_1m
+frequency: 1m
+# Literature provenance (directive: no citation, no atom):
+# RV_V_20: Clark (1973) subordinated volume clock; Ane-Geman (2000)
+#   volume-time realized variance (fixed reference bucket volume =
+#   trailing-20d mean daily volume / 50, never today's own volume),
+#   20d mean.
+# RV_V_RATIO_20: RV_V_20 relative to calendar-time 1m RV, 20d mean.
+# VT_AUTOCORR_20: Easley-Lopez de Prado-O'Hara (2012) volume clock;
+#   lag-1 autocorrelation of volume-time bucket returns, 20d mean.
+# VT_RET_SKEW_20: skewness of volume-time bucket returns, 20d mean.
+# VT_BUCKET_GINI_20: Gini coefficient of the calendar-time duration
+#   (in 1m bars) consumed by each equal-volume bucket, 20d mean.
+# VT_BUCKET_COUNT_20: number of equal-volume buckets realized that day
+#   under the fixed reference bucket size, 20d mean.
+# VT_BUCKET_COUNT_SHIFT_20: 20-day change of the above (today's volume
+#   regime relative to the trailing reference).
+# VT_LATE_MOM_20: sum of volume-time bucket returns in the last 20% of
+#   buckets by count, 20d mean.
+atoms:
+  - {name: RV_V_20, family: volume_time_1m}
+  - {name: RV_V_RATIO_20, family: volume_time_1m}
+  - {name: VT_AUTOCORR_20, family: volume_time_1m}
+  - {name: VT_RET_SKEW_20, family: volume_time_1m}
+  - {name: VT_BUCKET_GINI_20, family: volume_time_1m}
+  - {name: VT_BUCKET_COUNT_20, family: volume_time_1m}
+  - {name: VT_BUCKET_COUNT_SHIFT_20, family: volume_time_1m}
+  - {name: VT_LATE_MOM_20, family: volume_time_1m}
+grammar: {operators: [atomic], pair_policy: cross_family_only, max_atoms: 1}

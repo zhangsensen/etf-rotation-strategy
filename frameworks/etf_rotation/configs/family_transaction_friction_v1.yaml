@@ -1,0 +1,14 @@
+domain: etf_rotation
+grammar_version: etf_family_transaction_friction_v1
+factor_source: transaction_friction
+mechanism: negative lag-one return covariance; friction proxy, not quoted spread
+atoms:
+- name: RETURN_REVERSAL_COV_20
+  family: transaction_friction
+- name: RETURN_REVERSAL_COV_60
+  family: transaction_friction
+grammar:
+  operators:
+  - atomic
+  pair_policy: cross_family_only
+  max_atoms: 1

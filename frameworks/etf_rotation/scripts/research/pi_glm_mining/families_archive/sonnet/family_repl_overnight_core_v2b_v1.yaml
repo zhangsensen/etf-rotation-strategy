@@ -1,0 +1,15 @@
+domain: etf_rotation
+grammar_version: etf_family_repl_overnight_core_v2b_v1
+factor_source: repl_overnight_core_v2b
+frequency: 1m
+# Sub-family B of repl_overnight_core_v2 (see repl_overnight_core_v2.py
+# module docstring for full reproduction definitions).
+# R2_BIGBAR_EDGE_CONC_20: big-bar volume share in its modal 30-min
+#   segment (pi's precise code-level definition), 20d mean.
+# R2_OPEN30_VOL_SHARE_20: first-30-min volume / day volume, 20d mean.
+# R2_PRICE_POSITION_20: (close-20d low)/(20d high-20d low).
+atoms:
+  - {name: R2_BIGBAR_EDGE_CONC_20, family: repl_overnight_core_v2b}
+  - {name: R2_OPEN30_VOL_SHARE_20, family: repl_overnight_core_v2b}
+  - {name: R2_PRICE_POSITION_20, family: repl_overnight_core_v2b}
+grammar: {operators: [atomic], pair_policy: cross_family_only, max_atoms: 1}

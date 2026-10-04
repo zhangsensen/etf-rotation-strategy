@@ -1,0 +1,31 @@
+domain: etf_rotation
+grammar_version: etf_family_range_contraction_cycle_v1
+factor_source: range_contraction_cycle
+frequency: 1d
+# Literature provenance (directive: no citation, no atom):
+# TRUE_RANGE_RATIO_20: Wilder true range / its 20d mean, contraction/
+#   expansion state level.
+# LOW_RANGE_STREAK_20: current run length of TR below its 20d rolling
+#   median (Crabel 1990 contraction framing, generalized beyond NR4/NR7).
+# NR7_FLAG_FREQ_20 / DAYS_SINCE_NR7_20: Crabel (1990) NR7 (narrowest
+#   true range of trailing 7 days) frequency and recency.
+# BB_WIDTH_PCTL_120 / BB_WIDTH_CHG_20: Bollinger (2001) band-width
+#   ("the squeeze") 120d percentile and 20d change.
+# CONTRACTION_DEPTH_60: fraction of trailing-60d TR values >= the
+#   current rolling-20d minimum TR (continuous complement to NR7 flag;
+#   replaces the directive's "range ACF1" bullet, which duplicates the
+#   pre-existing range_memory:RANGE_ACF1_20 atom -- reused as-is there,
+#   not rebuilt here, per the standing no-reinventing-the-wheel rule).
+# BREAKOUT_DIR_CONSIST_20: 20d mean, over contraction-then-expansion
+#   ("breakout") days only, of whether the breakout day's return sign
+#   agrees with the trailing-5d pre-breakout trend direction.
+atoms:
+  - {name: TRUE_RANGE_RATIO_20, family: range_contraction_cycle}
+  - {name: LOW_RANGE_STREAK_20, family: range_contraction_cycle}
+  - {name: NR7_FLAG_FREQ_20, family: range_contraction_cycle}
+  - {name: DAYS_SINCE_NR7_20, family: range_contraction_cycle}
+  - {name: BB_WIDTH_PCTL_120, family: range_contraction_cycle}
+  - {name: BB_WIDTH_CHG_20, family: range_contraction_cycle}
+  - {name: CONTRACTION_DEPTH_60, family: range_contraction_cycle}
+  - {name: BREAKOUT_DIR_CONSIST_20, family: range_contraction_cycle}
+grammar: {operators: [atomic], pair_policy: cross_family_only, max_atoms: 1}

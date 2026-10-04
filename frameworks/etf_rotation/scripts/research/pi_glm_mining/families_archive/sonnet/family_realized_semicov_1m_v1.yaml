@@ -1,0 +1,27 @@
+domain: etf_rotation
+grammar_version: etf_family_realized_semicov_1m_v1
+factor_source: realized_semicov_1m
+frequency: 1m
+benchmark_symbols: [510300.SH, 510500.SH]
+# Literature provenance (directive: no citation, no atom):
+# RCOV_N_SHARE_20 / RCOV_P_SHARE_20: Bollerslev-Li-Patton-Quaedvlieg
+#   (2020) realized semicovariance, share of the both-negative (N) /
+#   both-positive (P) component in total absolute realized covariance
+#   with the benchmark basket, 20d mean.
+# SEMICOV_DOWNSIDE_BETA_20 / SEMICOV_UPSIDE_BETA_20: Ang-Chen-Xing (2006) downside/upside
+#   beta, covariation conditioned on the basket's return sign, 20d mean.
+# BETA_ASYM_20: SEMICOV_DOWNSIDE_BETA_20 - SEMICOV_UPSIDE_BETA_20.
+# MIXED_NET_20: Patton-Sheppard (2015) motivated net "directional
+#   decoupling" contribution (BLPQ's two mixed components combined),
+#   share of total absolute realized covariance, 20d mean.
+# *_CHG_20: 20-day change of the corresponding level atom.
+atoms:
+  - {name: RCOV_N_SHARE_20, family: realized_semicov_1m}
+  - {name: RCOV_P_SHARE_20, family: realized_semicov_1m}
+  - {name: SEMICOV_DOWNSIDE_BETA_20, family: realized_semicov_1m}
+  - {name: SEMICOV_UPSIDE_BETA_20, family: realized_semicov_1m}
+  - {name: BETA_ASYM_20, family: realized_semicov_1m}
+  - {name: MIXED_NET_20, family: realized_semicov_1m}
+  - {name: RCOV_N_SHARE_CHG_20, family: realized_semicov_1m}
+  - {name: BETA_ASYM_CHG_20, family: realized_semicov_1m}
+grammar: {operators: [atomic], pair_policy: cross_family_only, max_atoms: 1}

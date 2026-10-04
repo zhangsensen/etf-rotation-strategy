@@ -1,0 +1,23 @@
+domain: etf_rotation
+grammar_version: etf_family_pre_breakout_drawdown_1m_v1
+factor_source: pre_breakout_drawdown_1m
+frequency: 1m
+# Literature provenance (directive: no citation, no atom):
+# PRE_BREAKOUT_MAXDD_SIGMA_20: Karatzas & Shreve first-passage-time
+#   framing + Magdon-Ismail & Atiya (2004) maximum drawdown, restricted
+#   to the bars BEFORE (and including) the first touch of +sigma_prev
+#   (untouched days use the whole day), normalized by sigma_prev; 20d mean.
+# PRE_BREAKOUT_UNDERWATER_FRAC_20: Grossman & Zhou (1993) underwater-time
+#   framing, same pre-breakout segment; 20d mean.
+# POST_TROUGH_RECOVERY_20: recovery ratio (close - low_after_touch) /
+#   (touch_price - low_after_touch) computed only on days that touch
+#   -sigma_prev, restricted to bars from the touch bar to close; 20d mean.
+# PRE_BREAKOUT_MAXDD_SIGMA_CHG_20 / PRE_BREAKOUT_UNDERWATER_FRAC_CHG_20:
+#   20-day change of the corresponding level atom.
+atoms:
+  - {name: PRE_BREAKOUT_MAXDD_SIGMA_20, family: pre_breakout_drawdown_1m}
+  - {name: PRE_BREAKOUT_UNDERWATER_FRAC_20, family: pre_breakout_drawdown_1m}
+  - {name: POST_TROUGH_RECOVERY_20, family: pre_breakout_drawdown_1m}
+  - {name: PRE_BREAKOUT_MAXDD_SIGMA_CHG_20, family: pre_breakout_drawdown_1m}
+  - {name: PRE_BREAKOUT_UNDERWATER_FRAC_CHG_20, family: pre_breakout_drawdown_1m}
+grammar: {operators: [atomic], pair_policy: cross_family_only, max_atoms: 1}

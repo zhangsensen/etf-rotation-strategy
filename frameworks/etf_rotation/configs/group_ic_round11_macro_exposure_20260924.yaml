@@ -1,0 +1,137 @@
+version: group_ic_round11_macro_exposure_20260924
+source_type: claude_rounds
+purpose: seen_history_discovery_only
+campaign_extension: true
+discovery_surface: IC_DISCOVERY_ONLY
+data_root: /home/sensen/dev/projects/gpu_ml/data/etf_rotation_v1
+macro_inputs: true
+as_of: '2026-03-24'
+start: '2023-07-27'
+evaluation_start: '2025-01-01'
+groups: frameworks/etf_rotation/configs/etf_candidate14_economic_groups_v1.yaml
+universe: config/etf_rotation_universe_v1.json
+calendar_symbol: 510300.SH
+entry_lag: 2
+horizon: 5
+top_k: 2
+warmup: 60
+hac_lag: 10
+max_leads: 4
+external_registered_definitions: 8
+screens:
+  min_days: 360
+  min_year_days: 40
+  min_positive_years: 2
+  min_ic: 0.01
+  min_ic_hac_t: 2.0
+  min_ic_block_t: 2.0
+  min_excess8_hac_t: 2.0
+  alpha: 0.05
+  max_abs_rank_corr: 0.7
+prior_registered: 525
+budget_cap: 529
+new_definitions: 4
+mechanisms:
+  real_rate_beta:
+    direction: -1
+    window: 60
+    hypothesis: "Master's own formula. 60-day beta of each member's own return on the daily CHANGE in the US 10y real (TIPS) yield (us_trycr.y10), foreign-next-day-lagged (see notes.macro_lag_rule). direction -1: more negatively sensitive to real rates predicts relative strength (a rate-sensitivity premium narrative -- master's own words, cross-checked before implementation rather than accepted uncritically per the campaign's standing practice)."
+    raw_formula: "real_rate_change = diff(align(us_trycr.y10, foreign_lag=True)); beta(r_i, real_rate_change, w=60)."
+  usd_beta:
+    direction: -1
+    window: 60
+    hypothesis: "Master's own formula. 60-day beta of each member's own return on USDCNH's own daily return (USDCNH.bid_close), foreign-next-day-lagged. direction -1."
+    raw_formula: "usdcnh_return = pct_change(align(USDCNH.bid_close, foreign_lag=True)); beta(r_i, usdcnh_return, w=60)."
+  macro_r2:
+    direction: -1
+    window: 60
+    hypothesis: "Master's own formula. 60-day R\xB2 of each member's own return regressed on all 5 macro changes jointly (real rate, nominal rate, USDCNH, copper, bond future). direction -1: low macro explanatory power = the member's return is idiosyncratically (not macro-)driven."
+    raw_formula: "R\xB2 of a rolling 60-day multivariate OLS (with intercept, via centered X/y) of r_i on the 5 macro changes jointly (real_rate_change, nominal_rate_change, usdcnh_return, copper_return, bond_future_return)."
+  macro_expected_return_60_20:
+    direction: 1
+    window: 60
+    hypothesis: "Master's own formula, two legs: a 60-day rolling multivariate OLS beta (each member's own return on the 5 macro changes jointly) times the SAME 5 macro variables' own 20-day cumulative change, summed across the 5 regressors -- macro-driven expected return continues. direction +1."
+    raw_formula: "sum_k( beta_k(60d multivariate OLS of r_i on 5 macro changes) * cum_change_20d(macro_change_k) ), k over the 5 macro regressors."
+notes:
+  fixed_population: 14 ETFs / 8 economic groups
+  timing: close(D) signal; open(D+2) to open(D+7) H5 research label contract
+  evaluation_surface: previously-seen history, signal_date 2025-01-01 through 2026-03-24 (NOT this campaign's
+    usual 2026-09-17/2026-09-23 as_of -- capped at 2026-03-24 per master's 126-day cold-holdout hard check for
+    this new macro data source, enforced by run_rules.enforce_cold_holdout in the real discover_etf_groups.py
+    run).
+  direction_status: economic sign frozen before evaluation; no sign selection or automatic flip
+  complete_input_windows_only: true
+  member_aggregation: each member atom computed independently, then existing fixed group aggregation
+  source_vintage: canonical daily bars PLUS a new read-only macro data source this campaign's IC framework has
+    never used before (see macro_lag_rule below); no live/production data-authority claim over these 5 files.
+  engine: frameworks/etf_rotation/src/etf_strategy/core/etf_group_claude_rounds.py, source_type=claude_rounds,
+    macro_inputs=true.
+  campaign: >-
+    Round 11 of the USER 2026-09-23 50-round sub-agent mining campaign, resumed 2026-09-24 after the round-10
+    USER-decided checkpoint pause ("回到我们说的用ic因子"). Master gave all 5 formulas + the new macro data
+    source this round (no self-devised MY_ASSUMPTION candidates). 5 originally proposed, 1 dropped at dedup
+    (commodity_beta_60), 4 registered below.
+  dropped_candidates: >-
+    commodity_beta_60 (master's formula, 60-day beta of each member's own return on Shanghai copper futures'
+    own daily return, same-day domestic, direction +1): dedup max 0.7352 vs d2025_market_residual_market_
+    beta_20, also 0.7298 vs peer_corr_dispersion_60 and 0.7283 vs NEW:macro_r2_60 (4 separate flagged rows,
+    not a borderline single hit) -- copper's own beta against this 14-ETF pool is highly redundant with this
+    campaign's already-registered generic market-beta family (most of these ETFs are broadly cyclical/growth-
+    exposed, so a broad commodity beta tracks little beyond what market beta already captures).
+  macro_lag_rule: >-
+    Master's rule (2026-09-24): foreign-market variables (US 10y real/nominal yield, USDCNH) observed on
+    calendar date t may only be used starting A-share trading date t+1; domestic futures (copper CU, 10y bond
+    future T) settle same-day and are usable the same A-share date. Implemented in
+    etf_group_claude_rounds.py's _align_macro_series as a two-stage transform: (1) forward-fill each macro
+    variable's own native-date series onto the A-share trading calendar (same-day-inclusive); (2) for FOREIGN
+    variables only, an additional one-A-share-SESSION .shift(1) on the now A-share-indexed stage-1 result (not
+    a fixed calendar-day count, and not applied on the native date axis). This is DELIBERATELY CONSERVATIVE
+    (never a leak, only ever more lag than the strict minimum) for a foreign print whose native date falls on
+    a day the A-share calendar has no session for (e.g. a weekend USDCNH print, since FX trades weekends and
+    A-share does not): such a print only takes effect from the A-share session AFTER the one that first
+    forward-fills it in, i.e. potentially two A-share sessions after the weekend print's own date rather than
+    the bare minimum "next calendar day" a literal reading of the rule might suggest for that edge case.
+    Domestic futures (copper, bond future) have no A-share-absent native trading days, so this edge case does
+    not apply to them. Verified via a dedicated unit test with a controlled step-change fixture
+    (test_macro_foreign_next_day_domestic_same_day_lag_boundary) and an independent second implementation
+    using pd.merge_asof matching the two-stage semantics exactly (test_macro_changes_alignment_independent_
+    merge_asof) -- the first version of that independent test collapsed the two stages into a single
+    strict-inequality query and disagreed with the real implementation on ~40% of rows before being corrected
+    to the actual two-stage form, a genuine discrepancy caught and resolved before this proposal, not glossed
+    over.
+  shared_script_change: >-
+    frameworks/etf_rotation/scripts/research/discover_etf_groups.py gained an opt-in `macro_inputs: true` flag
+    (mirroring round 5's `minute_inputs` precedent exactly): loads the 5 macro parquet files (hashed into the
+    PLAN's input_hashes separately from the canonical-root-checked `files` list, since they live under
+    runtime_outputs/ not the canonical price data root), calls the new module-level load_macro_panel, and
+    covers the macro panel in both the canonical-reload prefix check and the generic leakage_checks
+    truncate/perturb test (the latter needed NO special-casing -- the macro panel is a plain DataFrame, so the
+    existing generic `.loc[:cut]`/`out.loc[out.index > cut] *= 1.71` branches already apply correctly).
+    Explicitly directed by master this round (not self-initiated); scoped to macro_inputs unset/false leaving
+    every other claude_rounds config completely unaffected (diff: ~27 lines). One unrelated line in the same
+    diff region (`cd = pd.read_parquet(calendar_file)` -> `..., columns=['trade_date']`) is NOT mine -- picked
+    up from another concurrent agent's edit in this shared worktree; flagged explicitly, not claimed.
+  family_precheck: >-
+    checked against runtime_outputs/etf_rotation_research/ic_inventory_20260923_claude_10rounds/families.csv
+    (freshest snapshot, post round 10). No exact-duplicate under any engine for real_rate_beta_60/usd_beta_60/
+    macro_r2_60/macro_expected_return_60_20_60/commodity_beta_60 -- genuinely new territory, zero keyword hits
+    for macro/real_rate/usd_beta/commodity.
+  no_label_dedup_precheck: >-
+    computed group scores only (no forward return/H5 label), 2025-01-01..2026-03-24, against the full saved
+    scores_*.csv library (493 candidates) plus this round's own 5 attempted candidates (symmetric NEW-vs-NEW
+    recording). commodity_beta_60 dropped: 0.7352 vs d2025_market_residual_market_beta_20, 0.7298 vs
+    peer_corr_dispersion_60, 0.7282 vs NEW:macro_r2_60, 0.7064 vs market_residual_market_beta_20 (4 separate
+    flags, not a borderline case). The other 4's real max, with commodity_beta_60 excluded from consideration
+    since it is not being registered: real_rate_beta_60 0.4717 (vs beta_variability_60), usd_beta_60 0.6740
+    (vs minute_amount_range_pressure_20), macro_r2_60 0.5370 (vs peer_corr_dispersion_60, once its own
+    0.7282-vs-commodity_beta_60 collision is moot), macro_expected_return_60_20_60 0.5840 (vs
+    market_residual_market_beta_20, once its own 0.5994-vs-commodity_beta_60 collision is moot). All 4 <0.7,
+    clean. See runtime_outputs/etf_rotation_research/diagnostics/round11_20260923/dedup_precheck.csv.
+  eval_window_structural_precheck: >-
+    2025-01-01..2026-03-24 (294 days, shorter than this campaign's usual ~420 -- the as_of cap), read-only
+    feature check, no labels read. All 5 attempted candidates (incl. dropped commodity_beta_60): every
+    single-member group nan_rate=0.0, mode_value_rate=0.0034, days_all_8_valid=294/294. No candidate was
+    dropped on this precheck (commodity_beta_60 was dropped at dedup, not here). See
+    runtime_outputs/etf_rotation_research/diagnostics/round11_20260923/structural_diagnostics.csv.
+  no_label_read: true
+  no_formal_evaluation_in_implementation_task: true

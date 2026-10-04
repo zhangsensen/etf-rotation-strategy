@@ -1,0 +1,20 @@
+domain: etf_rotation
+grammar_version: etf_family_category_relative_geometry_v1
+factor_source: category_relative_geometry
+frequency: 1m
+# S32 stage (round_631): deepen S29's REL_UNDERWATER_CATEGORY_20
+# mechanism (S29P10 was S29's strongest admission). Grinold-Kahn active
+# return framework; Chekhlov-Uryasev-Zabarankin 2005; Moskowitz-Grinblatt
+# 1999 within-industry momentum. Sleeve grouping from
+# config/etf_rotation_universe_v1.json.
+atoms:
+  - {name: REL_UNDERWATER_CATEGORY_CHG_20, family: category_relative_geometry}
+  - {name: REL_MAXDD_CATEGORY_20, family: category_relative_geometry}
+  - {name: REL_RECOVERY_TIME_CATEGORY_20, family: category_relative_geometry}
+  - {name: REL_ON_PREM_CATEGORY_20, family: category_relative_geometry}
+  - {name: REL_ON_VAR_SHARE_CATEGORY_20, family: category_relative_geometry}
+  - {name: REL_MFI_EXTREME_CATEGORY_20, family: category_relative_geometry}
+  - {name: REL_LUNCH_POSTRUN_CATEGORY_20, family: category_relative_geometry}
+  - {name: REL_ULCER_CATEGORY_CHG_20, family: category_relative_geometry}
+  - {name: REL_RECOVERY_TIME_CATEGORY_CHG_20, family: category_relative_geometry}
+grammar: {operators: [atomic, rank_spread, rank_interaction], pair_policy: cross_family_only, max_atoms: 9}

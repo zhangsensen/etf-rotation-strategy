@@ -1,0 +1,42 @@
+version: group_discovery_daily_v1
+purpose: seen_history_discovery_only
+data_root: /home/sensen/dev/projects/gpu_ml/data/etf_rotation_v1
+as_of: '2026-09-17'
+start: '2023-07-27'
+groups: frameworks/etf_rotation/configs/etf_candidate14_economic_groups_v1.yaml
+universe: config/etf_rotation_universe_v1.json
+calendar_symbol: 510300.SH
+entry_lag: 2
+horizon: 5
+top_k: 2
+warmup: 60
+hac_lag: 10
+budget_cap: 96
+max_leads: 6
+# Direction is a hypothesis, not fitted or flipped after looking at labels.
+windows: [5, 20]
+mechanisms:
+  momentum: {direction: 1, hypothesis: price strength persists}
+  efficiency: {direction: 1, hypothesis: directional price paths persist}
+  reversal: {direction: -1, hypothesis: recent price overshoot reverses}
+  gap: {direction: -1, hypothesis: overnight overshoot reverses}
+  volatility: {direction: -1, hypothesis: lower realized risk predicts relative strength}
+  downside: {direction: -1, hypothesis: lower downside risk predicts relative strength}
+  range_expansion: {direction: 1, hypothesis: expanding relative range accompanies repricing}
+  amount_expansion: {direction: 1, hypothesis: expanding trading participation supports strength}
+  price_volume_corr: {direction: 1, hypothesis: volume follows positive price moves}
+  illiquidity: {direction: -1, hypothesis: lower price impact supports relative strength}
+  close_location: {direction: 1, hypothesis: repeated strong closes indicate demand}
+  intraday_return: {direction: 1, hypothesis: sustained session buying persists}
+screens:
+  min_days: 360
+  min_year_days: 40
+  min_positive_years: 2
+  min_ic: 0.01
+  min_ic_hac_t: 2.0
+  min_ic_block_t: 2.0
+  min_excess8_hac_t: 2.0
+  alpha: 0.05
+  max_abs_rank_corr: 0.7
+# No certification; the p-value screen is asymptotic and conditional on this batch.
+# Historical campaigns are not erased by this budget. No live/forward use allowed.

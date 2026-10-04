@@ -1,0 +1,11 @@
+domain: etf_rotation
+grammar_version: etf_family_cost_distribution_v1
+factor_source: cost_distribution
+asset_class_config: configs/etf_asset_classes_current20_v1.yaml
+atoms:
+  - {name: PROFIT_RATIO_60, family: cost_distribution}
+  - {name: PRICE_VS_AVGCOST_20, family: cost_distribution}
+  - {name: CHIP_RANGE_90_60, family: cost_distribution}
+  - {name: OVERHAND_THICKNESS_60, family: cost_distribution}
+  - {name: COST_CENTER_SHIFT_20, family: cost_distribution}
+grammar: {operators: [atomic], pair_policy: cross_family_only, max_atoms: 1}

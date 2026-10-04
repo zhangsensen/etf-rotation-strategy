@@ -1,0 +1,29 @@
+description: "Explicit recovery of the label-unopened round 14, then the authorized next 20 rounds"
+group: Research
+type: graph
+working_dir: /home/sensen/dev/projects/gpu_ml-coral
+max_active_runs: 1
+log_output: merged
+max_output_size: 16777216
+env:
+  - PYTHONUNBUFFERED: "1"
+  - PATH: "/home/sensen/.local/bin:/home/sensen/.cargo/bin:/usr/local/bin:/usr/bin:/bin"
+retry_policy:
+  limit: 0
+steps:
+  - id: resume_predecessor
+    name: Resume frozen predecessor with Sol review
+    run: >-
+      /home/sensen/dev/projects/gpu_ml-coral/.venv/bin/python -u
+      frameworks/etf_rotation/scripts/research/run_etf_autoresearch_campaign.py
+      --campaign-id luna_v6_campaign20_20260927 --rounds 20
+      --candidates-per-round 4 --mode mixed --profiles all
+      --model gpt-6-luna --reviewer gpt-5.6-sol --resume
+  - id: next_20_rounds
+    name: Run authorized next 20 Luna rounds with Sol review
+    depends: [resume_predecessor]
+    run: >-
+      /home/sensen/dev/projects/gpu_ml-coral/.venv/bin/python -u
+      frameworks/etf_rotation/scripts/research/schedule_etf_luna_campaign.py
+      --after luna_v6_campaign20_20260927
+      --campaign-id luna_v6_dagu20_20260927

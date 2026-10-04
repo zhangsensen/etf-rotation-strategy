@@ -1,0 +1,9 @@
+domain: etf_rotation
+grammar_version: etf_family_intraday_trend_consistency_v1
+factor_source: intraday_trend_consistency
+frequency: 60m
+available_frequencies: [1m, 5m, 15m, 30m, 60m]
+atoms:
+  - {name: INTRADAY_TREND_CONSISTENCY, family: intraday_trend_consistency}
+  - {name: INTRADAY_SIGN_FLIP_RATE, family: intraday_trend_consistency}
+grammar: {operators: [atomic], pair_policy: cross_family_only, max_atoms: 1}

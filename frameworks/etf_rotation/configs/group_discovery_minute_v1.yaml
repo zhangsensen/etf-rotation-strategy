@@ -1,0 +1,36 @@
+version: group_discovery_minute_v1
+purpose: seen_history_discovery_only
+source_type: minute
+data_root: /home/sensen/dev/projects/gpu_ml/data/etf_rotation_v1
+as_of: '2026-09-17'
+start: '2023-07-27'
+groups: frameworks/etf_rotation/configs/etf_candidate14_economic_groups_v1.yaml
+universe: config/etf_rotation_universe_v1.json
+calendar_symbol: 510300.SH
+entry_lag: 2
+horizon: 5
+top_k: 2
+warmup: 60
+hac_lag: 10
+budget_cap: 96
+max_leads: 6
+windows: [5, 20]
+mechanisms:
+  minute_late_return: {direction: 1, hypothesis: final-hour buying pressure persists}
+  minute_late_volume_share: {direction: 1, hypothesis: concentrated late participation supports repricing}
+  minute_signed_volume: {direction: 1, hypothesis: volume weighted positive minute bodies indicate demand}
+  minute_downside_ratio: {direction: -1, hypothesis: smaller downside semivariance share indicates resilience}
+  minute_close_vwap: {direction: 1, hypothesis: closing above daily transacted average indicates demand}
+  minute_path_efficiency: {direction: 1, hypothesis: intraday directional paths persist}
+  minute_impact_asymmetry: {direction: 1, hypothesis: lower down-bar than up-bar impact indicates resilience}
+  minute_volume_entropy: {direction: -1, hypothesis: concentrated intraday participation indicates information arrival}
+screens:
+  min_days: 360
+  min_year_days: 40
+  min_positive_years: 2
+  min_ic: 0.01
+  min_ic_hac_t: 2.0
+  min_ic_block_t: 2.0
+  min_excess8_hac_t: 2.0
+  alpha: 0.05
+  max_abs_rank_corr: 0.7

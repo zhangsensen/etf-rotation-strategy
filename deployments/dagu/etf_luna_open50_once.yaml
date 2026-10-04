@@ -1,0 +1,25 @@
+description: "One authorized 50-round ETF open discovery campaign; Luna mining, Sol review; fixed 14 ETFs / 8 groups and cold cutoff."
+group: Research
+type: graph
+working_dir: /home/sensen/dev/projects/-0927
+schedule:
+  - at: "2026-10-04T02:00:00+08:00"
+max_active_runs: 1
+timeout_sec: 172800
+log_output: merged
+max_output_size: 16777216
+env:
+  - PYTHONUNBUFFERED: "1"
+  - PATH: "/home/sensen/.local/bin:/home/sensen/.cargo/bin:/usr/local/bin:/usr/bin:/bin"
+retry_policy:
+  limit: 2
+  interval_sec: 60
+steps:
+  - id: mine_50_rounds
+    name: Run exactly one 50-round campaign with safe restart checks
+    run: >-
+      /home/sensen/dev/projects/-0927/frameworks/etf_rotation/.venv/bin/python -u
+      frameworks/etf_rotation/scripts/research/schedule_etf_luna_campaign.py
+      --after luna_v15_open5_20261003_continuation
+      --campaign-id luna_v15_dagu50_20261004
+      --rounds 50 --candidates-per-round 4

@@ -1,0 +1,13 @@
+domain: etf_rotation
+grammar_version: etf_family_fund_flow_v1
+factor_source: fund_flow
+data_subdirs: [fund_share]
+asset_class_config: configs/etf_asset_classes_current20_v1.yaml
+atoms:
+  - {name: SHARE_CHG_5, family: fund_flow}
+  - {name: SHARE_CHG_20, family: fund_flow}
+  - {name: SHARE_Z_60, family: fund_flow}
+  - {name: STREAK_DAYS, family: fund_flow}
+  - {name: SHARE_RET_CORR_20, family: fund_flow}
+  - {name: PRIMARY_SHARE_20, family: fund_flow}
+grammar: {operators: [atomic], pair_policy: cross_family_only, max_atoms: 1}

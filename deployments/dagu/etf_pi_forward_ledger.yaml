@@ -1,0 +1,24 @@
+description: "Paper forward ledger for gate-7 admitted ETF single factors: daily top-3 picks and realized open(D+2)->open(D+7) excess vs 14-EW. Read-only w.r.t. data; no positions."
+group: Research
+type: graph
+working_dir: /home/sensen/dev/projects/-0927
+schedule: "30 19 * * 1-5"
+max_active_runs: 1
+timeout_sec: 1800
+log_output: merged
+env:
+  - PYTHONUNBUFFERED: "1"
+steps:
+  - id: ledger
+    name: Update forward ledger for admitted factors (pi lane)
+    run: >-
+      /home/sensen/dev/projects/-0927/frameworks/etf_rotation/.venv/bin/python
+      frameworks/etf_rotation/scripts/research/pi_glm_mining/audit/forward_ledger.py
+  - id: ledger_sonnet
+    name: Update forward ledger for admitted factors (Sonnet lane)
+    depends: [ledger]
+    env:
+      - ETF_RUN_DIR: /home/sensen/dev/projects/-0927/runtime_outputs/etf_sonnet_mining_20260920
+    run: >-
+      /home/sensen/dev/projects/-0927/frameworks/etf_rotation/.venv/bin/python
+      frameworks/etf_rotation/scripts/research/pi_glm_mining/audit/forward_ledger.py

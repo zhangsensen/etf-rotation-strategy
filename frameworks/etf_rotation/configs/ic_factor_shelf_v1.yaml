@@ -1,0 +1,34 @@
+version: etf_ic_factor_shelf_v4_raw_ic_broad_discovery
+economic_axis_taxonomy: configs/economic_axis_taxonomy_v1.yaml
+target_factor_count: 15
+min_family_count: 15
+min_axis_count: 7
+min_effective_factor_count: 9.0
+max_selected_per_family: 1
+min_discovery_days: 360
+min_abs_discovery_ic: 0.01
+min_abs_seen_audit_ic: 0.01
+require_all_horizons_same_direction: true
+year_start: 2021
+year_end: 2023
+min_year_direction_count: 2
+max_abs_factor_rank_corr: 0.70
+rank_correlation_sample_stride: 5
+mechanism_limits:
+  intraday_turnover_composition:
+    expressions: [FIRST_HOUR_TURNOVER_SHARE, LAST_HOUR_TURNOVER_SHARE, FIRST_HOUR_SHARE_REL_20, FIRST_HOUR_SHARE_REL_60, AFTERNOON_TURNOVER_SHARE, TURNOVER_CONCENTRATION]
+    max_selected: 1
+  money_pressure_windows:
+    expressions: [MONEY_PRESSURE_5, MONEY_PRESSURE_20, MONEY_PRESSURE_60]
+    max_selected: 1
+  volatility_level:
+    expressions: [REALIZED_VOL_20, REALIZED_VOL_60, CATEGORY_VOL_20, CATEGORY_VOL_60, BENCHMARK_RESIDUAL_VOL_20, BENCHMARK_RESIDUAL_VOL_60, INTRADAY_REALIZED_VOL, DAILY_RANGE_PCT]
+    max_selected: 1
+  medium_term_trend:
+    expressions: [RET_20, RET_60, RET_120, SKIP_RECENT_MOM_20_5, SKIP_RECENT_MOM_60_5, SESSION_MEAN_20, SESSION_MEAN_60]
+    max_selected: 1
+  current_drawdown_state:
+    expressions: [CURRENT_DD_20, CURRENT_DD_60, CATEGORY_CURRENT_DD_20, CATEGORY_CURRENT_DD_60]
+    max_selected: 1
+require_identity_gate_pass: true
+evidence_status: discovery_candidate_not_certified

@@ -1,0 +1,78 @@
+version: group_ic_batch50_luna_five_20260923
+source_type: daily_rounds
+purpose: seen_history_discovery_only
+campaign_extension: true
+discovery_surface: IC_DISCOVERY_ONLY
+data_root: /home/sensen/dev/projects/gpu_ml/data/etf_rotation_v1
+as_of: '2026-09-17'
+start: '2023-07-27'
+evaluation_start: '2025-01-01'
+groups: frameworks/etf_rotation/configs/etf_candidate14_economic_groups_v1.yaml
+universe: config/etf_rotation_universe_v1.json
+calendar_symbol: 510300.SH
+entry_lag: 2
+horizon: 5
+top_k: 2
+warmup: 60
+hac_lag: 10
+max_leads: 4
+external_registered_definitions: 8
+windows:
+- 20
+screens:
+  min_days: 360
+  min_year_days: 40
+  min_positive_years: 2
+  min_ic: 0.01
+  min_ic_hac_t: 2.0
+  min_ic_block_t: 2.0
+  min_excess8_hac_t: 2.0
+  alpha: 0.05
+  max_abs_rank_corr: 0.7
+notes:
+  fixed_population: 14 ETFs / 8 economic groups
+  timing: close(D) signal; open(D+2) to open(D+7) H5 research label contract
+  evaluation_surface: previously-seen history, signal_date 2025-01-01 through 2026-09-17;
+    discovery, not OOS
+  direction_status: economic sign frozen before evaluation; no sign selection or automatic
+    flip
+  complete_input_windows_only: true
+  member_aggregation: each member atom computed independently, then existing fixed
+    group aggregation
+  source_vintage: canonical daily bars; no additional information sources
+prior_registered: 451
+budget_cap: 455
+new_definitions: 4
+mechanisms:
+  l50_peer_body_to_member_gap_beta:
+    direction: 1
+    raw_formula: 令x_i,t为其他13只前一日body_{j,t-1}=Close_{j,t-1}/Open_{j,t-1}-1等权均值；响应为本ETF当日gap_i,t=Open_{i,t}/Close_{i,t-1}-1。固定14成员完整行，最近20个(x_i,t,gap_i,t)配对总体OLS
+      beta，ddof=0，零方差/缺失NaN。
+    hypothesis: 同业前日盘中实体方向延续到本ETF次日开盘，表示隔夜跨品种价格发现。
+    family: peer_intraday_price_transmission
+    nearest_previous: l47_prior_body_to_next_gap_corr; l49_peer_gap_to_member_gap_beta
+    distinction: 本ETF响应于跨ETF peer body聚合，而不是个体自身body或同业gap。
+  l50_peer_body_to_member_body_beta:
+    direction: 1
+    raw_formula: 令x_i,t为其他13只前一日body_{j,t-1}=Close_{j,t-1}/Open_{j,t-1}-1等权均值；响应为本ETF当日body_i,t=Close_{i,t}/Open_{i,t}-1。固定14成员完整日，最近20完整配对总体OLS
+      beta，ddof=0；零方差/缺失NaN。
+    hypothesis: 同业盘中方向跨日延续到本ETF实体，反映更慢的相对资金轮动。
+    family: peer_intraday_price_transmission
+    nearest_previous: peer_lag_return_beta_20; l49_peer_gap_to_member_body_beta
+    distinction: 传导源明确为前日peer intraday body，不是peer close-close收益或peer overnight gap。
+  l50_peer_body_to_member_range_beta:
+    direction: -1
+    raw_formula: 以其他13只前一日|body_{j,t-1}|等权均值为x_i,t，响应为本ETF当日relrange_i,t=(High_{i,t}-Low_{i,t})/Close_{i,t-1}；固定14成员完整日，最近20完整配对总体OLS
+      beta (ddof=0)，零方差/缺失NaN。
+    hypothesis: peer前日盘中实体幅度放大本ETF次日波动区间，表示风险传播。
+    family: peer_intraday_price_transmission
+    nearest_previous: l49_peer_gap_to_member_range_beta; l42_peer_flow_impact_instability_20
+    distinction: shock变量是peer intraday body绝对幅度，非peer gap绝对幅度或peer成交活动。
+  l50_peer_range_to_member_open_dislocation_beta:
+    direction: -1
+    raw_formula: 令x_i,t为其他13只前一日relrange_{j,t-1}=(High-Low)/Close_{j,t-2}等权均值；响应本ETF当日open
+      dislocation_i,t=|Open_{i,t}/Close_{i,t-1}-1|；固定14成员完整行，最近20完整配对总体OLS beta (ddof=0)，零方差/缺失NaN。
+    hypothesis: 同业前日高波幅扩大本ETF次日跳空幅度，代表风险状态传播。
+    family: peer_intraday_price_transmission
+    nearest_previous: l49_peer_gap_to_member_range_beta; overnight_variance_share_20
+    distinction: 以peer完整日内range预测member下一日开盘dislocation；与peer gap冲击预测member当日range的时序/状态源均不同。

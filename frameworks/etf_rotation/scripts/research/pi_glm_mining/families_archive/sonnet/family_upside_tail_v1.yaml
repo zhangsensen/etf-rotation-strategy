@@ -1,0 +1,39 @@
+domain: etf_rotation
+grammar_version: etf_family_upside_tail_v1
+factor_source: upside_tail
+frequency: 1m
+asset_class_config: configs/etf_asset_classes_current20_v1.yaml
+# Literature provenance (directive: no citation, no atom):
+# BEST_DAY_20 / BEST_DAY_60: Bali, Cakici & Whitelaw (2011) MAX effect,
+#   rolling max daily return; symmetric counterpart of return_tail_shape's
+#   WORST_DAY_20/60.
+# MAX5_MEAN_20: mean of the top-5 daily returns within the trailing 20-day
+#   window (Bali-Cakici-Whitelaw robust MAX(5) variant).
+# TAIL_RATIO_20: BEST_DAY_20 / |WORST_DAY_20| — upside vs downside tail
+#   asymmetry (Barberis & Huang 2008 probability-weighting skew preference).
+# POS_DAY_FRAC_Z_20: 20d fraction of positive-return days, z-scored against
+#   its own trailing 120d mean/std (Kumar 2009 lottery-demand regime shift).
+# INTRADAY_MAXBAR_RET_20: 1m intraday lottery proxy — daily max single
+#   1-minute bar return, 20d mean (Bali-Cakici-Whitelaw MAX extended to
+#   intraday granularity).
+# *_XVOL (round_505, directive: "沿着显著通道加新构造"): round_504 atom_health
+#   traced BEST_DAY_20/60, MAX5_MEAN_20, INTRADAY_MAXBAR_RET_20 shadow flags
+#   (corr 0.72-0.84) to a single shelf factor, REALIZED_VOL_60 -- these four
+#   XVOL atoms are the Fama-MacBeth-style cross-sectional residual of each
+#   raw atom on REALIZED_VOL_60 (per date, OLS across eligible symbols),
+#   isolating the lottery-preference component that is not just volatility
+#   level (Bali-Cakici-Whitelaw themselves control for other characteristics
+#   in their cross-sectional regressions; this is the same idea applied to
+#   the one confound this pool actually exhibits).
+atoms:
+  - {name: BEST_DAY_20, family: upside_tail}
+  - {name: BEST_DAY_60, family: upside_tail}
+  - {name: MAX5_MEAN_20, family: upside_tail}
+  - {name: TAIL_RATIO_20, family: upside_tail}
+  - {name: POS_DAY_FRAC_Z_20, family: upside_tail}
+  - {name: INTRADAY_MAXBAR_RET_20, family: upside_tail}
+  - {name: BEST_DAY_20_XVOL, family: upside_tail}
+  - {name: BEST_DAY_60_XVOL, family: upside_tail}
+  - {name: MAX5_MEAN_20_XVOL, family: upside_tail}
+  - {name: INTRADAY_MAXBAR_RET_20_XVOL, family: upside_tail}
+grammar: {operators: [atomic], pair_policy: cross_family_only, max_atoms: 1}

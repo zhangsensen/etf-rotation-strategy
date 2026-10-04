@@ -1,0 +1,49 @@
+version: group_ic_bond_aux_20260925
+source_type: auxiliary_bond
+purpose: seen_history_discovery_only
+campaign_extension: true
+discovery_surface: IC_DISCOVERY_ONLY
+screens_version: cold_250_v1
+data_root: /home/sensen/dev/projects/gpu_ml/data/etf_rotation_v1
+as_of: '2026-03-24'
+start: '2023-07-27'
+evaluation_start: '2025-01-01'
+groups: frameworks/etf_rotation/configs/etf_candidate14_economic_groups_v1.yaml
+universe: config/etf_rotation_universe_v1.json
+calendar_symbol: 510300.SH
+auxiliary_symbol: 511010.SH
+entry_lag: 2
+horizon: 5
+top_k: 2
+warmup: 60
+hac_lag: 10
+max_leads: 1
+external_registered_definitions: 8
+screens:
+  min_days: 250
+  min_year_days: 40
+  min_positive_years: 2
+  min_ic: 0.01
+  min_ic_hac_t: 2.0
+  min_ic_block_t: 2.0
+  min_excess8_hac_t: 2.0
+  alpha: 0.05
+  max_abs_rank_corr: 0.7
+prior_registered: 529
+budget_cap: 530
+new_definitions: 1
+windows: [60]
+mechanisms:
+  bond_trend_exposure:
+    direction: 1
+    family: domestic_bond_trend_sensitivity
+    hypothesis: A sustained domestic bond rally proxies falling local discount rates; ETFs with stronger measured bond co-movement may lead the next H5 relative return if rate pressure persists.
+    raw_formula: rolling_beta_60(etf_daily_return, 511010_daily_return) * 511010_return_20
+notes:
+  fixed_population: 14 candidate ETFs / 8 economic groups; 511010.SH is an auxiliary feature only
+  signal_time: close(D) after all D domestic daily bars are published
+  label: open(D+2) to open(D+7), adjusted-open research prices
+  source_vintage: 511010 daily bars are timestamped by trade date; exact publication vintage is not certified
+  direction_status: positive economic prior frozen before any H5 label read
+  historical_status: already-seen 2025+ window, never independent confirmation
+  prelabel_rejection: bond_shock_underreaction_60 had mean_abs_daily_rank_corr 0.7531 with existing intraday_return_5 on 294 common dates, so it was dropped before H5 labels were read

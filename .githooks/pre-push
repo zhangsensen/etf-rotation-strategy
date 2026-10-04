@@ -1,0 +1,53 @@
+#!/usr/bin/env bash
+set -euo pipefail
+# Branch-hygiene reminder (warning-only, never blocks).
+# Policy: docs/governance/BRANCH_INTEGRATION_POLICY.md § "Trunk-Based Default".
+# Install (keeps the existing Gate-1 pre-commit intact):
+#   cp .githooks/pre-push .git/hooks/pre-push && chmod +x .git/hooks/pre-push
+#
+# Goal: stop branch/worktree sprawl before it becomes a cleanup project.
+# main is THE line. Feature branches are short-lived → PR → auto-deleted on merge.
+
+remote_name="${1:-origin}"
+branch=$(git symbolic-ref --short HEAD 2>/dev/null || true)
+updates_file="$(mktemp)"
+trap 'rm -f "$updates_file"' EXIT
+cat >"$updates_file"
+
+zero_sha="0000000000000000000000000000000000000000"
+while read -r local_ref local_sha remote_ref remote_sha; do
+  [[ -z "${local_ref:-}" || "$local_sha" == "$zero_sha" ]] && continue
+  local_commit="$(git rev-parse --verify -q "${local_sha}^{commit}" || true)"
+  if [[ -z "$local_commit" ]]; then
+    echo "CODE-ONLY PRE-PUSH GUARD FAILED: non-commit ref $local_ref" >&2
+    exit 1
+  fi
+  if [[ "$remote_sha" != "$zero_sha" ]]; then
+    base="$(git rev-parse "${remote_sha}^{commit}" 2>/dev/null || true)"
+  else
+    base=""
+    if [[ -z "$base" ]] && git show-ref --verify --quiet "refs/remotes/${remote_name}/main"; then
+      base="$(git merge-base "$local_commit" "refs/remotes/${remote_name}/main")"
+    fi
+    if [[ -z "$base" ]]; then
+      echo "CODE-ONLY PRE-PUSH GUARD FAILED: new ref requires a known remote main baseline; refusing unverified history" >&2
+      exit 1
+    fi
+  fi
+  guard="$(git rev-parse --path-format=absolute --git-common-dir)/../scripts/guard_no_data_in_git.sh"
+  bash "$guard" --range "$base" "$local_commit"
+done <"$updates_file"
+
+if [ -n "$branch" ] && [ "$branch" != "main" ]; then
+  behind=$(git rev-list --count "${branch}..${remote_name}/main" 2>/dev/null || echo 0)
+  echo "⚠️  branch-hygiene: pushing non-main branch '${branch}' (behind origin/main by ${behind:-0})."
+  echo "    Policy: develop on main; keep feature branches short-lived → PR → merge (auto-deleted)."
+  echo "    Do NOT let this become a long-lived/personal branch — that is how the sprawl starts."
+  if [ "${behind:-0}" -gt 30 ]; then
+    echo "    ❗ ${behind} commits behind main = heavy divergence. Rebase onto main now,"
+    echo "       before whole-merge becomes impossible and you have to white-list backport."
+  fi
+  echo "    (warning only — push proceeds. See docs/governance/BRANCH_INTEGRATION_POLICY.md)"
+fi
+
+exit 0

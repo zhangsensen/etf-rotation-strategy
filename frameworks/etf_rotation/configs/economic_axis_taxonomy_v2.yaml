@@ -1,0 +1,55 @@
+version: etf_economic_axis_taxonomy_v2
+frozen_at: '2026-09-19'
+purpose: pre_registered_breadth_and_multiplicity_grouping_for_future_etf_discovery
+axes:
+  trend_location:
+    families:
+    - directional_trend
+    - price_location
+  risk_dispersion:
+    families:
+    - downside_risk
+    - category_state
+    - gap_volatility
+  candle_gap_structure:
+    families:
+    - daily_candle
+    - gap_response
+    - auction_range_overlap
+  path_serial_dependence:
+    families:
+    - path_efficiency
+    - serial_dependence
+    - range_memory
+    - transaction_friction
+  tail_distribution:
+    families:
+    - return_tail_shape
+    - intraday_tail_reversal_jump
+    - intraday_return_distribution
+    - return_concentration
+  liquidity_price_volume:
+    families:
+    - trading_activity
+    - price_volume_coupling
+    - liquidity_variability
+    - conditional_activity
+    - activity_response
+    - uncertainty_activity
+  market_relations:
+    families:
+    - market_sensitivity
+    - cross_etf_lead_lag
+  intraday_return_price_path:
+    families:
+    - intraday_return_path
+    - intraday_vwap_position
+    - intraday_trend_consistency
+  intraday_volatility_shape:
+    families:
+    - intraday_volatility_structure
+  intraday_flow_impact:
+    families:
+    - intraday_turnover_shape
+    - intraday_price_volume_shock
+    - intraday_turnover_asymmetry

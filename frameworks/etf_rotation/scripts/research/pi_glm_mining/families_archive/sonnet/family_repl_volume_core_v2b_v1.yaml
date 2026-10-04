@@ -1,0 +1,13 @@
+domain: etf_rotation
+grammar_version: etf_family_repl_volume_core_v2b_v1
+factor_source: repl_volume_core_v2b
+frequency: 1m
+# S26R2 stage (round_617): part B of 2.
+# R2_BIGBAR_VOL_SHARE_20: big-bar (amount > 5x day's median bar amount)
+#   volume / day total volume, 20d mean.
+# R2_VOL_AUTOCORR_20: lag-1 autocorrelation of the 1m volume series
+#   within each day, 20d mean.
+atoms:
+  - {name: R2_BIGBAR_VOL_SHARE_20, family: repl_volume_core_v2b}
+  - {name: R2_VOL_AUTOCORR_20, family: repl_volume_core_v2b}
+grammar: {operators: [atomic], pair_policy: cross_family_only, max_atoms: 1}

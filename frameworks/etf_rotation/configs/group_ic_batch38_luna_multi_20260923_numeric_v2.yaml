@@ -1,0 +1,75 @@
+version: group_ic_batch38_luna_multi_20260923_numeric_v2
+source_type: daily_rounds
+purpose: seen_history_discovery_only
+campaign_extension: true
+discovery_surface: IC_DISCOVERY_ONLY
+data_root: /home/sensen/dev/projects/gpu_ml/data/etf_rotation_v1
+as_of: '2026-09-17'
+start: '2023-07-27'
+evaluation_start: '2025-01-01'
+groups: frameworks/etf_rotation/configs/etf_candidate14_economic_groups_v1.yaml
+universe: config/etf_rotation_universe_v1.json
+calendar_symbol: 510300.SH
+entry_lag: 2
+horizon: 5
+top_k: 2
+warmup: 60
+hac_lag: 10
+max_leads: 4
+external_registered_definitions: 8
+windows:
+- 20
+screens:
+  min_days: 360
+  min_year_days: 40
+  min_positive_years: 2
+  min_ic: 0.01
+  min_ic_hac_t: 2.0
+  min_ic_block_t: 2.0
+  min_excess8_hac_t: 2.0
+  alpha: 0.05
+  max_abs_rank_corr: 0.7
+notes:
+  fixed_population: 14 ETFs / 8 economic groups
+  timing: close(D) signal; open(D+2) to open(D+7) H5 research label contract
+  evaluation_surface: previously-seen history, signal_date 2025-01-01 through 2026-09-17;
+    discovery, not OOS
+  direction_status: economic sign frozen before evaluation; no sign selection or automatic
+    flip
+  complete_input_windows_only: true
+  member_aggregation: each member atom computed independently, then existing fixed
+    group aggregation
+  source_vintage: canonical daily bars; no additional information sources
+prior_registered: 407
+budget_cap: 407
+new_definitions: 0
+mechanisms:
+  l38_open_excursion_balance_mean:
+    direction: 1
+    raw_formula: 20日均值 b_t，其中 b_t=((High-Open)-(Open-Low))/(High-Low)，零区间缺失。
+    hypothesis: 平均极值空间偏向开盘上方，表示上行空间主导。
+    family: open_anchored_range_geometry
+    nearest_previous: wick_demand / intraday_body_utilization
+    distinction: 窗口均值给出净偏斜方向；不等同偏斜绝对幅度、时间依赖或符号稳定性。
+  l38_open_excursion_imbalance_magnitude:
+    direction: -1
+    raw_formula: 20日均值 |b_t|，b_t=((High-Open)-(Open-Low))/(High-Low)。
+    hypothesis: 极值空间长期偏向单侧、而非两侧均衡，提示日内区间失衡。
+    family: open_anchored_range_geometry
+    nearest_previous: range_body_ratio_dispersion
+    distinction: 对逐日偏斜取绝对值后平均，只度量失衡强度而不保留偏斜方向；不与有符号均值同排名逻辑。
+  l38_open_excursion_balance_ar1:
+    direction: 1
+    raw_formula: 20日b_t序列的一阶Pearson自相关，至少完整窗口且零方差缺失。
+    hypothesis: 开盘锚定的上下空间优势持续，可能反映方向性价格发现。
+    family: open_anchored_range_geometry
+    nearest_previous: intraday_body_ar1
+    distinction: 自相关对象是区间在open两侧的分配，不是open-close实体符号/幅度。
+  l38_open_excursion_sign_switch_rate:
+    direction: -1
+    raw_formula: 20日b_t非零符号相邻切换次数/(有效相邻对数)，b_t=0的日子不计。
+    hypothesis: 上、下空间主导频繁切换表示日内区间方向供需不稳定。
+    family: open_anchored_range_geometry
+    nearest_previous: overnight_intraday_switch_rate
+    distinction: 只看每日high/low相对open两侧空间优势的跨日切换，不比较隔夜与日内收益符号。
+rejudge_of: group_ic_batch38_luna_multi_20260923

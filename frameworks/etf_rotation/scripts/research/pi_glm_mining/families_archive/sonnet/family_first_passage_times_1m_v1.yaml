@@ -1,0 +1,30 @@
+domain: etf_rotation
+grammar_version: etf_family_first_passage_times_1m_v1
+factor_source: first_passage_times_1m
+frequency: 1m
+# Literature provenance (directive: no citation, no atom):
+# FIRST_PASSAGE_UP_20 / FIRST_PASSAGE_DOWN_20: Karatzas & Shreve first-
+#   passage-time framing; bar index of first touch of +/- sigma_prev
+#   (sigma calibrated from the prior 20 daily returns, no fixed
+#   threshold), untouched days record n_bars; 20d mean.
+# PASSAGE_ASYM_20: FIRST_PASSAGE_DOWN_20 - FIRST_PASSAGE_UP_20 (directional
+#   first-passage asymmetry).
+# UP_FIRST_FRAC_20: Zumbach (2007) direction framing; fraction of days
+#   where +sigma was touched before -sigma, 20d mean.
+# FALSE_BREAK_RATE_20: fraction of days where, after first touching
+#   +/-0.5*sigma_prev, price reverts back through the open before day
+#   end, 20d mean (days that never touched 0.5*sigma are excluded).
+# SIGMA_CROSSING_COUNT_20: Zumbach/Guillaume et al. (1997) directional-
+#   change event count using threshold sigma_prev, 20d mean.
+# FIRST_PASSAGE_UP_CHG_20 / FIRST_PASSAGE_DOWN_CHG_20: 20-day change of
+#   the corresponding first-passage level atom.
+atoms:
+  - {name: FIRST_PASSAGE_UP_20, family: first_passage_times_1m}
+  - {name: FIRST_PASSAGE_DOWN_20, family: first_passage_times_1m}
+  - {name: PASSAGE_ASYM_20, family: first_passage_times_1m}
+  - {name: UP_FIRST_FRAC_20, family: first_passage_times_1m}
+  - {name: FALSE_BREAK_RATE_20, family: first_passage_times_1m}
+  - {name: SIGMA_CROSSING_COUNT_20, family: first_passage_times_1m}
+  - {name: FIRST_PASSAGE_UP_CHG_20, family: first_passage_times_1m}
+  - {name: FIRST_PASSAGE_DOWN_CHG_20, family: first_passage_times_1m}
+grammar: {operators: [atomic], pair_policy: cross_family_only, max_atoms: 1}

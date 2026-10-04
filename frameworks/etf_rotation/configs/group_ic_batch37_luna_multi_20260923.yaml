@@ -1,0 +1,74 @@
+version: group_ic_batch37_luna_multi_20260923
+source_type: daily_rounds
+purpose: seen_history_discovery_only
+campaign_extension: true
+discovery_surface: IC_DISCOVERY_ONLY
+data_root: /home/sensen/dev/projects/gpu_ml/data/etf_rotation_v1
+as_of: '2026-09-17'
+start: '2023-07-27'
+evaluation_start: '2025-01-01'
+groups: frameworks/etf_rotation/configs/etf_candidate14_economic_groups_v1.yaml
+universe: config/etf_rotation_universe_v1.json
+calendar_symbol: 510300.SH
+entry_lag: 2
+horizon: 5
+top_k: 2
+warmup: 60
+hac_lag: 10
+max_leads: 4
+external_registered_definitions: 8
+windows:
+- 20
+screens:
+  min_days: 360
+  min_year_days: 40
+  min_positive_years: 2
+  min_ic: 0.01
+  min_ic_hac_t: 2.0
+  min_ic_block_t: 2.0
+  min_excess8_hac_t: 2.0
+  alpha: 0.05
+  max_abs_rank_corr: 0.7
+notes:
+  fixed_population: 14 ETFs / 8 economic groups
+  timing: close(D) signal; open(D+2) to open(D+7) H5 research label contract
+  evaluation_surface: previously-seen history, signal_date 2025-01-01 through 2026-09-17;
+    discovery, not OOS
+  direction_status: economic sign frozen before evaluation; no sign selection or automatic
+    flip
+  complete_input_windows_only: true
+  member_aggregation: each member atom computed independently, then existing fixed
+    group aggregation
+  source_vintage: canonical daily bars; no additional information sources
+prior_registered: 399
+budget_cap: 403
+new_definitions: 4
+mechanisms:
+  l37_upper_tail_mean_excess:
+    direction: 1
+    raw_formula: 20日简单收益经验q90，统计r>=q90子集的mean(r)-q90；完整20个收益，条件集为空缺失。
+    hypothesis: 右尾超额幅度反映少数强势日的非线性上行贡献。
+    family: return_tail_shape
+    nearest_previous: market_coskewness / clv_excess_kurtosis
+    distinction: 单序列收益右尾条件超额，不含市场共矩或CLV
+  l37_lower_tail_mean_excess:
+    direction: -1
+    raw_formula: 20日简单收益经验q10，统计r<=q10子集的q10-mean(r)；正值表示左尾额外损失，完整20个收益，条件集为空缺失；方向-1。
+    hypothesis: 左尾超额损失越负，价格脆弱性越高，因此方向-1。
+    family: return_tail_shape
+    nearest_previous: downside_semivariance_share / bipower_jump_share
+    distinction: 条件尾均值超额，不是全体负收益平方占比或跳跃方差
+  l37_tail_magnitude_asymmetry:
+    direction: 1
+    raw_formula: '[mean(r|r>=q90)+mean(r|r<=q10)]/mean(|r|)，q90/q10来自完整20日收益窗；分母为0或尾集合为空缺失。'
+    hypothesis: 右尾均值与负左尾均值之和相对典型波动为正时，上尾贡献更强；方向+1。
+    family: return_tail_shape
+    nearest_previous: market_residual_skew / gap_excess_kurtosis
+    distinction: 原始日收益两侧条件均值差，不是残差偏度或gap矩
+  l37_central_return_bias:
+    direction: 1
+    raw_formula: 20日收益中位数 - 算术均值；除以收益绝对值中位数
+    hypothesis: 典型日表现强于均值可表示收益不依赖少数极端日的分布稳健性。
+    family: return_tail_shape
+    nearest_previous: return_concentration / return_acceleration_5
+    distinction: 中位数与均值偏离，非收益集中度或时序加速度

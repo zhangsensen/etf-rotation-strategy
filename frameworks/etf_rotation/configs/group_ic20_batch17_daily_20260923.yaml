@@ -1,0 +1,59 @@
+version: group_ic20_batch17_daily_20260923
+source_type: daily_rounds
+purpose: seen_history_discovery_only
+campaign_extension: true
+discovery_surface: 2025_DIRECTION_DISCOVERY_ONLY
+data_root: /home/sensen/dev/projects/gpu_ml/data/etf_rotation_v1
+as_of: '2025-12-31'
+start: '2023-07-27'
+evaluation_start: '2025-01-01'
+groups: frameworks/etf_rotation/configs/etf_candidate14_economic_groups_v1.yaml
+universe: config/etf_rotation_universe_v1.json
+calendar_symbol: 510300.SH
+entry_lag: 2
+horizon: 5
+top_k: 2
+warmup: 60
+hac_lag: 10
+max_leads: 6
+prior_registered: 254
+budget_cap: 260
+new_definitions: 6
+external_registered_definitions: 8
+windows: [20]
+mechanisms:
+  amount_shock_body_efficiency:
+    direction: 1
+    hypothesis: absolute amount innovation weighted by body absorption efficiency
+  amount_shock_wick_rejection:
+    direction: 1
+    hypothesis: absolute amount innovation weighted by body-wick rejection state
+  amount_shock_direction_alignment:
+    direction: 1
+    hypothesis: amount innovation shock magnitude aligned or opposed to body direction
+  amount_shock_close_location_alignment:
+    direction: 1
+    hypothesis: amount innovation shock magnitude aligned with close location direction
+  amount_shock_gap_repair:
+    direction: 1
+    hypothesis: amount innovation shock magnitude during same-day gap repair
+  amount_shock_close_extremity:
+    direction: 1
+    hypothesis: amount innovation shock magnitude at extreme close locations
+screens:
+  min_days: 360
+  min_year_days: 40
+  min_positive_years: 2
+  min_ic: 0.01
+  min_ic_hac_t: 2.0
+  min_ic_block_t: 2.0
+  min_excess8_hac_t: 2.0
+  alpha: 0.05
+  max_abs_rank_corr: 0.7
+notes:
+  fixed_population: 14 ETFs / 8 economic groups
+  timing: close(D) signal; open(D+2) to open(D+7) H5 label contract
+  amount_source: canonical daily turnover/amount, not volume
+  raw_direction_status: all six Stage1 definitions fixed at +1
+  no_label_read: true
+  no_real_market_run_in_implementation_task: true

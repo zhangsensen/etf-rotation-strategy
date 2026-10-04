@@ -1,0 +1,12 @@
+domain: etf_rotation
+grammar_version: etf_family_repl_pi37_core_v1_v1
+factor_source: repl_pi37_core_v1
+frequency: 1m
+# S50 stage (round_652): precise-definition reproduction of pi lane's
+# stage-37 mechanism atoms (R_ prefix). See repl_pi37_core_v1.py module
+# docstring for full definitions and contrast with existing S12
+# ULCER_INDEX_20 (running-peak base, not fixed-open base).
+atoms:
+  - {name: R_LUNCH_DIR_BET_20, family: repl_pi37_core_v1}
+  - {name: R_VFP_ULCER_SHIFT_20, family: repl_pi37_core_v1}
+grammar: {operators: [atomic, rank_spread], pair_policy: cross_family_only, max_atoms: 1}

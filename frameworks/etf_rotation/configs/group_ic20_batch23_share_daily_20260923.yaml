@@ -1,0 +1,68 @@
+version: group_ic20_batch23_share_daily_20260923
+source_type: share
+purpose: seen_history_discovery_only
+campaign_extension: true
+discovery_surface: 2025_DIRECTION_DISCOVERY_ONLY
+availability_status: NEXT_SESSION_ASSUMPTION_NOT_PUBLICATION_PROOF
+max_stale_calendar_days: 7
+data_root: /home/sensen/dev/projects/gpu_ml/data/etf_rotation_v1
+as_of: '2025-12-31'
+start: '2023-07-27'
+evaluation_start: '2025-01-01'
+groups: frameworks/etf_rotation/configs/etf_candidate14_economic_groups_v1.yaml
+universe: config/etf_rotation_universe_v1.json
+calendar_symbol: 510300.SH
+entry_lag: 2
+horizon: 5
+top_k: 2
+warmup: 60
+hac_lag: 10
+max_leads: 6
+prior_registered: 378
+budget_cap: 384
+new_definitions: 6
+external_registered_definitions: 8
+windows: [20]
+mechanisms:
+  share_amount_flow_divergence_corr: {direction: 1, hypothesis: rolling correlation between fund-share log flow and canonical daily turnover log innovation}
+  share_amount_tail_mismatch_rate: {direction: 1, hypothesis: rate that a share-flow tail day and an amount-innovation tail day disagree}
+  share_flow_amount_signed_alignment: {direction: 1, hypothesis: mean sign agreement between share flow and amount innovation}
+  share_lag_amount_abs_corr: {direction: 1, hypothesis: prior-day share flow correlated with same-day absolute amount innovation}
+  share_amount_ratio_dispersion: {direction: 1, hypothesis: dispersion of abs share flow scaled by abs amount innovation}
+  share_flow_amount_conditional_asymmetry: {direction: 1, hypothesis: mean abs share flow on amount-up days minus amount-down days}
+screens:
+  min_days: 360
+  min_year_days: 40
+  min_positive_years: 2
+  min_ic: 0.01
+  min_ic_hac_t: 2.0
+  min_ic_block_t: 2.0
+  min_excess8_hac_t: 2.0
+  alpha: 0.05
+  max_abs_rank_corr: 0.7
+notes:
+  status: >-
+    BLOCKED_PENDING_MASTER_2026_09_23_STRUCTURAL_DIAGNOSTIC, confirmed by master 2026-09-23. Reason: within the
+    real 2025-01-01..2026-09-17 evaluation window, us_large_growth (513100.SH) fund-share zero-change-day rate is
+    98.8% (2025) and 94.8% (2026), a genuinely degenerate single-member group, not an artifact of the earlier
+    pre-2025 proxy window this batch's own read-only diagnostic was restricted to (that diagnostic, window-limited
+    to as_of 2024-12-31 or earlier, found a weaker but directionally consistent 0.20/0.44 full-window/trailing-
+    quarter rate; see runtime_outputs/etf_rotation_research/diagnostics/batch23_share_amount_20260923/). Other
+    single-member groups over the same eval-window split: hk_technology (513130.SH) 0.12/0.14/0.20 across
+    2023-07~2024/2025/2026, innovative_pharma member 513120.SH 0.10/0.06/0.12; neither breaches the gate. A
+    degenerate single-member group's group-day is dropped whenever its member is NaN or tied, which collapses the
+    required all-8-groups-valid daily cross-section for IC, so the whole family's coverage is at risk, not just
+    us_large_growth's own group. Not registered against the persistent ledger; do not run discover_etf_groups.py
+    against this config until master clears this note.
+  audit_flag_for_master_only: >-
+    master noted that already-registered share-family batches (group_share_v1, batch8_share, etc.) are likely
+    affected by the same us_large_growth degeneracy within the 2025+ evaluation window. Left for master's own
+    review; not investigated or acted on by this batch.
+  fixed_population: 14 ETFs / 8 economic groups
+  timing: close(D) signal; open(D+2) to open(D+7) H5 label contract
+  information_source: fund_share (NEXT_SESSION_ASSUMPTION creation/redemption flow) crossed with canonical daily turnover amount; this share x amount cross has not been used by any prior batch (share family used share-only or share-vs-return; amount family used amount-vs-OHLC only)
+  raw_direction_status: all six Stage1 definitions fixed at +1
+  operator_precedent: corr / tail-mismatch-rate / signed-alignment / lag-corr / ratio-dispersion / conditional-asymmetry operators reused verbatim from batch14/15/17/19 daily-OHLC families; the new element is the share-flow x amount-innovation cross, not the operator, flagged for master review
+  single_member_group_comparability: inherits the share family's existing per-member equal-weight group aggregation already accepted for share_redemption/persistence/acceleration/volatility/share_flow_return_lead in batch8_share; no new comparability question is introduced by this batch
+  no_label_read: true
+  no_formal_evaluation_in_implementation_task: true

@@ -1,0 +1,51 @@
+version: group_ic20_batch19_daily_20260923
+source_type: daily_rounds
+purpose: seen_history_discovery_only
+campaign_extension: true
+discovery_surface: 2025_DIRECTION_DISCOVERY_ONLY
+data_root: /home/sensen/dev/projects/gpu_ml/data/etf_rotation_v1
+as_of: '2025-12-31'
+start: '2023-07-27'
+evaluation_start: '2025-01-01'
+groups: frameworks/etf_rotation/configs/etf_candidate14_economic_groups_v1.yaml
+universe: config/etf_rotation_universe_v1.json
+calendar_symbol: 510300.SH
+entry_lag: 2
+horizon: 5
+top_k: 2
+warmup: 60
+hac_lag: 10
+max_leads: 10
+prior_registered: 306
+budget_cap: 316
+new_definitions: 10
+external_registered_definitions: 8
+windows: [20]
+mechanisms:
+  body_positive_run_mean: {direction: 1, hypothesis: persistence length of positive open-to-close body states}
+  body_negative_run_mean: {direction: 1, hypothesis: persistence length of negative open-to-close body states}
+  gap_positive_run_mean: {direction: 1, hypothesis: persistence length of positive overnight gap states}
+  gap_negative_run_mean: {direction: 1, hypothesis: persistence length of negative overnight gap states}
+  clv_extreme_recovery_rate: {direction: 1, hypothesis: frequency of next-day recovery toward center after extreme close location}
+  range_shock_compression_rate: {direction: 1, hypothesis: frequency of one-day range expansion followed by compression}
+  amount_price_tail_mismatch_rate: {direction: 1, hypothesis: mismatch between amount-innovation and body-magnitude tail states}
+  gap_body_tail_direction_asymmetry: {direction: 1, hypothesis: signed body response on unusually large gap days}
+  range_shock_body_absorption: {direction: 1, hypothesis: body absorption efficiency conditional on range expansion}
+  amount_tail_clv_alignment: {direction: 1, hypothesis: amount-innovation tail direction aligned with close location}
+screens:
+  min_days: 360
+  min_year_days: 40
+  min_positive_years: 2
+  min_ic: 0.01
+  min_ic_hac_t: 2.0
+  min_ic_block_t: 2.0
+  min_excess8_hac_t: 2.0
+  alpha: 0.05
+  max_abs_rank_corr: 0.7
+notes:
+  fixed_population: 14 ETFs / 8 economic groups
+  timing: close(D) signal; open(D+2) to open(D+7) H5 label contract
+  no_entropy_kurtosis_concentration_phase_migration: true
+  raw_direction_status: all ten Stage1 definitions fixed at +1
+  no_label_read: true
+  no_real_market_run_in_implementation_task: true

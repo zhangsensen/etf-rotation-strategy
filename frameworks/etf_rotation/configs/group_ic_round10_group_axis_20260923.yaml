@@ -1,0 +1,95 @@
+version: group_ic_round10_group_axis_20260923
+source_type: claude_rounds
+purpose: seen_history_discovery_only
+campaign_extension: true
+discovery_surface: IC_DISCOVERY_ONLY
+data_root: /home/sensen/dev/projects/gpu_ml/data/etf_rotation_v1
+as_of: '2026-09-17'
+start: '2023-07-27'
+evaluation_start: '2025-01-01'
+groups: frameworks/etf_rotation/configs/etf_candidate14_economic_groups_v1.yaml
+universe: config/etf_rotation_universe_v1.json
+calendar_symbol: 510300.SH
+entry_lag: 2
+horizon: 5
+top_k: 2
+warmup: 60
+hac_lag: 10
+max_leads: 4
+external_registered_definitions: 8
+screens:
+  min_days: 360
+  min_year_days: 40
+  min_positive_years: 2
+  min_ic: 0.01
+  min_ic_hac_t: 2.0
+  min_ic_block_t: 2.0
+  min_excess8_hac_t: 2.0
+  alpha: 0.05
+  max_abs_rank_corr: 0.7
+prior_registered: 496
+budget_cap: 497
+new_definitions: 1
+mechanisms:
+  group_return_autocorrelation_relative:
+    direction: 1
+    window: 60
+    hypothesis: "MY_ASSUMPTION. Master gave no formula or angle for round 10 (both 9 and 10 fully self-devised). Each member's factor value is its OWN ECONOMIC GROUP's trailing lag-1 return autocorrelation (group_returns_df, the same 8-group equal-weight all-members-valid construction round 7's beta_to_leader_group and round 6's dispersion candidates use) -- a regime indicator: is this member's sector currently in a trending (positive autocorrelation) or choppy/mean-reverting (negative autocorrelation) state. A genuinely unexplored axis: neither claude_rounds' own family list nor the cross-engine daily_rounds/minute rows in the shared families.csv registry have any group_momentum/group_rank/group_autocorr/group_leader entry. Different statistic and lag structure from tsmom_consistency (20-day BLOCK sign-consistency, already registered, DO_NOT_REPEAT_TESTED_VARIANTS_WITHOUT_NEW_INFORMATION) and from daily_rounds:market_residual_sign_persistence/_turning_rate (per-MEMBER residual, not per-GROUP raw return). For the 6 single-member economic groups (hk_technology, us_large_growth, gold, metals_equity, dividend_low_vol, electric_power) this reduces to that member's own raw-return lag-1 autocorrelation (no group-aggregation effect for those 6, disclosed not hidden); only the 2 multi-member groups (cn_technology_manufacturing, innovative_pharma) get genuine group-level aggregation. direction +1: membership in a currently trending group predicts relative continuation."
+    raw_formula: "group_returns = 8-group equal-weight mean return (all members of that group valid); lag1_autocorr = group_returns.rolling(60).corr(group_returns.shift(1)); each member's factor value = its own group's lag1_autocorr that day."
+notes:
+  fixed_population: 14 ETFs / 8 economic groups
+  timing: close(D) signal; open(D+2) to open(D+7) H5 research label contract
+  evaluation_surface: previously-seen history, signal_date 2025-01-01 through 2026-09-17; discovery, not OOS
+  direction_status: economic sign frozen before evaluation; no sign selection or automatic flip
+  complete_input_windows_only: true
+  member_aggregation: each member atom computed independently, then existing fixed group aggregation
+  source_vintage: canonical daily bars; no additional information sources
+  engine: frameworks/etf_rotation/src/etf_strategy/core/etf_group_claude_rounds.py, source_type=claude_rounds.
+  campaign: >-
+    Round 10 of the USER 2026-09-23 50-round sub-agent mining campaign, master's checkpoint round (snapshot +
+    saturation report due after this round; round 11 does not open without master/USER's explicit go-ahead).
+    Round 9 registered 3 candidates, 0 HAS_IC. Round 10: master gave no angle, fully self-devised. Originally
+    3 candidates were planned; 1 (a Kaufman-Efficiency-Ratio-on-residual construction) was closed at the
+    pre-proposal due-diligence stage before ever being drafted here, because it is an exact formula match to
+    the already-registered daily_rounds:market_residual_path_efficiency (INCOMPLETE_EVIDENCE, not closed, but
+    a near-exact duplicate is not new information). Of the remaining 2 drafted candidates, 1
+    (group_momentum_rank_relative_60) was dropped at the no-label dedup precheck (0.9124 vs
+    vol_scaled_momentum_60, plus 0.70-0.74 vs 2 of round 9's own delayed-window candidates). Only
+    group_return_autocorrelation_relative_60 survives, below the round-5-established "dedup后>=3" floor and
+    below round 7's precedent-waived 2; master explicitly waived the floor for this round rather than force a
+    weak 3rd candidate, per the campaign's standing "report honestly, don't pad with weak variants" rule.
+  pre_proposal_due_diligence: >-
+    Before drafting any round 10 formula, checked runtime_outputs/etf_rotation_research/ic_inventory_20260923_
+    claude_5rounds/families.csv (which is shared across claude_rounds, daily_rounds, and minute engines) for
+    two originally-planned angles: (1) per-member amount/turnover price-volume confirmation and up/down-day
+    asymmetry -- found 15+ daily_rounds:amount_* rows and 15+ minute:minute_amount_*/minute_turnover_return_
+    corr rows already registered, several explicitly DO_NOT_REPEAT_TESTED_VARIANTS_WITHOUT_NEW_INFORMATION
+    (including daily_rounds:amount_return_asymmetry, near-identical to the up/down-day turnover asymmetry idea
+    considered); (2) a Kaufman Efficiency Ratio applied to the market residual -- found daily_rounds:market_
+    residual_path_efficiency already registered with the exact same formula (sum(residual)/sum(|residual|)).
+    Both closed before drafting, redirected effort to the economic-group axis (see mechanisms above), which
+    returned zero hits for group_momentum/group_rank/group_autocorr/group_leader keywords in either engine's
+    family list.
+  family_precheck: >-
+    checked against runtime_outputs/etf_rotation_research/ic_inventory_20260923_claude_5rounds/families.csv
+    (freshest snapshot, post round 1-5; rounds 6-9's 14 registered candidates not yet reflected as rows, but
+    their real saved scores ARE in the dedup library below). No exact-duplicate under source_type=claude_rounds
+    or any other engine for group_return_autocorrelation_relative_60.
+  no_label_dedup_precheck: >-
+    computed group scores only (no forward return/H5 label), 2025-01-01..2026-09-23, against the full saved
+    scores_*.csv library (deduped to latest per candidate id, now including rounds 1-9's 31 registered
+    candidates, n_library_scores_compared=464) plus group_momentum_rank_relative_60 (this round's own dropped
+    candidate, symmetric NEW-vs-NEW recording). group_return_autocorrelation_relative_60 max mean(abs(daily
+    cross-sectional rank corr))=0.5722 (<0.7, clean, not flagged). The dropped candidate
+    (group_momentum_rank_relative_60) hit 0.9124 vs vol_scaled_momentum_60 -- the same family that also ate
+    round 8's rank_persistence_60 (0.8736), now confirmed as this campaign's single highest-collision-rate
+    registered family; also 0.7403 vs post_market_tail_delayed_relative_return_60 and 0.7053 vs post_own_tail_
+    delayed_relative_return_60 (both round 9). See
+    runtime_outputs/etf_rotation_research/diagnostics/round10_20260923/dedup_precheck.csv.
+  eval_window_structural_precheck: >-
+    2025-01-01..2026-09-23 (420 days), read-only feature check, no labels read.
+    group_return_autocorrelation_relative_60: every single-member group nan_rate=0.0, mode_value_rate=0.0024
+    (no near-constant group), days_all_8_valid=420/420. Not dropped on this precheck. See
+    runtime_outputs/etf_rotation_research/diagnostics/round10_20260923/structural_diagnostics.csv.
+  no_label_read: true
+  no_formal_evaluation_in_implementation_task: true

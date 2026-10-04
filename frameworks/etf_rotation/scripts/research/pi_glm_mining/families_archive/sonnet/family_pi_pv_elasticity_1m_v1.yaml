@@ -1,0 +1,11 @@
+domain: etf_rotation
+grammar_version: etf_family_pi_pv_elasticity_1m_v1
+factor_source: pi_pv_elasticity_1m
+frequency: 1m
+# S14 cross-lane replication (directive 2026-09-20 round_569): Karpoff
+# (1987) volume-price elasticity, OLS slope of |1m return| on log(1m
+# volume), 20d mean of the daily slope. Independently built from the
+# directive's literature definition; pi workspace code not read.
+atoms:
+  - {name: PV_ELASTICITY_20, family: pi_pv_elasticity_1m}
+grammar: {operators: [atomic, rank_spread], pair_policy: cross_family_only, max_atoms: 1}

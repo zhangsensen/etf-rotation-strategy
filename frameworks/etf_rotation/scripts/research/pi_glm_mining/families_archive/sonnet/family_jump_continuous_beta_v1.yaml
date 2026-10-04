@@ -1,0 +1,25 @@
+domain: etf_rotation
+grammar_version: etf_family_jump_continuous_beta_v1
+factor_source: jump_continuous_beta
+frequency: 1m
+benchmark_symbols: [510300.SH, 510500.SH]
+# Literature provenance (directive: no citation, no atom):
+# CONTINUOUS_BETA_20/60: Todorov & Bollerslev (2010) continuous-component
+#   beta -- daily covariation(asset,market)/variance(market) computed over
+#   1m bars classified as non-jump (neither asset nor market |return|
+#   exceeds 4.5x the PREVIOUS day's robust sigma), 20d/60d mean.
+# JUMP_BETA_20: same paper's jump-component beta -- covariation/variance
+#   computed over jump-classified bars only, on days with >=1 jump bar,
+#   20d mean (sparse by construction, min_periods=5).
+# BETA_GAP_20: Bollerslev, Li & Todorov (2016) "Roughing Up Beta" --
+#   JUMP_BETA_20 - CONTINUOUS_BETA_20, the crash-beta gap; jump and
+#   continuous betas earn different cross-sectional risk premia.
+# JUMP_BETA_STABILITY_20: 20d rolling std of the daily jump beta --
+#   uncertainty of the crash-beta estimate.
+atoms:
+  - {name: CONTINUOUS_BETA_20, family: jump_continuous_beta}
+  - {name: CONTINUOUS_BETA_60, family: jump_continuous_beta}
+  - {name: JUMP_BETA_20, family: jump_continuous_beta}
+  - {name: BETA_GAP_20, family: jump_continuous_beta}
+  - {name: JUMP_BETA_STABILITY_20, family: jump_continuous_beta}
+grammar: {operators: [atomic], pair_policy: cross_family_only, max_atoms: 1}

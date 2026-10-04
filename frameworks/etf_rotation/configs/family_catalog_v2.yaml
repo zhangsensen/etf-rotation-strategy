@@ -1,0 +1,125 @@
+version: etf_family_catalog_v2
+research_question: cross_sectional_future_relative_return_5_10_20d
+signal_cutoff: D_CLOSE
+entry: D_PLUS_2_OPEN
+available_families:
+- source: directional_trend
+  config: configs/family_directional_trend_v1.yaml
+  data: daily_ohlcv
+- source: price_location
+  config: configs/family_price_location_v1.yaml
+  data: daily_ohlcv
+- source: downside_risk
+  config: configs/family_downside_risk_v1.yaml
+  data: daily_ohlcv
+- source: daily_candle
+  config: configs/family_daily_candle_v1.yaml
+  data: daily_ohlcv
+- source: path_efficiency
+  config: configs/family_path_efficiency_v1.yaml
+  data: daily_ohlcv
+- source: return_tail_shape
+  config: configs/family_return_tail_shape_v1.yaml
+  data: daily_ohlcv
+- source: trading_activity
+  config: configs/family_trading_activity_v1.yaml
+  data: daily_amount_volume
+- source: price_volume_coupling
+  config: configs/family_price_volume_coupling_v1.yaml
+  data: daily_ohlcv_amount
+- source: market_sensitivity
+  config: configs/family_market_sensitivity_v1.yaml
+  data: daily_close_benchmark
+- source: category_state
+  config: configs/family_category_state_v1.yaml
+  data: daily_close_classification
+- source: serial_dependence
+  config: configs/family_serial_dependence_v1.yaml
+  data: daily_close
+- source: cross_etf_lead_lag
+  config: configs/family_cross_etf_lead_lag_v1.yaml
+  data: daily_close_benchmark
+- source: intraday_return_path
+  config: configs/family_intraday_return_path_v1.yaml
+  data: intraday_60m
+- source: intraday_turnover_shape
+  config: configs/family_intraday_turnover_shape_v1.yaml
+  data: intraday_60m_turnover
+- source: intraday_vwap_position
+  config: configs/family_intraday_vwap_position_v1.yaml
+  data: intraday_60m_price_volume
+- source: intraday_trend_consistency
+  config: configs/family_intraday_trend_consistency_v1.yaml
+  data: intraday_60m_path
+- source: intraday_volatility_structure
+  config: configs/family_intraday_volatility_structure_v1.yaml
+  data: intraday_60m_path
+- source: intraday_price_volume_shock
+  config: configs/family_intraday_price_volume_shock_v1.yaml
+  data: intraday_60m_price_volume
+- source: range_memory
+  config: configs/family_range_memory_v1.yaml
+  data: daily_ohlcv
+- source: gap_response
+  config: configs/family_gap_response_v1.yaml
+  data: daily_ohlcv
+- source: intraday_turnover_asymmetry
+  config: configs/family_intraday_turnover_asymmetry_v1.yaml
+  data: intraday_15m_price_turnover
+- source: intraday_tail_reversal_jump
+  config: configs/family_intraday_tail_reversal_jump_v1.yaml
+  data: intraday_5m_price_path
+- source: intraday_return_distribution
+  config: configs/family_intraday_return_distribution_v1.yaml
+  data: intraday_5m_return_distribution
+- source: gap_volatility
+  config: configs/family_gap_volatility_v1.yaml
+  data: daily_ohlcv
+- source: liquidity_variability
+  config: configs/family_liquidity_variability_v1.yaml
+  data: daily_amount
+- source: transaction_friction
+  config: configs/family_transaction_friction_v1.yaml
+  data: daily_ohlcv_amount
+- source: conditional_activity
+  config: configs/family_conditional_activity_v1.yaml
+  data: daily_ohlcv_amount
+- source: return_concentration
+  config: configs/family_return_concentration_v1.yaml
+  data: daily_ohlcv_amount
+- source: auction_range_overlap
+  config: configs/family_auction_range_overlap_v1.yaml
+  data: daily_ohlcv_amount
+- source: activity_response
+  config: configs/family_activity_response_v1.yaml
+  data: daily_ohlcv_amount
+- source: uncertainty_activity
+  config: configs/family_uncertainty_activity_v1.yaml
+  data: daily_ohlcv_amount
+blocked_families:
+- family: share_creation_redemption_flow
+  missing_data: daily_fund_share
+- family: nav_premium_discount
+  missing_data: point_in_time_iopv_or_nav
+- family: tracking_quality
+  missing_data: point_in_time_underlying_index_return
+- family: holdings_concentration_drift
+  missing_data: point_in_time_holdings
+- family: primary_market_microstructure
+  missing_data: creation_redemption_basket_and_quotes
+closed_redundant_families:
+- family: market_relative_strength
+  reason: subtracting_the_same_benchmark_return_does_not_change_cross_sectional_rank
+- family: category_leadership
+  reason: merged_into_category_state_because_both_are_statistics_of_the_same_class_index
+- family: within_category_selection
+  reason: exact_identity_of_directional_trend_minus_category_momentum
+- family: liquidity_cost
+  reason: same_mechanism_as_existing_price_volume_coupling_AMIHUD_rank_correlation_above_0_98
+retired_sources:
+- ohlcv
+- cross_asset
+- benchmark_relative
+- liquidity
+- intraday_path
+- market_relative_strength

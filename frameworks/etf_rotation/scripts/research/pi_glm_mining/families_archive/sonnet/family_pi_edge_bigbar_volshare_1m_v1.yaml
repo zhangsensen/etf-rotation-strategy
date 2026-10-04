@@ -1,0 +1,14 @@
+domain: etf_rotation
+grammar_version: etf_family_pi_edge_bigbar_volshare_1m_v1
+factor_source: pi_edge_bigbar_volshare_1m
+frequency: 1m
+# S14 cross-lane replication (directive 2026-09-20 round_569): top-decile-
+# volume 1m bars' share of total day volume, restricted to bars in the
+# first/last 30 minutes, 20d mean. Independently built from the directive's
+# literature definition; pi workspace code not read. NOTE: this line's
+# pre-existing bar_size_order_flow:BIGBAR_EDGE_CONC_20 uses a DIFFERENT
+# formula (modal-slot concentration of amount>5x-median bars) -- this atom
+# is the directive-matching construct under a new name.
+atoms:
+  - {name: EDGE_BIGBAR_VOLSHARE_20, family: pi_edge_bigbar_volshare_1m}
+grammar: {operators: [atomic, rank_spread], pair_policy: cross_family_only, max_atoms: 1}

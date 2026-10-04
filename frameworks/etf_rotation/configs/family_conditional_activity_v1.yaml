@@ -1,0 +1,14 @@
+domain: etf_rotation
+grammar_version: etf_family_conditional_activity_v1
+factor_source: conditional_activity
+mechanism: mean traded amount on down versus up sessions
+atoms:
+- name: DOWN_UP_ACTIVITY_20
+  family: conditional_activity
+- name: DOWN_UP_ACTIVITY_60
+  family: conditional_activity
+grammar:
+  operators:
+  - atomic
+  pair_policy: cross_family_only
+  max_atoms: 1

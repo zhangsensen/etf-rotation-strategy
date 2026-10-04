@@ -1,0 +1,12 @@
+domain: etf_rotation
+grammar_version: etf_family_bar_size_order_flow_v1
+factor_source: bar_size_order_flow
+frequency: 1m
+atoms:
+  - {name: TICK_IMBALANCE_20, family: bar_size_order_flow}
+  - {name: BIGBAR_VOL_SHARE_20, family: bar_size_order_flow}
+  - {name: BIGBAR_DIR_SKEW_20, family: bar_size_order_flow}
+  - {name: CLOSE5_DAY_CONSIST_20, family: bar_size_order_flow}
+  - {name: BIGBAR_EDGE_CONC_20, family: bar_size_order_flow}
+grammar: {operators: [atomic], pair_policy: cross_family_only, max_atoms: 1}
+note: 1m bar-size-layered direction; bar-level large-order proxy; <=D bars only

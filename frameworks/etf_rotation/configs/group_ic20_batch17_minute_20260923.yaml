@@ -1,0 +1,72 @@
+version: group_ic20_batch17_minute_20260923
+source_type: minute
+purpose: seen_history_discovery_only
+campaign_extension: true
+discovery_surface: 2025_DIRECTION_DISCOVERY_ONLY
+data_root: /home/sensen/dev/projects/gpu_ml/data/etf_rotation_v1
+as_of: '2025-12-31'
+start: '2023-07-27'
+evaluation_start: '2025-01-01'
+groups: frameworks/etf_rotation/configs/etf_candidate14_economic_groups_v1.yaml
+universe: config/etf_rotation_universe_v1.json
+calendar_symbol: 510300.SH
+entry_lag: 2
+horizon: 5
+top_k: 2
+warmup: 60
+hac_lag: 10
+max_leads: 10
+prior_registered: 260
+budget_cap: 270
+new_definitions: 10
+external_registered_definitions: 8
+windows: [20]
+mechanisms:
+  minute_amount_price_impact:
+    direction: 1
+    hypothesis: amount-weighted absolute intrabar C/O price impact
+  minute_amount_signed_impact:
+    direction: 1
+    hypothesis: amount-weighted signed intrabar price impact
+  minute_amount_directional_consistency:
+    direction: 1
+    hypothesis: amount-weighted signed direction consistency among absolute returns
+  minute_amount_impact_late_share:
+    direction: 1
+    hypothesis: share of amount-weighted absolute impact arriving in the late phase
+  minute_amount_impact_phase_shift:
+    direction: 1
+    hypothesis: amount-weighted absolute impact migrates from early to late phase
+  minute_amount_impact_sign_transition:
+    direction: 1
+    hypothesis: canonical amount attached to intrabar return-sign transitions
+  minute_amount_reversal_impact_share:
+    direction: 1
+    hypothesis: amount-weighted absolute impact attached to sign reversals
+  minute_amount_range_pressure:
+    direction: 1
+    hypothesis: canonical amount-weighted intrabar range pressure
+  minute_amount_return_range_absorption:
+    direction: 1
+    hypothesis: amount-weighted absolute return absorbed per amount-weighted range
+  minute_amount_impact_time_position:
+    direction: 1
+    hypothesis: normalized intraday time position of amount-weighted absolute impact
+screens:
+  min_days: 360
+  min_year_days: 40
+  min_positive_years: 2
+  min_ic: 0.01
+  min_ic_hac_t: 2.0
+  min_ic_block_t: 2.0
+  min_excess8_hac_t: 2.0
+  alpha: 0.05
+  max_abs_rank_corr: 0.7
+notes:
+  fixed_population: 14 ETFs / 8 economic groups
+  timing: close(D) signal; open(D+2) to open(D+7) H5 label contract
+  minute_alignment: exactly 240 complete unadjusted bars; m_k=C_k/O_k-1; amount is canonical turnover, not volume
+  phase_boundaries: fixed early 60 / middle 120 / late 60 bars
+  raw_direction_status: all ten Stage1 definitions fixed at +1
+  no_label_read: true
+  no_real_market_run_in_implementation_task: true

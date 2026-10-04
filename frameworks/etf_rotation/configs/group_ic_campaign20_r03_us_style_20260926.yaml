@@ -1,0 +1,64 @@
+version: group_ic_campaign20_r03_us_style_20260926
+status: PROPOSED_NOT_APPROVED_NO_H5_LABELS_READ
+source_type: us_style
+purpose: seen_history_discovery_only
+campaign_extension: true
+discovery_surface: IC_DISCOVERY_ONLY
+screens_version: cold_250_v1
+data_root: /home/sensen/dev/projects/gpu_ml/data/etf_rotation_v1
+as_of: '2026-03-24'
+start: '2023-07-27'
+evaluation_start: '2025-01-01'
+groups: frameworks/etf_rotation/configs/etf_candidate14_economic_groups_v1.yaml
+universe: config/etf_rotation_universe_v1.json
+calendar_symbol: 510300.SH
+value_file: runtime_outputs/etf_rotation_research/NASDAQNQUSLV_cold_20260324.csv
+value_sha256: 19d72245683272a969ee265bc98930c34e815d2eb3a8c003fc002c347b9cac71
+growth_file: runtime_outputs/etf_rotation_research/NASDAQNQUSLG_cold_20260324.csv
+growth_sha256: d36977206b2b311ff982177afae832a53f03fd4236b8f05af4d42c1c47a10288
+entry_lag: 2
+horizon: 5
+top_k: 2
+warmup: 60
+hac_lag: 10
+max_leads: 3
+external_registered_definitions: 8
+prior_registered: 539
+new_definitions: 3
+budget_cap: 542
+windows: [60]
+screens:
+  min_days: 250
+  min_year_days: 40
+  min_positive_years: 2
+  min_ic: 0.01
+  min_ic_hac_t: 2.0
+  min_ic_block_t: 2.0
+  min_excess8_hac_t: 2.0
+  alpha: 0.05
+  max_abs_rank_corr: 0.7
+mechanisms:
+  us_style_same_day_response:
+    direction: 1
+    family: external_us_value_growth_style_transmission
+    hypothesis: A US large-cap value-over-growth move contains global style positioning information. ETF groups with stronger prior positive response may continue to outperform over H5 during gradual cross-market style rotation.
+    raw_formula: On China D, x_D is the latest strictly prior US common-date Nasdaq US Large Cap Value price-index daily return minus Growth price-index daily return. score_i=beta0_i,D-1*x_D; beta0=cov(r_i,t,x_t)/var(x_t), ddof=0, exactly 60 complete China-session pairs t=D-60..D-1. D ETF return and x_D do not enter beta.
+  us_style_delayed_response:
+    direction: 1
+    family: external_us_value_growth_style_transmission
+    hypothesis: Cross-market value-growth reallocations may reach ETF groups with one-China-session delay; a signed historical delayed response may continue into H5.
+    raw_formula: score_i=beta1_i,D-1*x_D; beta1=cov(r_i,t,x_(t-1))/var(x_(t-1)), ddof=0, exactly 60 complete ETF-return China-session pairs t=D-60..D-1 and prior-China-session aligned style shocks. Current D inputs do not enter beta.
+  us_style_sign_asymmetry:
+    direction: 1
+    family: external_us_value_growth_style_transmission
+    hypothesis: Value-led and growth-led global reallocations may propagate at different speeds; signed conditional responses may persist over H5.
+    raw_formula: On exactly 60 complete pairs t=D-60..D-1 estimate beta_plus on x_t>0 and beta_minus on x_t<0, each requiring >=10 historical dates, ddof=0. score_i=beta_plus_i,D-1*x_D if x_D>0, beta_minus_i,D-1*x_D if x_D<0; missing if x_D=0. D inputs do not enter beta.
+notes:
+  population: fixed 14 candidate ETFs and eight economic groups; the two US indexes are auxiliary information only
+  external_source: Nasdaq US Large Cap Value and Growth price indexes via FRED NASDAQNQUSLV/NASDAQNQUSLG; https://fred.stlouisfed.org/series/NASDAQNQUSLV and https://fred.stlouisfed.org/series/NASDAQNQUSLG; Nasdaq style methodology https://indexes.nasdaq.com/docs/methodology_USStyleFamily.pdf
+  foreign_timing: First intersect valid US dates for both price index levels, then compute each daily percentage return against the same previous common US date; x_us=return_value-return_growth. For China D use the most recent US observation strictly before D and no more than five calendar days old. Same-calendar-date US close is forbidden.
+  source_vintage: Current FRED snapshots trimmed to 2026-03-24 and byte-hashed, not point-in-time archives; later index corrections/revisions possible. Both same-US-date prices must exist. Nasdaq US close may be corrected through 17:15 ET; strict prior-US-date alignment makes that close available by China D.
+  sign_story: Positive x_D means US large-cap value beat growth on the latest known common US date. Groups with prior positive response to value-led style moves may continue to rank higher over H5 if global allocation transmits slowly; negative x_D reverses the predicted relative ranking. This is a falsifiable one-sided continuation hypothesis, not an observed fact.
+  overlap_risk: Domestic cn_mid_large_style_transmission_60 is size, not value-growth, but is a named near neighbor. R01/R02 external scores, us_lagged_transmission_60 and all indexed definitions require no-label rank correlation; different source alone does not establish independent information.
+  historical_status: PREVIOUSLY_SEEN_2025_PLUS_NOT_OOS
+  decision_boundary: Proposal only; master formal approval required before registration or H5 label read.

@@ -1,0 +1,94 @@
+version: group_ic_batchA_market_comovement_20260923
+source_type: claude_rounds
+purpose: seen_history_discovery_only
+campaign_extension: true
+discovery_surface: IC_DISCOVERY_ONLY
+data_root: /home/sensen/dev/projects/gpu_ml/data/etf_rotation_v1
+as_of: '2026-09-17'
+start: '2023-07-27'
+evaluation_start: '2025-01-01'
+groups: frameworks/etf_rotation/configs/etf_candidate14_economic_groups_v1.yaml
+universe: config/etf_rotation_universe_v1.json
+calendar_symbol: 510300.SH
+entry_lag: 2
+horizon: 5
+top_k: 2
+warmup: 60
+hac_lag: 10
+max_leads: 4
+external_registered_definitions: 8
+screens:
+  min_days: 360
+  min_year_days: 40
+  min_positive_years: 2
+  min_ic: 0.01
+  min_ic_hac_t: 2.0
+  min_ic_block_t: 2.0
+  min_excess8_hac_t: 2.0
+  alpha: 0.05
+  max_abs_rank_corr: 0.7
+prior_registered: 455
+budget_cap: 459
+new_definitions: 4
+mechanisms:
+  beta_asymmetry:
+    direction: -1
+    window: 60
+    hypothesis: "Downside-market beta minus upside-market beta. Larger positive asymmetry (steeper exposure on down days than up days) marks a downside-risk-concentrated name; direction -1 expects it to be relatively weaker going forward."
+    raw_formula: "beta(r_i | r_m<0, w=60) - beta(r_i | r_m>0, w=60); beta via OLS covariance/variance of r_i on r_m within each conditional subset; r_m is the fixed14 leave-none equal-weight mean (etf_group_daily_rounds._market_residuals's market leg, all-14-complete dates only); conditional min_periods=max(10, w//4)=15 non-null observations within the 60-day window (a strict min_periods=60 is unsatisfiable on an already down/up-masked series)."
+  corr_stability_20_60:
+    direction: -1
+    window: 60
+    hypothesis: "|corr20(r_i,r_m) - corr60(r_i,r_m)|. A larger gap between the short- and long-window correlation with the market means the name's market linkage is regime-unstable; direction -1 expects instability to predict relative weakness."
+    raw_formula: "abs(corr(r_i, r_m, window=20) - corr(r_i, r_m, window=60)); registered candidate window is 60 (the longer of its own two internal legs); r_m as above."
+  lead_to_market:
+    direction: 1
+    window: 60
+    hypothesis: "corr(r_i,t-1; r_m,t) - corr(r_m,t-1; r_i,t), rolling w=60. Positive means the name's past return predicts the market's next return more than the market's past predicts the name's next return, i.e. the name leads; direction +1 expects leadership to persist."
+    raw_formula: "rolling_corr(r_m, r_i.shift(1), w=60) - rolling_corr(r_m.shift(1), r_i, w=60); r_m as above."
+  overnight_intraday_beta_gap:
+    direction: 1
+    window: 60
+    hypothesis: "beta(overnight_i, overnight_m, w=60) - beta(intraday_i, intraday_m, w=60), where overnight=open/prev_close-1 and intraday=close/open-1, each leg's own fixed14 equal-weight all-complete mean used as its market leg. Larger overnight-relative beta marks a name that absorbs overseas/macro information gapped-in rather than during the session; direction +1 expects that absorption exposure to persist."
+    raw_formula: "beta(overnight_i on overnight_m, w=60) - beta(intraday_i on intraday_m, w=60); each of overnight_m/intraday_m is its own series' all-14-complete equal-weight mean, not r_m from the close-to-close market; min_periods=60 (dense, no conditional masking)."
+notes:
+  fixed_population: 14 ETFs / 8 economic groups
+  timing: close(D) signal; open(D+2) to open(D+7) H5 research label contract
+  evaluation_surface: previously-seen history, signal_date 2025-01-01 through 2026-09-17; discovery, not OOS
+  direction_status: economic sign frozen before evaluation; no sign selection or automatic flip
+  complete_input_windows_only: true
+  member_aggregation: each member atom computed independently, then existing fixed group aggregation
+  source_vintage: canonical daily bars; no additional information sources
+  engine: >-
+    new module frameworks/etf_rotation/src/etf_strategy/core/etf_group_claude_rounds.py, source_type=claude_rounds.
+    Unlike etf_group_daily_rounds.py (module-global WINDOW=20), each mechanism here carries its own frozen window
+    (60 for all of Batch A); introduced 2026-09-23 specifically because Batch A/B need windows the existing
+    daily_rounds engine's hardcoded WINDOW=20 cannot express. Does not modify etf_group_daily_rounds.py.
+  family_precheck: >-
+    checked against runtime_outputs/etf_rotation_research/ic_inventory_20260923_luna_multi_r10/families.csv (234
+    families) plus per-run family tags in PLAN.json. beta_asymmetry is adjacent to market_residual_downside
+    (DO_NOT_REPEAT) and market_residual_market_beta (INCOMPLETE_EVIDENCE) but is a different statistic (conditional
+    beta difference, not residual-downside RMS or a single unconditional beta level). overnight_intraday_beta_gap
+    is adjacent to overnight_intraday_switch_rate (INCOMPLETE_EVIDENCE) and overnight_variance_share
+    (DO_NOT_REPEAT) but is a different statistic (beta-of-beta difference, not sign-flip frequency or variance
+    share). No exact-duplicate or window-only-variant collision found for any of the 4 registered here; 4 other
+    originally proposed Batch A candidates (covol_beta_60, idio_var_share_60, lower_coexceedance_60, max_return_20)
+    were dropped before registration on the no-label dedup precheck below, not on family collision.
+  no_label_dedup_precheck: >-
+    computed group scores only (no forward return/H5 label), 2025-01-01..2026-09-22, against 423 saved
+    scores_*.csv files across the whole runs/ library (deduped to latest per candidate id) plus the other Batch
+    A/B candidates. Registered candidates' max mean(abs(daily cross-sectional rank corr)): beta_asymmetry_60
+    0.452, corr_stability_20_60 0.495, lead_to_market_60 0.458, overnight_intraday_beta_gap_60 0.671 (all <0.7).
+    Dropped (>=0.7): covol_beta_60 0.814 (vs idio_var_share_60 and market_residual_market_beta_20),
+    idio_var_share_60 0.857 (vs minute_amount_range_pressure_20 / market_residual_market_beta_20),
+    lower_coexceedance_60 0.820 (vs minute_amount_price_impact_20; also failed the structural precheck below),
+    max_return_20 0.879 (vs volatility_20). See
+    runtime_outputs/etf_rotation_research/diagnostics/batch_ab_20260923/dedup_precheck.csv.
+  eval_window_structural_precheck: >-
+    2025-01-01..2026-09-22 (419 days), read-only feature check, no labels read. All 4 registered candidates:
+    every single-member group nan_rate=0.0, mode_value_rate<=0.40 (no near-constant group), days_all_8_groups_valid
+    =419/419. lower_coexceedance_60 (dropped above on dedup) additionally failed this precheck: dividend_low_vol
+    (512890.SH) mode_value_rate=0.8005. See
+    runtime_outputs/etf_rotation_research/diagnostics/batch_ab_20260923/structural_diagnostics.csv.
+  no_label_read: true
+  no_formal_evaluation_in_implementation_task: true

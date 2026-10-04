@@ -1,0 +1,11 @@
+domain: etf_rotation
+grammar_version: etf_family_pi_lunch_prerun_1m_v1
+factor_source: pi_lunch_prerun_1m
+frequency: 1m
+# S14 cross-lane replication (directive 2026-09-20 round_569): volume
+# fraction occurring in the 11:20-11:30 wall-clock window (last 10 minutes
+# before the lunch break), 20d mean. Independently built from the
+# directive's literature definition; pi workspace code not read.
+atoms:
+  - {name: LUNCH_PRE_RUN_20, family: pi_lunch_prerun_1m}
+grammar: {operators: [atomic, rank_spread], pair_policy: cross_family_only, max_atoms: 1}

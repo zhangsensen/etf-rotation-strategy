@@ -1,0 +1,62 @@
+version: group_ic_campaign20_r09_ext_realrate_20260926
+status: PROPOSED_NOT_APPROVED_NO_H5_LABELS_READ
+source_type: ext_realrate
+purpose: seen_history_discovery_only
+campaign_extension: true
+discovery_surface: IC_DISCOVERY_ONLY
+screens_version: cold_250_v1
+data_root: /home/sensen/dev/projects/gpu_ml/data/etf_rotation_v1
+as_of: '2026-03-24'
+start: '2023-07-27'
+evaluation_start: '2025-01-01'
+groups: frameworks/etf_rotation/configs/etf_candidate14_economic_groups_v1.yaml
+universe: config/etf_rotation_universe_v1.json
+calendar_symbol: 510300.SH
+realrate_file: runtime_outputs/etf_rotation_research/long_history_proxies/macro/us_trycr.parquet
+realrate_sha256: 21b2f6979e061c4fdbbab3bb89d40212c94c7e480c2b25ab8fd6e84f8e1d5471
+entry_lag: 2
+horizon: 5
+top_k: 2
+warmup: 60
+hac_lag: 10
+max_leads: 3
+external_registered_definitions: 8
+prior_registered: 557
+new_definitions: 3
+budget_cap: 560
+windows: [60]
+screens:
+  min_days: 250
+  min_year_days: 40
+  min_positive_years: 2
+  min_ic: 0.01
+  min_ic_hac_t: 2.0
+  min_ic_block_t: 2.0
+  min_excess8_hac_t: 2.0
+  alpha: 0.05
+  max_abs_rank_corr: 0.7
+mechanisms:
+  realrate_same_day_response:
+    direction: 1
+    family: external_us_real_rate_transmission
+    hypothesis: A rise in the US 10-year real yield tightens global real discount rates and reduces the attraction of long-duration and non-yielding assets. ETF groups with a more positive historical contemporaneous response to that signed real-rate shock may continue to reprice over H5; a real-rate decline reverses the predicted ranking.
+    raw_formula: On China D, x_D=y10_u - y10_prev for the latest US observation u strictly before D and at most five calendar days old; the yield is a percent level and may be negative, so the shock is the arithmetic first difference, never a log change. score_i=beta0_i,D-1*x_D, where beta0=cov(r_i,t,x_t)/var(x_t), ddof=0, on exactly 60 complete China-session pairs t=D-60..D-1. D ETF return and x_D do not enter beta.
+  realrate_delayed_response:
+    direction: 1
+    family: external_us_real_rate_transmission
+    hypothesis: Real-rate-driven duration and allocation adjustments may reach domestic ETF groups with a one-China-session lag, then continue into H5.
+    raw_formula: score_i=beta1_i,D-1*x_D; beta1=cov(r_i,t,x_(t-1))/var(x_(t-1)), ddof=0, on exactly 60 complete ETF-return pairs t=D-60..D-1 with prior-China-session aligned real-rate shocks. D inputs do not enter beta.
+  realrate_sign_asymmetry:
+    direction: 1
+    family: external_us_real_rate_transmission
+    hypothesis: Real-yield rises driven by policy tightening may transmit differently from declines driven by easing; each signed response may continue over H5.
+    raw_formula: On exactly 60 complete pairs t=D-60..D-1 estimate beta_plus using x_t>0 and beta_minus using x_t<0, requiring at least 10 historical dates in each branch; ddof=0. score_i=beta_plus_i,D-1*x_D if x_D>0, or beta_minus_i,D-1*x_D if x_D<0; missing if x_D=0. D inputs do not enter beta.
+notes:
+  population: fixed 14 candidate ETFs and eight economic groups; the US 10y real yield is auxiliary information only
+  external_source: US Treasury 10-year par real yield curve (percent) from the local long-history proxy library (SHA256-pinned, trimmed to the 2026-03-24 cold cutoff); 3053 observations from 2014-01-02, no missing y10 values
+  foreign_timing: Compute the arithmetic first difference on consecutive valid US observation dates. For each China D use the most recent observation date strictly earlier than D and no more than five calendar days old; the same-calendar-date US observation is never assumed known at China D close.
+  source_vintage: Local historical proxy snapshot, not a point-in-time archive; Treasury real-yield curve revisions are a limitation. This is seen-history discovery, not PIT confirmation.
+  sign_story: A positive x_D means the US 10-year real yield rose on the latest known US observation. Positive historical beta times the signed shock ranks groups that historically strengthened alongside rising real rates higher; a decline reverses the ranking. One-sided continuation over D+2..D+7 is a falsifiable hypothesis, not an observed fact.
+  overlap_risk: Old real_rate_beta is the explicit near-neighbor (candidate exposure to a US real-rate proxy); R01-R08 transmission families and us_lagged_transmission_60 are additional references. Distinct source does not imply distinct eight-group score.
+  historical_status: PREVIOUSLY_SEEN_2025_PLUS_NOT_OOS
+  decision_boundary: Proposed draft only. Master approval required before registration or any new H5 label read; zero evidence is retained.

@@ -1,0 +1,15 @@
+domain: etf_rotation
+grammar_version: etf_family_serial_dependence_v1
+factor_source: serial_dependence
+atoms:
+  - {name: RET_ACF1_5, family: serial_dependence}
+  - {name: RET_ACF1_20, family: serial_dependence}
+  - {name: RET_ACF1_60, family: serial_dependence}
+  - {name: RET_ACF2_20, family: serial_dependence}
+  - {name: RET_ACF2_60, family: serial_dependence}
+  - {name: SIGN_ACF1_5, family: serial_dependence}
+  - {name: SIGN_ACF1_20, family: serial_dependence}
+  - {name: SIGN_ACF1_60, family: serial_dependence}
+  - {name: VAR_RATIO_5_60, family: serial_dependence}
+  - {name: VAR_RATIO_20_120, family: serial_dependence}
+grammar: {operators: [atomic], pair_policy: cross_family_only, max_atoms: 1}

@@ -1,0 +1,50 @@
+domain: etf_rotation
+grammar_version: etf_current20_benchmark_rank_grammar_v1
+factor_source: benchmark_relative
+availability_lag_sessions: 0
+benchmark_symbols: [510300.SH, 510500.SH]
+
+population:
+  ranking_roles: [candidate, defensive_tool, benchmark, observation]
+  min_history_sessions: 120
+  require_positive_volume: true
+
+execution:
+  signal_time: D_CLOSE
+  entry_lag_sessions: 2
+  horizons: [5, 10, 20]
+  primary_horizon: 5
+
+surfaces:
+  discovery_end: '2023-12-31'
+  ordered_audit_start: '2024-01-01'
+  ordered_audit_end: '2025-04-30'
+  seen_diagnostic_start: '2025-05-01'
+
+atoms:
+  - {name: REL_MARKET_MOM_20, family: relative_trend}
+  - {name: REL_MARKET_MOM_60, family: relative_trend}
+  - {name: REL_MARKET_MOM_120, family: relative_trend}
+  - {name: MARKET_BETA_20, family: beta}
+  - {name: MARKET_BETA_60, family: beta}
+  - {name: DOWNSIDE_BETA_20, family: downside_beta}
+  - {name: DOWNSIDE_BETA_60, family: downside_beta}
+  - {name: MARKET_CORR_20, family: correlation}
+  - {name: MARKET_CORR_60, family: correlation}
+  - {name: TRACKING_ERROR_20, family: tracking_risk}
+  - {name: TRACKING_ERROR_60, family: tracking_risk}
+
+grammar:
+  operators: [atomic, rank_mean, rank_spread, rank_interaction]
+  pair_policy: cross_family_only
+  max_atoms: 2
+
+gates:
+  min_discovery_days: 500
+  min_median_pairs: 10
+  min_abs_discovery_ic: 0.015
+  min_rolling_direction_stability: 0.65
+  min_year_direction_agreement: 0.75
+  min_abs_ordered_audit_ic: 0.01
+  holm_alpha: 0.05
+  redundancy_max_abs_rank_corr: 0.80

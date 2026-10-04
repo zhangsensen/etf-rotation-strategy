@@ -1,0 +1,11 @@
+domain: etf_rotation
+grammar_version: etf_family_volume_tail_shape_1m_v1
+factor_source: volume_tail_shape_1m
+frequency: 1m
+asset_class_config: configs/etf_asset_classes_current20_v1.yaml
+atoms:
+  - {name: VOL_Q95_MED_20, family: volume_tail_shape_1m}
+  - {name: VOL_HILL_TAIL_20, family: volume_tail_shape_1m}
+  - {name: LOG_VOL_CV_20, family: volume_tail_shape_1m}
+  - {name: VOL_MAX_SHARE_20, family: volume_tail_shape_1m}
+grammar: {operators: [atomic, rank_spread, rank_interaction], pair_policy: cross_family_only, max_atoms: 6}

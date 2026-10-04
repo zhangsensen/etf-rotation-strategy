@@ -1,0 +1,36 @@
+version: group_discovery_nav_v1
+purpose: seen_history_discovery_only
+source_type: nav
+availability_status: AFTER_RECORDED_ANN_DATE_NOT_VINTAGE_CERTIFIED
+max_stale_calendar_days: 7
+data_root: /home/sensen/dev/projects/gpu_ml/data/etf_rotation_v1
+as_of: '2026-09-17'
+start: '2023-07-27'
+groups: frameworks/etf_rotation/configs/etf_candidate14_economic_groups_v1.yaml
+universe: config/etf_rotation_universe_v1.json
+calendar_symbol: 510300.SH
+entry_lag: 2
+horizon: 5
+top_k: 2
+warmup: 60
+hac_lag: 10
+budget_cap: 96
+max_leads: 6
+# Valuation-date close/NAV is released only after ann_date. Not current-close/stale-NAV.
+# QDII clocks differ: call this reported NAV basis, not synchronous fair-value discount.
+windows: [5, 20]
+mechanisms:
+  nav_basis_discount: {direction: -1, hypothesis: reported discount relative to NAV mean reverts}
+  nav_basis_change: {direction: -1, hypothesis: widening reported premium indicates demand overshoot}
+  nav_basis_volatility: {direction: -1, hypothesis: stable NAV basis indicates more reliable arbitrage anchoring}
+  nav_basis_persistence: {direction: -1, hypothesis: persistent reported discount indicates neglected demand}
+screens:
+  min_days: 360
+  min_year_days: 40
+  min_positive_years: 2
+  min_ic: 0.01
+  min_ic_hac_t: 2.0
+  min_ic_block_t: 2.0
+  min_excess8_hac_t: 2.0
+  alpha: 0.05
+  max_abs_rank_corr: 0.7

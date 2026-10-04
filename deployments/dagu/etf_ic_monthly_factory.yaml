@@ -1,0 +1,29 @@
+description: "Idempotent daily ETF IC workflow: build v4 panel, freeze/evaluate matured months, observe all 16 saved leads, and record separate fixed-rule personal paper H5 sleeves after maturity. No new factor definitions or orders; NOOP when nothing is due."
+group: Research
+type: graph
+working_dir: /home/sensen/dev/projects/-0927
+schedule: "0 23 * * 1-5"
+max_active_runs: 1
+timeout_sec: 1800
+log_output: merged
+env:
+  - PYTHONUNBUFFERED: "1"
+  - PYTHONPATH: /home/sensen/dev/projects/-0927/frameworks/etf_rotation/src
+steps:
+  - id: monthly_cycle
+    name: Build panel; freeze previous closed month if due; evaluate matured frozen months
+    run: >-
+      /home/sensen/dev/projects/-0927/frameworks/etf_rotation/.venv/bin/python
+      frameworks/etf_rotation/scripts/research/run_etf_ic_monthly_cycle.py
+  - id: lead_watch
+    name: Record matured monthly IC for all 16 saved leads; flag unavailable share source
+    depends: monthly_cycle
+    run: >-
+      /home/sensen/dev/projects/-0927/frameworks/etf_rotation/.venv/bin/python
+      frameworks/etf_rotation/scripts/research/run_etf_ic_lead_watch_v2.py
+  - id: personal_paper
+    name: Record matured fixed-rule ETF paper H5 sleeves; never place orders
+    depends: lead_watch
+    run: >-
+      /home/sensen/dev/projects/-0927/frameworks/etf_rotation/.venv/bin/python
+      frameworks/etf_rotation/scripts/research/run_etf_personal_paper_v1.py

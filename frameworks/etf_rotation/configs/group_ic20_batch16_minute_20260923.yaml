@@ -1,0 +1,78 @@
+version: group_ic20_batch16_minute_20260923
+source_type: minute
+purpose: seen_history_discovery_only
+campaign_extension: true
+discovery_surface: 2025_DIRECTION_DISCOVERY_ONLY
+data_root: /home/sensen/dev/projects/gpu_ml/data/etf_rotation_v1
+as_of: '2025-12-31'
+start: '2023-07-27'
+evaluation_start: '2025-01-01'
+groups: frameworks/etf_rotation/configs/etf_candidate14_economic_groups_v1.yaml
+universe: config/etf_rotation_universe_v1.json
+calendar_symbol: 510300.SH
+entry_lag: 2
+horizon: 5
+top_k: 2
+warmup: 60
+hac_lag: 10
+max_leads: 12
+prior_registered: 226
+budget_cap: 238
+new_definitions: 12
+external_registered_definitions: 8
+windows: [20]
+mechanisms:
+  minute_phase_range_migration:
+    direction: 1
+    hypothesis: normalized intraday range moves from fixed early 60 bars to late 60 bars
+  minute_phase_amount_migration:
+    direction: 1
+    hypothesis: canonical turnover share migrates from early 60 bars to late 60 bars
+  minute_phase_abs_return_migration:
+    direction: 1
+    hypothesis: absolute C/O return activity migrates from early 60 bars to late 60 bars
+  minute_phase_return_path_persistence:
+    direction: 1
+    hypothesis: early-middle-late mean return signs persist or reverse as a path state
+  minute_phase_return_reversal:
+    direction: 1
+    hypothesis: early and late mean return signs oppose after passing through the middle phase
+  minute_phase_range_curvature:
+    direction: 1
+    hypothesis: middle-phase range expansion relative to early and late phases
+  minute_phase_amount_curvature:
+    direction: 1
+    hypothesis: middle-phase turnover share is elevated or depressed relative to edge phases
+  minute_phase_amount_abs_return_migration:
+    direction: 1
+    hypothesis: amount-weighted absolute return activity migrates between early and late phases
+  minute_phase_return_range_absorption:
+    direction: 1
+    hypothesis: absolute return per unit range differs between late and early phases
+  minute_phase_directional_range_shift:
+    direction: 1
+    hypothesis: positive-versus-nonpositive range asymmetry shifts from early to late phase
+  minute_phase_directional_amount_shift:
+    direction: 1
+    hypothesis: positive-versus-nonpositive amount allocation shifts from early to late phase
+  minute_gap_repair_phase:
+    direction: 1
+    hypothesis: fixed early-middle-late phase at which the overnight gap is first repaired
+screens:
+  min_days: 360
+  min_year_days: 40
+  min_positive_years: 2
+  min_ic: 0.01
+  min_ic_hac_t: 2.0
+  min_ic_block_t: 2.0
+  min_excess8_hac_t: 2.0
+  alpha: 0.05
+  max_abs_rank_corr: 0.7
+notes:
+  fixed_population: 14 ETFs / 8 economic groups
+  timing: close(D) signal; open(D+2) to open(D+7) H5 label contract
+  minute_alignment: exactly 240 complete unadjusted bars; C/O returns; fixed early 60 / middle 120 / late 60 phases
+  source_fields: canonical minute OHLC and turnover(amount), never volume for amount mechanisms
+  raw_direction_status: all twelve Stage1 definitions fixed at +1; no outcome-derived direction
+  no_label_read: true
+  no_real_market_run_in_implementation_task: true

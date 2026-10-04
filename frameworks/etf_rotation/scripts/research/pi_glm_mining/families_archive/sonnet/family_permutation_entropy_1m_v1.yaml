@@ -1,0 +1,26 @@
+domain: etf_rotation
+grammar_version: etf_family_permutation_entropy_1m_v1
+factor_source: permutation_entropy_1m
+frequency: 1m
+# Literature provenance (directive: no citation, no atom):
+# PERM_ENTROPY_RET_20: Bandt & Pompe (2002) normalized permutation entropy
+#   (embedding d=3, delay=1) of 1m returns, 20d mean.
+# STAT_COMPLEXITY_20: Rosso et al. (2007) statistical complexity C_JS =
+#   Q0 * Jensen-Shannon-divergence(P,uniform) * H_norm, 20d mean.
+# CEP_DISTANCE_20: Zunino-Zanin-Tabak-Perez-Rosso (2010) complexity-entropy
+#   causality plane, Euclidean distance from (H_norm, C_JS) to the
+#   white-noise point (1, 0), 20d mean.
+# PERM_ENTROPY_VOL_20: same Bandt-Pompe measure applied to the 1m volume
+#   sequence (arrival-pattern regularity), 20d mean.
+# ENTROPY_RET_VOL_DIFF_20: PERM_ENTROPY_RET_20 - PERM_ENTROPY_VOL_20.
+# *_CHG_20: 20-day change of the corresponding level atom.
+atoms:
+  - {name: PERM_ENTROPY_RET_20, family: permutation_entropy_1m}
+  - {name: STAT_COMPLEXITY_20, family: permutation_entropy_1m}
+  - {name: CEP_DISTANCE_20, family: permutation_entropy_1m}
+  - {name: PERM_ENTROPY_VOL_20, family: permutation_entropy_1m}
+  - {name: ENTROPY_RET_VOL_DIFF_20, family: permutation_entropy_1m}
+  - {name: PERM_ENTROPY_RET_CHG_20, family: permutation_entropy_1m}
+  - {name: STAT_COMPLEXITY_CHG_20, family: permutation_entropy_1m}
+  - {name: PERM_ENTROPY_VOL_CHG_20, family: permutation_entropy_1m}
+grammar: {operators: [atomic], pair_policy: cross_family_only, max_atoms: 1}

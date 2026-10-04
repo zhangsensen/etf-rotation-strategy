@@ -1,0 +1,54 @@
+domain: etf_rotation
+grammar_version: etf_current20_cross_asset_rank_grammar_v3
+factor_source: cross_asset
+availability_lag_sessions: 0
+asset_class_config: configs/etf_asset_classes_current20_v1.yaml
+
+population:
+  ranking_roles: [candidate, defensive_tool, benchmark, observation]
+  min_history_sessions: 120
+  require_positive_volume: true
+
+execution:
+  signal_time: D_CLOSE
+  entry_lag_sessions: 2
+  horizons: [5, 10, 20]
+  primary_horizon: 5
+
+surfaces:
+  discovery_end: '2023-12-31'
+  ordered_audit_start: '2024-01-01'
+  ordered_audit_end: '2025-04-30'
+  seen_diagnostic_start: '2025-05-01'
+
+atoms:
+  - {name: CATEGORY_MOM_5, family: category_trend}
+  - {name: CATEGORY_MOM_20, family: category_trend}
+  - {name: CATEGORY_MOM_60, family: category_trend}
+  - {name: WITHIN_CATEGORY_MOM_5, family: within_category}
+  - {name: WITHIN_CATEGORY_MOM_20, family: within_category}
+  - {name: WITHIN_CATEGORY_MOM_60, family: within_category}
+  - {name: CATEGORY_CURRENT_DD_20, family: category_drawdown}
+  - {name: CATEGORY_CURRENT_DD_60, family: category_drawdown}
+  - {name: CATEGORY_VOL_20, family: category_risk}
+  - {name: CATEGORY_VOL_60, family: category_risk}
+  - {name: CATEGORY_BREADTH_MA20, family: category_breadth}
+  - {name: CATEGORY_BREADTH_MA60, family: category_breadth}
+  - {name: CATEGORY_DISPERSION_20, family: category_dispersion}
+  - {name: CATEGORY_DISPERSION_60, family: category_dispersion}
+
+grammar:
+  operators: [atomic, rank_mean, rank_spread, rank_interaction]
+  pair_policy: cross_family_only
+  max_atoms: 2
+
+gates:
+  # Frozen from coverage alone, before reading any return-label result.
+  min_discovery_days: 500
+  min_median_pairs: 10
+  min_abs_discovery_ic: 0.015
+  min_rolling_direction_stability: 0.65
+  min_year_direction_agreement: 0.75
+  min_abs_ordered_audit_ic: 0.01
+  holm_alpha: 0.05
+  redundancy_max_abs_rank_corr: 0.80

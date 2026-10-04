@@ -1,0 +1,29 @@
+[project]
+name = "etf-ic-mining"
+version = "1.0.0"
+requires-python = ">=3.13,<3.14"
+dependencies = [
+    "numpy==2.3.5",
+    "pandas==2.3.3",
+    "scipy==1.16.3",
+    "pyyaml==6.0.3",
+    "pyarrow==22.0.0",
+    "TA-Lib==0.8.1",
+    "numba==0.63.1",
+    "scikit-learn==1.8.0",
+    "statsmodels==0.15.0",
+    "backtrader==1.9.78.123",
+    "joblib==1.5.3",
+    "tqdm==4.67.1",
+    "duckdb==1.5.2",
+    "tushare==1.4.24",
+    "openpyxl==3.1.5",
+    "matplotlib==3.10.8",
+    "requests==2.32.5",
+]
+
+[dependency-groups]
+dev = ["pytest==9.0.2"]
+
+[tool.uv]
+package = false

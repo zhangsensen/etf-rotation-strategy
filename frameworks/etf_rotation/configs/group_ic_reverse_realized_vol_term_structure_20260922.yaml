@@ -1,0 +1,51 @@
+version: group_ic_reverse_realized_vol_term_structure_20260922
+source_type: daily_rounds
+purpose: seen_history_discovery_only
+campaign_extension: true
+data_root: /home/sensen/dev/projects/gpu_ml/data/etf_rotation_v1
+as_of: '2026-09-17'
+start: '2023-07-27'
+evaluation_start: '2025-01-01'
+groups: frameworks/etf_rotation/configs/etf_candidate14_economic_groups_v1.yaml
+universe: config/etf_rotation_universe_v1.json
+calendar_symbol: 510300.SH
+entry_lag: 2
+horizon: 5
+top_k: 2
+warmup: 60
+hac_lag: 10
+max_leads: 6
+prior_registered: 133
+budget_cap: 134
+new_definitions: 1
+external_registered_definitions: 8
+windows: [20]
+mechanisms:
+  reverse_realized_vol_term_structure_5:
+    direction: 1
+    hypothesis: higher recent-to-medium realized-vol ratio may mark repricing capacity rather than fragility
+    parent_candidate: realized_vol_term_structure_5_20
+    parent_direction: -1
+    direction_source: POST_RESULT_REVERSE
+    independent_confirmation: false
+    status: PROPOSAL_ONLY
+screens:
+  min_days: 360
+  min_year_days: 40
+  min_positive_years: 2
+  min_ic: 0.01
+  min_ic_hac_t: 2.0
+  min_ic_block_t: 2.0
+  min_excess8_hac_t: 2.0
+  alpha: 0.05
+  max_abs_rank_corr: 0.7
+notes:
+  candidate_name: reverse_realized_vol_term_structure_5_20
+  formula: std_5(close.pct_change()) / std_20(close.pct_change())
+  direction: score_equals_positive_raw_ratio
+  direction_source: POST_RESULT_REVERSE
+  independent_confirmation: false
+  parent_result_status: REVERSE_WATCH_NOT_VALIDATED
+  parent_result_run: group_ic20_batch6_20260922
+  approval_required_before_run: true
+  no_real_market_run_in_implementation_task: true

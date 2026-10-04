@@ -1,0 +1,12 @@
+version: etf_asset_classes_current20_v1
+classification_use: preregistered_rotation_relations_for_tradable_roles
+classes:
+  semiconductor: [159995.SZ, 159516.SZ]
+  digital_industry: [515880.SH, 159852.SZ, 562500.SH, 159732.SZ]
+  thematic_observation: [159819.SZ, 159206.SZ]
+  overseas_growth: [513130.SH, 513100.SH]
+  healthcare: [159992.SZ, 513120.SH]
+  real_assets: [518880.SH, 512400.SH]
+  defensive_equity: [512890.SH, 159611.SZ]
+  liquidity_defense: [511010.SH, 511880.SH]
+  domestic_benchmark: [510300.SH, 510500.SH]

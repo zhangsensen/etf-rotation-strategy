@@ -1,0 +1,17 @@
+domain: etf_rotation
+grammar_version: etf_family_mechanism_atoms_v3_v1
+factor_source: mechanism_atoms_v3
+frequency: 1m
+# S30 stage (round_627): third batch of mechanism atoms, inspired by pi
+# lane's stage-37 pairings (CO36, CK04, CJ16, CZ01/CY95, CR08, CQ31),
+# independently implemented on this line. Heavily reuses already-built
+# atoms via resolve_family() inside _build() per the controller's
+# 2026-09-21 efficiency directive; only 2 lightweight new 1m statistics
+# computed from scratch (close-5min return, first-30min volume sum).
+atoms:
+  - {name: VT_AUTOCORR_ACTIVITY_SPLIT_20, family: mechanism_atoms_v3}
+  - {name: AM_PRERUN_CLOSE5_CONSIST_20, family: mechanism_atoms_v3}
+  - {name: PM_POSTRUN_DAY_CONSIST_20, family: mechanism_atoms_v3}
+  - {name: FIRST30_BUCKET_SHARE_20, family: mechanism_atoms_v3}
+  - {name: HAR_RESID_SIGN_PV_ELASTICITY_SPLIT_20, family: mechanism_atoms_v3}
+grammar: {operators: [atomic, rank_spread], pair_policy: cross_family_only, max_atoms: 5}

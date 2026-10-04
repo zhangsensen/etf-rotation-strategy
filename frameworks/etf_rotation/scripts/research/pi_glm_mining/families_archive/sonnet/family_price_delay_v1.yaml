@@ -1,0 +1,33 @@
+domain: etf_rotation
+grammar_version: etf_family_price_delay_v1
+factor_source: price_delay
+frequency: 1m
+# Literature provenance (directive: no citation, no atom):
+# D1_LEVEL_60: Hou-Moskowitz (2005) price delay D1, 60d rolling daily
+#   OLS vs 14-ETF equal-weight basket (contemporaneous + lags 1-4), raw
+#   level (the 20d-change form already exists as
+#   pi_price_delay_1d:PD_D1_CHG_20 from S14 -- reused there, not rebuilt).
+# D2_LAGSHARE_60: Hou-Moskowitz (2005) D2, share of total |coefficient|
+#   mass carried by the 4 lagged terms vs the contemporaneous term, same
+#   60d regression.
+# LAG1_COEF_60: Mech (1993) single-lag delay coefficient (the lag-1
+#   coefficient alone, a less-aggregated proxy than D1/D2).
+# LAG_COEF_SIGN_FREQ_20: 20d frequency of the lagged-coefficient sum
+#   being positive (delay/underreaction) vs negative (overreaction then
+#   reversal).
+# D2_LAGSHARE_CHG_20: 20d change of D2_LAGSHARE_60.
+# D1_1M_20 / D1_1M_CHG_20: intraday (1m) analogue of D1, basket lags
+#   1-5 bars, estimated per day and rolled to a 20d mean; and its 20d
+#   change.
+# D1_DIFF_1D_1M_20: D1_LEVEL_60 minus D1_1M_20 (Boehmer-Wu 2013 framing
+#   -- which frequency band carries more delay).
+atoms:
+  - {name: D1_LEVEL_60, family: price_delay}
+  - {name: D2_LAGSHARE_60, family: price_delay}
+  - {name: LAG1_COEF_60, family: price_delay}
+  - {name: LAG_COEF_SIGN_FREQ_20, family: price_delay}
+  - {name: D2_LAGSHARE_CHG_20, family: price_delay}
+  - {name: D1_1M_20, family: price_delay}
+  - {name: D1_1M_CHG_20, family: price_delay}
+  - {name: D1_DIFF_1D_1M_20, family: price_delay}
+grammar: {operators: [atomic], pair_policy: cross_family_only, max_atoms: 1}

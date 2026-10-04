@@ -1,0 +1,9 @@
+.cache/
+__pycache__/
+.pytest_cache/
+results/
+reports/
+data/
+raw/
+sealed_strategies/
+*.log

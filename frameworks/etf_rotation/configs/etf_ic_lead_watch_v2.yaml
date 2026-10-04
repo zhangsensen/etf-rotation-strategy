@@ -1,0 +1,26 @@
+version: etf_ic_lead_watch_v2
+purpose: descriptive_forward_ic_only
+parent_contract: frameworks/etf_rotation/configs/etf_ic_monthly_factory_v4.yaml
+first_month: '2026-10'
+signal_time: close_D
+entry_lag: 2
+horizon: 5
+metric: eight_group_daily_spearman_rank_ic
+candidate_catalog:
+  - market_residual_abs_cluster_20
+  - market_coskewness_20
+  - beta_asymmetry_60
+  - intraday_body_utilization_20
+  - d2025_body_shock_wick_repair_20
+  - direction_range_coupling_20
+  - breadth_5
+  - range_flow_20_40_1
+  - d2025_amount_innovation_sign_entropy_20
+  - range_expansion_5
+  - d2025_clv_extreme_wick_rejection_20
+  - d2025_body_wick_abs_corr_20
+  - peer_corr_network_change_60
+  - intraday_return_5
+  - OVERHEAD_TURNOVER_20
+  - weekday_relative_return_pattern_60
+note: Observation only. The v4 twenty-candidate selection contract and its ledger are unchanged. A missing or stale source is recorded as uncomputable, never as zero IC.

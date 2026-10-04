@@ -1,0 +1,19 @@
+domain: etf_rotation
+grammar_version: etf_family_volume_extremes_in_drawdown_1m_v1
+factor_source: volume_extremes_in_drawdown_1m
+frequency: 1m
+# S33 stage (round_632): deepen this line's strongest content mechanism
+# (money-flow/volume extremes inside intraday drawdowns -- S27B5 t3.89,
+# S29Q1 t3.60). Blume-Easley-O'Hara 1994; Campbell-Grossman-Wang 1993;
+# Karpoff 1987. Self-contained, single 1m pass per symbol, no
+# cross-family imports. Big-bar threshold reuses pi's precise definition
+# (amount > day-median amount x5, same as S26R2).
+atoms:
+  - {name: DD_VOL_SHARE_EXCESS_20, family: volume_extremes_in_drawdown_1m}
+  - {name: TROUGH_PREPOST_VOL_RATIO_20, family: volume_extremes_in_drawdown_1m}
+  - {name: DD_RET_VOL_CORR_20, family: volume_extremes_in_drawdown_1m}
+  - {name: DD_BIGBAR_VOL_SHARE_20, family: volume_extremes_in_drawdown_1m}
+  - {name: RECOVERY_VOL_SHARE_EXCESS_20, family: volume_extremes_in_drawdown_1m}
+  - {name: DD_VOL_SHARE_EXCESS_CHG_20, family: volume_extremes_in_drawdown_1m}
+  - {name: DD_RET_VOL_CORR_CHG_20, family: volume_extremes_in_drawdown_1m}
+grammar: {operators: [atomic, rank_spread], pair_policy: cross_family_only, max_atoms: 7}

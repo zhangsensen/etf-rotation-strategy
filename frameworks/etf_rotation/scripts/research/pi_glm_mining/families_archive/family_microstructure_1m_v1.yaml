@@ -1,0 +1,26 @@
+domain: etf_rotation
+grammar_version: etf_family_microstructure_1m_v1
+factor_source: microstructure_1m
+frequency: 1m
+asset_class_config: configs/etf_asset_classes_current20_v1.yaml
+# Literature provenance (directive 6: no citation, no atom):
+# VPIN_CLOSE_20: Easley, Lopez de Prado & O'Hara (2012), BVC split by normal
+#   CDF of the 1m return z, 50 volume buckets (bucket = day volume / 50),
+#   daily close value, 20d mean.
+# KYLE_LAMBDA_20: Kyle (1985) / Hasbrouck (2009) lambda proxy: daily OLS
+#   slope of 1m |dp| on signed volume, 20d mean.
+# ROLL_SPREAD_20: Roll (1984): 2*sqrt(max(0, -cov(r_t, r_{t-1}))) on 1m
+#   returns within the day, 20d mean.
+# AMIHUD_1M_20: Amihud (2002) at 1m: mean(|r_1m| / amount_1m) per day, 20d
+#   mean; health check vs daily AMIHUD_20.
+# OFI_AUTOCORR_20: Cont, Kukanov & Stoikov (2014): lag-1 autocorrelation of
+#   BVC net buy volume within the day, 20d mean.
+# IMPACT_ASYM_20: buy-bar vs sell-bar |dp|/volume ratio per day, 20d mean.
+atoms:
+  - {name: VPIN_CLOSE_20, family: microstructure_1m}
+  - {name: KYLE_LAMBDA_20, family: microstructure_1m}
+  - {name: ROLL_SPREAD_20, family: microstructure_1m}
+  - {name: AMIHUD_1M_20, family: microstructure_1m}
+  - {name: OFI_AUTOCORR_20, family: microstructure_1m}
+  - {name: IMPACT_ASYM_20, family: microstructure_1m}
+grammar: {operators: [atomic], pair_policy: cross_family_only, max_atoms: 1}

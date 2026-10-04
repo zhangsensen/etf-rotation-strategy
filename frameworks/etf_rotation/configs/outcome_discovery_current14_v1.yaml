@@ -1,0 +1,47 @@
+version: etf_outcome_discovery_current14_v1
+family_catalog: configs/family_catalog_v3.yaml
+
+data:
+  canonical_data_root: /home/sensen/dev/projects/gpu_ml/data/etf_rotation_v1
+  universe_config: config/etf_rotation_universe_v1.json
+  as_of: '2026-09-17'
+
+population:
+  ranking_roles: [candidate]
+  expected_symbols: 14
+  min_history_sessions: 120
+  require_positive_volume: true
+
+execution:
+  signal_time: D_CLOSE
+  entry_lag_sessions: 2
+  horizon: 5
+
+discovery:
+  start: '2021-08-09'
+  end: '2023-12-31'
+  direction_fit_end: '2022-06-30'
+  # Three baseline controls leave at most 111 estimable sessions on this fit
+  # surface; 100 is a coverage requirement, not a return-performance gate.
+  min_direction_fit_days: 100
+  top_k: 3
+  min_names: 8
+  min_days: 360
+  min_year_days: 60
+  min_eligible_years: 2
+  min_year_direction_agreement: 0.6666666666666666
+
+controls:
+  - {source: directional_trend, atom: RET_20}
+  - {source: market_sensitivity, atom: MARKET_BETA_60}
+  - {source: trading_activity, atom: AMOUNT_Z_20}
+
+distillation:
+  # V3 atomics were already tested by the family adjudicator.  They are discovery
+  # legs only; formal proposals must be novel cross-family spreads.
+  max_atomic_candidates: 0
+  max_candidates_per_family: 1
+  pair_pool_size: 12
+  max_pair_candidates: 15
+  max_abs_leg_rank_corr: 0.80
+  min_pair_score_gain: 0.0

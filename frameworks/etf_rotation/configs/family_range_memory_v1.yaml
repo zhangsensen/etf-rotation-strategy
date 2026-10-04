@@ -1,0 +1,6 @@
+domain: etf_rotation
+grammar_version: etf_family_range_memory_v1
+factor_source: range_memory
+atoms:
+  - {name: RANGE_ACF1_20, family: range_memory}
+grammar: {operators: [atomic], pair_policy: cross_family_only, max_atoms: 1}

@@ -1,0 +1,14 @@
+domain: etf_rotation
+grammar_version: etf_family_return_concentration_v1
+factor_source: return_concentration
+mechanism: concentration of absolute return across sessions
+atoms:
+- name: RETURN_CONCENTRATION_20
+  family: return_concentration
+- name: RETURN_CONCENTRATION_60
+  family: return_concentration
+grammar:
+  operators:
+  - atomic
+  pair_policy: cross_family_only
+  max_atoms: 1

@@ -1,0 +1,55 @@
+version: group_ic20_outcome_batch_v2_20260922
+source_type: daily_outcome
+campaign_extension: true
+purpose: seen_history_discovery_only
+data_root: /home/sensen/dev/projects/gpu_ml/data/etf_rotation_v1
+as_of: '2026-09-17'
+start: '2023-07-27'
+evaluation_start: '2025-01-01'
+groups: frameworks/etf_rotation/configs/etf_candidate14_economic_groups_v1.yaml
+universe: config/etf_rotation_universe_v1.json
+calendar_symbol: 510300.SH
+entry_lag: 2
+horizon: 5
+top_k: 2
+warmup: 80
+hac_lag: 10
+max_leads: 6
+prior_registered: 125
+budget_cap: 133
+new_definitions: 8
+external_registered_definitions: 8
+windows: [20]
+mechanisms:
+  VAR_RATIO_5_60: {direction: 1, mechanism: directional_return_memory}
+  RETURN_AUTOCOV_20: {direction: 1, mechanism: return_serial_dependence}
+  DOWN_UP_ACTIVITY_20: {direction: -1, mechanism: downside_to_upside_activity_pressure}
+  SHOCK_ACTIVITY_RESPONSE_20: {direction: -1, mechanism: lagged_shock_activity_response}
+  RANGE_ACTIVITY_ELASTICITY_20: {direction: 1, mechanism: uncertainty_activity_coupling}
+  VOL_RESPONSE_ASYMMETRY_20: {direction: -1, mechanism: downside_range_response_asymmetry}
+  RETURN_CONCENTRATION_20: {direction: 1, mechanism: concentrated_repricing}
+  OVERHEAD_TURNOVER_20: {direction: -1, mechanism: traded_price_overhead_supply}
+candidates:
+  - {id: OM22-01, name: VAR_RATIO_5_60, direction: 1}
+  - {id: OM22-02, name: RETURN_AUTOCOV_20, direction: 1}
+  - {id: OM22-03, name: DOWN_UP_ACTIVITY_20, direction: -1}
+  - {id: OM22-04, name: SHOCK_ACTIVITY_RESPONSE_20, direction: -1}
+  - {id: OM22-05, name: RANGE_ACTIVITY_ELASTICITY_20, direction: 1}
+  - {id: OM22-06, name: VOL_RESPONSE_ASYMMETRY_20, direction: -1}
+  - {id: OM22-07, name: RETURN_CONCENTRATION_20, direction: 1}
+  - {id: OM22-08, name: OVERHEAD_TURNOVER_20, direction: -1}
+screens:
+  min_days: 360
+  min_year_days: 40
+  min_positive_years: 2
+  min_ic: 0.01
+  min_ic_hac_t: 2.0
+  min_ic_block_t: 2.0
+  min_excess8_hac_t: 2.0
+  alpha: 0.05
+  max_abs_rank_corr: 0.7
+notes:
+  proposal_surface: 2025_outcome_microscope_seen_history
+  failed_predecessor: group_ic20_outcome_batch_20260922
+  repair: scale_invariant_overhead_price_comparison
+  global_search_count_known: false

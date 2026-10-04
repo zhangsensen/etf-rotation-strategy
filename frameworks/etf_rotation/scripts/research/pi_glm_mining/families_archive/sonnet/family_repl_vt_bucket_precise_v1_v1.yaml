@@ -1,0 +1,12 @@
+domain: etf_rotation
+grammar_version: etf_family_repl_vt_bucket_precise_v1_v1
+factor_source: repl_vt_bucket_precise_v1
+frequency: 1d
+# S46 stage (round_646): precise-definition reproduction of pi's
+# VT_BUCKET_COUNT_SHIFT_20 leg of CR08. See repl_vt_bucket_precise_v1.py
+# module docstring for the full formula and contrast with S24's
+# volume_time_1m:VT_BUCKET_COUNT_SHIFT_20 (a different, level-difference
+# statistic).
+atoms:
+  - {name: R2_VT_BUCKET_COUNT_SHIFT_20, family: repl_vt_bucket_precise_v1}
+grammar: {operators: [atomic, rank_spread], pair_policy: cross_family_only, max_atoms: 1}

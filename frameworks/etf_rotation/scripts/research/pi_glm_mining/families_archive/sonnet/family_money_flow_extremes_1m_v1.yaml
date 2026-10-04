@@ -1,0 +1,34 @@
+domain: etf_rotation
+grammar_version: etf_family_money_flow_extremes_1m_v1
+factor_source: money_flow_extremes_1m
+frequency: 1m
+# S15 self-directed deepening (2026-09-21 round_570): S10's
+# MFI_EXTREME_FRAC_20 x DEP_DRIFT_20 (NI8) is this line's single highest
+# discovery block-t (4.88) across all stages. This family decomposes the
+# pooled two-tail "extreme frequency" measure into direction, persistence,
+# timing, volume-weight and forward-reversal-quality facets.
+# MFI_EXTREME_HI_FRAC_20 / MFI_EXTREME_LO_FRAC_20: Quong-Soudack (1989)
+#   MFI, fraction of bars with MFI>80 / MFI<20, 20d mean (S10 pooled both
+#   tails; this splits them).
+# MFI_EXTREME_ASYM_20: 20d mean of daily(HI_frac - LO_frac).
+# MFI_EXTREME_STREAK_20: Wilder (1978) persistence framing, longest
+#   consecutive-extreme-bar run as a fraction of day bars, 20d mean.
+# MFI_EXTREME_TOD_SKEW_20: Admati-Pfleiderer (1988) intraday-pattern
+#   framing, mean bar-position of extreme bars minus 0.5, 20d mean.
+# MFI_EXTREME_FRAC_CHG_20: 20d change of the pooled extreme-frequency
+#   measure (self-contained recomputation of S10's own atom).
+# MFI_REVERSAL_HITRATE_20: Wilder (1978) reversal-quality framing,
+#   fraction of extreme bars followed by an opposite-direction 5-bar
+#   return, 20d mean.
+# MFI_EXTREME_VOL_CONC_20: Easley-Kiefer-O'Hara-Paperman (1996) PIN-style
+#   framing, volume share carried by extreme-MFI bars, 20d mean.
+atoms:
+  - {name: MFI_EXTREME_HI_FRAC_20, family: money_flow_extremes_1m}
+  - {name: MFI_EXTREME_LO_FRAC_20, family: money_flow_extremes_1m}
+  - {name: MFI_EXTREME_ASYM_20, family: money_flow_extremes_1m}
+  - {name: MFI_EXTREME_STREAK_20, family: money_flow_extremes_1m}
+  - {name: MFI_EXTREME_TOD_SKEW_20, family: money_flow_extremes_1m}
+  - {name: MFI_EXTREME_FRAC_CHG_20, family: money_flow_extremes_1m}
+  - {name: MFI_REVERSAL_HITRATE_20, family: money_flow_extremes_1m}
+  - {name: MFI_EXTREME_VOL_CONC_20, family: money_flow_extremes_1m}
+grammar: {operators: [atomic], pair_policy: cross_family_only, max_atoms: 1}

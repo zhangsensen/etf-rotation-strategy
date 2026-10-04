@@ -1,0 +1,13 @@
+domain: etf_rotation
+grammar_version: etf_family_cgo_true_turnover_v2_sonnet_v1
+factor_source: cgo_true_turnover_v2_sonnet
+frequency: 1d
+asset_class_config: configs/etf_asset_classes_current20_v1.yaml
+atoms:
+  - {name: CGO_V2_60, family: cgo_true_turnover_v2_sonnet}
+  - {name: CGO_V2_250, family: cgo_true_turnover_v2_sonnet}
+  - {name: GAIN_OVERHANG_V2_60, family: cgo_true_turnover_v2_sonnet}
+  - {name: LOSS_OVERHANG_V2_60, family: cgo_true_turnover_v2_sonnet}
+  - {name: UW_SHARE_V2_250, family: cgo_true_turnover_v2_sonnet}
+  - {name: RP_CHANGE_V2_20, family: cgo_true_turnover_v2_sonnet}
+grammar: {operators: [atomic, rank_spread, rank_interaction], pair_policy: cross_family_only, max_atoms: 6}

@@ -1,0 +1,74 @@
+version: group_ic_batch39_luna_multi_20260923
+source_type: daily_rounds
+purpose: seen_history_discovery_only
+campaign_extension: true
+discovery_surface: IC_DISCOVERY_ONLY
+data_root: /home/sensen/dev/projects/gpu_ml/data/etf_rotation_v1
+as_of: '2026-09-17'
+start: '2023-07-27'
+evaluation_start: '2025-01-01'
+groups: frameworks/etf_rotation/configs/etf_candidate14_economic_groups_v1.yaml
+universe: config/etf_rotation_universe_v1.json
+calendar_symbol: 510300.SH
+entry_lag: 2
+horizon: 5
+top_k: 2
+warmup: 60
+hac_lag: 10
+max_leads: 4
+external_registered_definitions: 8
+windows:
+- 20
+screens:
+  min_days: 360
+  min_year_days: 40
+  min_positive_years: 2
+  min_ic: 0.01
+  min_ic_hac_t: 2.0
+  min_ic_block_t: 2.0
+  min_excess8_hac_t: 2.0
+  alpha: 0.05
+  max_abs_rank_corr: 0.7
+notes:
+  fixed_population: 14 ETFs / 8 economic groups
+  timing: close(D) signal; open(D+2) to open(D+7) H5 research label contract
+  evaluation_surface: previously-seen history, signal_date 2025-01-01 through 2026-09-17;
+    discovery, not OOS
+  direction_status: economic sign frozen before evaluation; no sign selection or automatic
+    flip
+  complete_input_windows_only: true
+  member_aggregation: each member atom computed independently, then existing fixed
+    group aggregation
+  source_vintage: canonical daily bars; no additional information sources
+prior_registered: 407
+budget_cap: 411
+new_definitions: 4
+mechanisms:
+  l39_upper_tail_nextday_followthrough:
+    direction: 1
+    raw_formula: 对事件日D-20…D-1，逐日以事件日前20个简单收益估计q90；事件定义r>q90。返回事件次日收益均值，至少2个事件；只用已实现到D的响应，需41个连续完整收益（42个收盘），窗口中缺失即缺失。
+    hypothesis: 上尾冲击后继续上涨体现正向价格发现。
+    family: tail_event_response
+    nearest_previous: clv_extreme_recovery_rate / return_acceleration_5
+    distinction: 按close-close收益上尾事件条件化次日收益，不用CLV或连续加速度。
+  l39_lower_tail_nextday_rebound:
+    direction: 1
+    raw_formula: 对事件日D-20…D-1，逐日以事件日前20个简单收益估计q10；事件定义r<q10。返回事件次日收益均值，至少2个事件；只用已实现到D的响应，需41个连续完整收益（42个收盘），窗口中缺失即缺失。
+    hypothesis: 下尾冲击后反弹体现跌势吸收。
+    family: tail_event_response
+    nearest_previous: market_residual_downshock_recovery
+    distinction: 个体ETF原始收益尾部后的次日close-close反弹，不作横截面市场残差化，也不使用区间恢复。
+  l39_tail_event_nextday_absvol_ratio:
+    direction: -1
+    raw_formula: 在事件日D-20…D-1中，用各事件日前20个简单收益定义r>q90或r<q10的尾事件；计算事件次日|r|均值/非事件次日|r|均值。尾/非尾各至少2日；仅用已实现到D的响应，需41个连续完整收益（42个收盘），窗口中缺失即缺失；非事件分母0则缺失。
+    hypothesis: 尾部冲击后次日波动继续放大，表示价格调整不稳定。
+    family: tail_event_response
+    nearest_previous: bipower_jump_share / squared_return_ar1
+    distinction: 比较尾部事件后的次日绝对收益与普通次日绝对收益，不估算实现跳跃份额或平方收益自相关。
+  l39_tail_event_response_consistency:
+    direction: 1
+    raw_formula: 对事件日D-20…D-1，逐日以事件日前20个简单收益估计q90/q10，尾事件定义为r>q90或r<q10；统计事件次日收益与事件日同号的比例。必须至少2个尾事件；只用已实现到D的次日收益，需41个连续完整收益（42个收盘），窗口中缺失即缺失。
+    hypothesis: 尾部冲击后次日方向确认频率高，表示极端日方向延续。
+    family: tail_event_response
+    nearest_previous: body_transition_asymmetry / gap_shock_body_reversal
+    distinction: 前者看一般实体符号转移，后者看缺口冲击实体反转；本候选只在按历史阈值预定义的收益尾事件上计算次日方向命中率。

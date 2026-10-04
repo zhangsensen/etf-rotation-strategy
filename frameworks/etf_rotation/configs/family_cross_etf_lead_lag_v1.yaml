@@ -1,0 +1,19 @@
+domain: etf_rotation
+grammar_version: etf_family_cross_etf_lead_lag_v1
+factor_source: cross_etf_lead_lag
+benchmark_symbols: [510300.SH, 510500.SH]
+peer_symbols: [159995.SZ, 159516.SZ, 515880.SH, 159852.SZ, 562500.SH, 159732.SZ, 513130.SH, 159992.SZ, 513120.SH, 518880.SH, 512400.SH, 512890.SH, 159611.SZ, 513100.SH]
+atoms:
+  - {name: MARKET_LEAD_BETA_20, family: cross_etf_lead_lag}
+  - {name: MARKET_LEAD_BETA_60, family: cross_etf_lead_lag}
+  - {name: MARKET_LEAD_CORR_20, family: cross_etf_lead_lag}
+  - {name: MARKET_LEAD_CORR_60, family: cross_etf_lead_lag}
+  - {name: ASSET_LEAD_MARKET_CORR_20, family: cross_etf_lead_lag}
+  - {name: ASSET_LEAD_MARKET_CORR_60, family: cross_etf_lead_lag}
+  - {name: PEER_LEAD_BETA_20, family: cross_etf_lead_lag}
+  - {name: PEER_LEAD_BETA_60, family: cross_etf_lead_lag}
+  - {name: PEER_LEAD_CORR_20, family: cross_etf_lead_lag}
+  - {name: PEER_LEAD_CORR_60, family: cross_etf_lead_lag}
+  - {name: PEER_LEAD_NETWORK_CORR_20, family: cross_etf_lead_lag}
+  - {name: PEER_LEAD_NETWORK_CORR_60, family: cross_etf_lead_lag}
+grammar: {operators: [atomic], pair_policy: cross_family_only, max_atoms: 1}

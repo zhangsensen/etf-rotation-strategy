@@ -1,0 +1,88 @@
+version: group_ic20_outcome_batch_20260922
+source_type: daily_outcome
+campaign_extension: true
+purpose: seen_history_discovery_only
+data_root: /home/sensen/dev/projects/gpu_ml/data/etf_rotation_v1
+as_of: '2026-09-17'
+start: '2023-07-27'
+evaluation_start: '2025-01-01'
+groups: frameworks/etf_rotation/configs/etf_candidate14_economic_groups_v1.yaml
+universe: config/etf_rotation_universe_v1.json
+calendar_symbol: 510300.SH
+entry_lag: 2
+horizon: 5
+top_k: 2
+warmup: 80
+hac_lag: 10
+max_leads: 6
+prior_registered: 117
+budget_cap: 125
+new_definitions: 8
+external_registered_definitions: 8
+windows: [20]
+market_reference: null
+
+# Direction was selected on the 2025 outcome microscope. It is not a
+# mechanism prior and is not an independent confirmation surface.
+mechanisms:
+  VAR_RATIO_5_60:
+    direction: 1
+    mechanism: directional_return_memory
+    formula: Var_60(rolling_sum_5(return)) / (5 * Var_60(return))
+  RETURN_AUTOCOV_20:
+    direction: 1
+    mechanism: return_serial_dependence
+    formula: Cov_20(return_t, return_t_minus_1)
+  DOWN_UP_ACTIVITY_20:
+    direction: -1
+    mechanism: downside_to_upside_activity_pressure
+    formula: mean(amount_on_down_days_20) / mean(amount_on_up_days_20)
+  SHOCK_ACTIVITY_RESPONSE_20:
+    direction: -1
+    mechanism: lagged_shock_activity_response
+    formula: Corr_20(delta_log_amount, abs_lagged_return)
+  RANGE_ACTIVITY_ELASTICITY_20:
+    direction: 1
+    mechanism: uncertainty_activity_coupling
+    formula: Corr_20(delta_log_amount, delta_daily_range_pct)
+  VOL_RESPONSE_ASYMMETRY_20:
+    direction: -1
+    mechanism: downside_range_response_asymmetry
+    formula: mean(range_pct_after_down_return_20) / mean(range_pct_after_up_return_20)
+  RETURN_CONCENTRATION_20:
+    direction: 1
+    mechanism: concentrated_repricing
+    formula: sum(return_squared_20) / sum(abs_return_20)^2
+  OVERHEAD_TURNOVER_20:
+    direction: -1
+    mechanism: traded_price_overhead_supply
+    formula: sum(amount_where_typical_price_above_current_close_20) / sum(amount_20)
+
+# Kept as an explicit exact whitelist for the implementation boundary.
+candidates:
+  - {id: OM22-01, name: VAR_RATIO_5_60, direction: 1}
+  - {id: OM22-02, name: RETURN_AUTOCOV_20, direction: 1}
+  - {id: OM22-03, name: DOWN_UP_ACTIVITY_20, direction: -1}
+  - {id: OM22-04, name: SHOCK_ACTIVITY_RESPONSE_20, direction: -1}
+  - {id: OM22-05, name: RANGE_ACTIVITY_ELASTICITY_20, direction: 1}
+  - {id: OM22-06, name: VOL_RESPONSE_ASYMMETRY_20, direction: -1}
+  - {id: OM22-07, name: RETURN_CONCENTRATION_20, direction: 1}
+  - {id: OM22-08, name: OVERHEAD_TURNOVER_20, direction: -1}
+
+screens:
+  min_days: 360
+  min_year_days: 40
+  min_positive_years: 2
+  min_ic: 0.01
+  min_ic_hac_t: 2.0
+  min_ic_block_t: 2.0
+  min_excess8_hac_t: 2.0
+  alpha: 0.05
+  max_abs_rank_corr: 0.7
+
+notes:
+  canonical_input: 'runner canonical panels from 1d plus adj_factor; do not read 1d_qfq directly'
+  var_ratio_window: 'rolling 5-session return sum, then sample variance over 60 rolling sums, divided by 5 times sample variance of 60 daily returns; requires at least 64 daily observations'
+  nan_policy: 'strict complete rolling windows; denominator zero is NaN; no imputation or clipping'
+  direction_surface: '2025-01-01..2025-12-31 outcome microscope only'
+  excluded_from_proposal: '2026 labels, formal IC, runner verdict, market reference'

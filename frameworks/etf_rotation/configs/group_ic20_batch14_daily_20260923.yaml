@@ -1,0 +1,85 @@
+version: group_ic20_batch14_daily_20260923
+source_type: daily_rounds
+purpose: seen_history_discovery_only
+campaign_extension: true
+discovery_surface: 2025_DIRECTION_DISCOVERY_ONLY
+data_root: /home/sensen/dev/projects/gpu_ml/data/etf_rotation_v1
+as_of: '2025-12-31'
+start: '2023-07-27'
+evaluation_start: '2025-01-01'
+groups: frameworks/etf_rotation/configs/etf_candidate14_economic_groups_v1.yaml
+universe: config/etf_rotation_universe_v1.json
+calendar_symbol: 510300.SH
+entry_lag: 2
+horizon: 5
+top_k: 2
+warmup: 60
+hac_lag: 10
+max_leads: 14
+prior_registered: 158
+budget_cap: 172
+new_definitions: 14
+external_registered_definitions: 8
+windows: [20]
+mechanisms:
+  gap_excess_kurtosis:
+    direction: 1
+    hypothesis: excess tail shape of complete 20-day overnight gaps
+  clv_autocorr:
+    direction: 1
+    hypothesis: 20-pair persistence of daily close-location states
+  gap_abs_change:
+    direction: 1
+    hypothesis: mean 20-day absolute change in overnight gap magnitude
+  range_gap_abs_corr:
+    direction: 1
+    hypothesis: coupling between relative intraday range and absolute overnight gap
+  amount_abs_body_corr:
+    direction: 1
+    hypothesis: canonical amount innovation response to absolute open-close body
+  amount_clv_abs_corr:
+    direction: 1
+    hypothesis: canonical amount innovation response to absolute close-location extremity
+  clv_excess_kurtosis:
+    direction: 1
+    hypothesis: excess tail shape of daily close-location states
+  wick_abs_kurtosis:
+    direction: 1
+    hypothesis: excess tail shape of absolute signed-wick imbalance
+  wick_abs_change:
+    direction: 1
+    hypothesis: mean 20-day change in absolute wick rejection magnitude
+  amount_innovation_excess_kurtosis:
+    direction: 1
+    hypothesis: excess tail shape of canonical amount innovations
+  amount_innovation_abs_change:
+    direction: 1
+    hypothesis: mean 20-day change in canonical amount innovation
+  body_wick_abs_corr:
+    direction: 1
+    hypothesis: coupling between absolute body and absolute wick magnitude
+  gap_signed_body_corr:
+    direction: 1
+    hypothesis: signed overnight-gap to signed same-day-body transmission
+  range_body_ratio_dispersion:
+    direction: 1
+    hypothesis: dispersion of absolute body share within relative daily range
+screens:
+  min_days: 360
+  min_year_days: 40
+  min_positive_years: 2
+  min_ic: 0.01
+  min_ic_hac_t: 2.0
+  min_ic_block_t: 2.0
+  min_excess8_hac_t: 2.0
+  alpha: 0.05
+  max_abs_rank_corr: 0.7
+notes:
+  fixed_population: 14 ETFs / 8 economic groups
+  timing: close(D) signal; open(D+2) to open(D+7) H5 research label contract
+  source_fields: canonical daily open/high/low/close/amount; amount must be positive
+  formulas: g=O/C_prev-1; b=C/O-1; q=(H-L)/C_prev; c=(2C-H-L)/(H-L); w=signed wick imbalance; x=delta(log(amount))
+  nan_policy: nonpositive amount, zero previous-close/range denominator, zero rolling variance, or incomplete window is NaN; fixed members are not replaced
+  direction_status: all 14 directions are +1 raw-library defaults; no outcome-derived direction selection
+  no_label_read: true
+  no_real_market_run_in_implementation_task: true

@@ -1,0 +1,92 @@
+version: group_ic_batch42_luna_multi_20260923
+source_type: daily_rounds
+purpose: seen_history_discovery_only
+campaign_extension: true
+discovery_surface: IC_DISCOVERY_ONLY
+data_root: /home/sensen/dev/projects/gpu_ml/data/etf_rotation_v1
+as_of: '2026-09-17'
+start: '2023-07-27'
+evaluation_start: '2025-01-01'
+groups: frameworks/etf_rotation/configs/etf_candidate14_economic_groups_v1.yaml
+universe: config/etf_rotation_universe_v1.json
+calendar_symbol: 510300.SH
+entry_lag: 2
+horizon: 5
+top_k: 2
+warmup: 60
+hac_lag: 10
+max_leads: 4
+external_registered_definitions: 8
+windows:
+- 20
+screens:
+  min_days: 360
+  min_year_days: 40
+  min_positive_years: 2
+  min_ic: 0.01
+  min_ic_hac_t: 2.0
+  min_ic_block_t: 2.0
+  min_excess8_hac_t: 2.0
+  alpha: 0.05
+  max_abs_rank_corr: 0.7
+notes:
+  fixed_population: 14 ETFs / 8 economic groups
+  timing: close(D) signal; open(D+2) to open(D+7) H5 research label contract
+  evaluation_surface: previously-seen history, signal_date 2025-01-01 through 2026-09-17;
+    discovery, not OOS
+  direction_status: economic sign frozen before evaluation; no sign selection or automatic
+    flip
+  complete_input_windows_only: true
+  member_aggregation: each member atom computed independently, then existing fixed
+    group aggregation
+  source_vintage: canonical daily bars; no additional information sources
+prior_registered: 419
+budget_cap: 423
+new_definitions: 4
+mechanisms:
+  l42_peer_liquidity_adjusted_return:
+    direction: 1
+    raw_formula: For each i,t, q_i,t=r_i,t/(1+|e_i,t|), with e_i,t=log(amount_i,t)-mean(previous
+      20 log amounts); compute beta_20(q_i,t, m^-i_t), where m^-i is mean peer e;
+      group fixed-member mean.
+    hypothesis: Positive own return per unit own activity, when peers are active,
+      suggests efficient selective repricing rather than requiring exceptional turnover.
+    family: peer_activity_impact
+    nearest_previous: market_residual_amount_beta_20; amount_innovation_return_beta_20
+    distinction: Uses a bounded liquidity-adjusted return response conditional on
+      contemporaneous leave-one-out peer activity, not a beta of amount on return.
+  l42_peer_flow_impact_spread:
+    direction: 1
+    raw_formula: beta_20(r_i,t,m^-i_t) - beta_20(r_i,t,abs(m^-i_t)); both OLS slopes
+      include intercept and use population moments (ddof=0); require 20 complete pairs
+      and nonzero predictor variance. Group fixed-member mean.
+    hypothesis: A larger signed-flow response than absolute-flow response indicates
+      peer activity carries directional information beyond activity magnitude; direction
+      +1 is frozen.
+    family: peer_activity_impact
+    nearest_previous: downside_price_impact_share; market_residual_amount_beta_20
+    distinction: Explicit signed-minus-absolute peer activity slope contrast; direction
+      agrees with the stated informed-directional-activity hypothesis.
+  l42_amount_neutral_peer_response:
+    direction: 1
+    raw_formula: On complete 20-pair windows, OLS with intercept of member return
+      on peer activity mean and own activity innovation; return the peer-activity
+      slope. Population covariance moments (ddof=0); singular or near-singular design
+      when determinant <= 1e-12 * Var(peer)*Var(own) is NaN. Group fixed-member mean.
+    hypothesis: Peer activity that predicts return beyond own activity is evidence
+      of cross-ETF transmission, not simply own turnover-price coupling.
+    family: peer_activity_impact
+    nearest_previous: peer_lag_return_beta_20; amount_innovation_return_beta_20
+    distinction: Partial peer-amount slope conditions on own amount innovation; prior
+      peer variable definitions do not control own flow.
+  l42_peer_flow_impact_instability:
+    direction: -1
+    raw_formula: Over the trailing 40 complete pairs, calculate the population standard
+      deviation across four consecutive non-overlap 10-pair beta(r_i,m^-i); group
+      fixed-member mean; require all 40 pairs.
+    hypothesis: An unstable response to peer flow suggests unreliable liquidity transmission;
+      lower instability is expected to accompany durable relative demand.
+    family: peer_activity_impact
+    nearest_previous: market_residual_amount_beta_20; amount_shock_*
+    distinction: Measures time variation of a peer-flow response slope in prespecified
+      disjoint blocks, not shock magnitude or a window-only variant of amount expansion.

@@ -1,0 +1,106 @@
+version: group_ic_batchB_long_horizon_structure_20260923
+source_type: claude_rounds
+purpose: seen_history_discovery_only
+campaign_extension: true
+discovery_surface: IC_DISCOVERY_ONLY
+data_root: /home/sensen/dev/projects/gpu_ml/data/etf_rotation_v1
+as_of: '2026-09-17'
+start: '2023-07-27'
+evaluation_start: '2025-01-01'
+groups: frameworks/etf_rotation/configs/etf_candidate14_economic_groups_v1.yaml
+universe: config/etf_rotation_universe_v1.json
+calendar_symbol: 510300.SH
+entry_lag: 2
+horizon: 5
+top_k: 2
+warmup: 60
+hac_lag: 10
+max_leads: 6
+external_registered_definitions: 8
+screens:
+  min_days: 360
+  min_year_days: 40
+  min_positive_years: 2
+  min_ic: 0.01
+  min_ic_hac_t: 2.0
+  min_ic_block_t: 2.0
+  min_excess8_hac_t: 2.0
+  alpha: 0.05
+  max_abs_rank_corr: 0.7
+prior_registered: 459
+budget_cap: 465
+new_definitions: 6
+mechanisms:
+  momentum_120_skip5:
+    direction: 1
+    window: 120
+    hypothesis: "close[t-5]/close[t-120]-1: 12-1-month-style momentum with the most recent 5 trading days skipped to avoid short-term reversal contamination. Direction +1: continued relative strength."
+    raw_formula: "close.shift(5) / close.shift(120) - 1"
+  momentum_250_skip20:
+    direction: 1
+    window: 250
+    hypothesis: "close[t-20]/close[t-250]-1: a longer-horizon skip-recency momentum (roughly one year lookback, one month skipped). Direction +1."
+    raw_formula: "close.shift(20) / close.shift(250) - 1"
+  vol_scaled_momentum:
+    direction: 1
+    window: 60
+    hypothesis: "60-day return scaled by the 60-day daily-return standard deviation (a risk-adjusted momentum). Direction +1: risk-adjusted strength persists better than raw return."
+    raw_formula: "close.pct_change(60) / rolling_std(daily_return, 60)"
+  tsmom_consistency:
+    direction: 1
+    window: 120
+    hypothesis: "Fraction of the six trailing non-overlapping 20-day blocks (sampled backward from today: today, today-20d, ..., today-100d) with a positive 20-day return. Direction +1: more consistent time-series momentum persists better than a single-period return of the same magnitude."
+    raw_formula: >-
+      block_return = close.pct_change(20); positive = block_return>0 (NaN-preserving, not gt(0)'s silent-False on
+      NaN); mean of positive sampled at window-relative offsets [-1,-21,-41,-61,-81,-101] (i.e. today and every
+      20th prior day, 6 points), each offset itself a genuine pct_change(20) endpoint with no missing history in
+      the offset chain; requires all 6 finite.
+  vol_of_vol:
+    direction: -1
+    window: 60
+    hypothesis: "Standard deviation of the rolling-20-day realized volatility over the trailing 60 days, scaled by its own 60-day mean level. Direction -1: an unstable (high vol-of-vol) risk regime predicts relative weakness."
+    raw_formula: "rolling_std(rolling_std(daily_return,20), 60) / rolling_mean(rolling_std(daily_return,20), 60)"
+  illiquidity_trend:
+    direction: -1
+    window: 60
+    hypothesis: "Amihud(20)/Amihud(60) - 1, i.e. the CHANGE in price impact per unit turnover, not its level (the existing registered 'illiquidity' family is a level, INCOMPLETE_EVIDENCE status; this is its trend). Direction -1: a rising (deteriorating) illiquidity trend predicts relative weakness."
+    raw_formula: "amihud20 = mean(abs(daily_return)/amount, 20); amihud60 = mean(abs(daily_return)/amount, 60); amihud20/amihud60 - 1"
+notes:
+  fixed_population: 14 ETFs / 8 economic groups
+  timing: close(D) signal; open(D+2) to open(D+7) H5 research label contract
+  evaluation_surface: previously-seen history, signal_date 2025-01-01 through 2026-09-17; discovery, not OOS
+  direction_status: economic sign frozen before evaluation; no sign selection or automatic flip
+  complete_input_windows_only: true
+  member_aggregation: each member atom computed independently, then existing fixed group aggregation
+  source_vintage: canonical daily bars; no additional information sources
+  engine: >-
+    new module frameworks/etf_rotation/src/etf_strategy/core/etf_group_claude_rounds.py, source_type=claude_rounds
+    (same module as group_ic_batchA_market_comovement_20260923.yaml; see that config's notes.engine for why a new
+    module was needed instead of extending etf_group_daily_rounds.py's WINDOW=20).
+  family_precheck: >-
+    checked against families.csv (234 families) plus per-run family tags in PLAN.json. Two originally proposed
+    candidates were dropped BEFORE registration on family collision, not dedup: dist_from_250_high and
+    drawdown_depth_120 both fall under the close_drawdown_topology family (4 tested, 0 IC,
+    DO_NOT_REPEAT_TESTED_VARIANTS_WITHOUT_NEW_INFORMATION), specifically group_ic_batch36_luna_multi_20260923's
+    l36_max_close_drawdown_depth_20 (direction -1, hypothesis text near-identical to drawdown_depth_120's own
+    "distinguish from underwater_time_share" rationale). Neither is registered here. momentum_120_skip5/
+    momentum_250_skip20 are adjacent to the exhausted daily:momentum family (DO_NOT_REPEAT) but that family is a
+    different engine kind (legacy 'daily', no skip-recency construction) at windows 5/20; skip-recency momentum is
+    treated as a distinct construction (excludes short-term-reversal-prone recent days), not a mere window change.
+  no_label_dedup_precheck: >-
+    computed group scores only (no forward return/H5 label), 2025-01-01..2026-09-22, against 423 saved
+    scores_*.csv files across the whole runs/ library (deduped to latest per candidate id) plus the other Batch
+    A/B candidates. All 8 originally proposed Batch B candidates stayed under 0.7 (max momentum_250_skip20 0.686);
+    the 6 registered here: momentum_120_skip5 0.638, momentum_250_skip20 0.686, vol_scaled_momentum_60 0.600,
+    tsmom_consistency_120 0.523, vol_of_vol_60 0.483, illiquidity_trend_60 0.542. dist_from_250_high (0.642) and
+    drawdown_depth_120 (0.538) also passed dedup but are excluded on the family collision above, not on dedup. See
+    runtime_outputs/etf_rotation_research/diagnostics/batch_ab_20260923/dedup_precheck.csv.
+  eval_window_structural_precheck: >-
+    2025-01-01..2026-09-22 (419 days), read-only feature check, no labels read. All 6 registered candidates:
+    every single-member group nan_rate=0.0, mode_value_rate<=0.40, days_all_8_groups_valid=419/419. All 8
+    originally proposed Batch B candidates also show days_all_14_valid=419/419 in the long-window (120/250)
+    member-level coverage estimate: the long lookback is fully absorbed by warmup before 2025-01-01, so the
+    2025+ evaluation window itself has no coverage shortfall. See
+    runtime_outputs/etf_rotation_research/diagnostics/batch_ab_20260923/{structural_diagnostics,batch_b_coverage_estimate}.csv.
+  no_label_read: true
+  no_formal_evaluation_in_implementation_task: true

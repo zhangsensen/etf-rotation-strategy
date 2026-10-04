@@ -1,0 +1,13 @@
+domain: etf_rotation
+grammar_version: etf_family_directional_trend_v1
+factor_source: directional_trend
+atoms:
+  - {name: RET_5, family: directional_trend}
+  - {name: RET_20, family: directional_trend}
+  - {name: RET_60, family: directional_trend}
+  - {name: RET_120, family: directional_trend}
+  - {name: SKIP_RECENT_MOM_20_5, family: directional_trend}
+  - {name: SKIP_RECENT_MOM_60_5, family: directional_trend}
+  - {name: TREND_RET_VOLADJ_20, family: directional_trend}
+  - {name: TREND_RET_VOLADJ_60, family: directional_trend}
+grammar: {operators: [atomic], pair_policy: cross_family_only, max_atoms: 1}

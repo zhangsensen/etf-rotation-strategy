@@ -1,0 +1,27 @@
+domain: etf_rotation
+grammar_version: etf_family_mfi_extreme_timing_1m_v1
+factor_source: mfi_extreme_timing_1m
+frequency: 1m
+# Literature provenance (directive: no citation, no atom):
+# MFI_EXTREME_TROUGH_SKEW_20: Quong-Soudack (1989) MFI(14), extreme =
+#   MFI>80 or MFI<20 (conventional 80/20 boundary, same as
+#   accumulation_distribution_1m); (extreme-bar count before the day's
+#   drawdown trough - count after) / total extreme-bar count, 20d mean.
+# MFI_EXTREME_PEAK_SKEW_20: same, relative to the day's high (peak_idx).
+# MFI_EXTREME_DIR_SKEW_CHG_20: 20d change of (count MFI>80 - count
+#   MFI<20) / total extreme-bar count; the level is shadow-flagged
+#   (corr=0.87 vs money_flow_extremes_1m's MFI_EXTREME_ASYM_20) and not
+#   exposed as a standalone atom, only its change.
+# MFI_EXTREME_EDGE_MID_SKEW_20: (extreme count in first/last 30min) /
+#   total - (extreme count in the middle segment) / total, 20d mean.
+# Note: MFI_EXTREME_TOD_SKEW_20 and MFI_EXTREME_STREAK_LEN_20 were
+# dropped after a plan-time canonical-hash collision with round_570's
+# money_flow_extremes_1m family (which already registered a differently-
+# constructed TOD_SKEW and a directly analogous STREAK_20); see the
+# provider module docstring.
+atoms:
+  - {name: MFI_EXTREME_TROUGH_SKEW_20, family: mfi_extreme_timing_1m}
+  - {name: MFI_EXTREME_PEAK_SKEW_20, family: mfi_extreme_timing_1m}
+  - {name: MFI_EXTREME_DIR_SKEW_CHG_20, family: mfi_extreme_timing_1m}
+  - {name: MFI_EXTREME_EDGE_MID_SKEW_20, family: mfi_extreme_timing_1m}
+grammar: {operators: [atomic], pair_policy: cross_family_only, max_atoms: 1}

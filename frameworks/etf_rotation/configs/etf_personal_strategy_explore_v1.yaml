@@ -1,0 +1,42 @@
+version: etf_personal_strategy_explore_v1
+purpose: descriptive_hindsight_exploration_not_live_authority
+population: fixed14_eight_groups
+start_date: '2024-01-01'
+cold_as_of: '2026-03-24'
+signal_time: close_D
+execution_price: adjusted_open_research_proxy
+fill_proxy: raw_daily_open_and_volume_positive_and_0931_minute_volume_positive
+mark_price: adjusted_close_research_proxy
+illustrative_cost_bps_per_side: 10
+account_initial_nav: 1.0
+unpriced_exit: invalidate_fill_aware_nav_from_event_onward
+missing_entry: retain_intended_member_allocation_as_cash
+benchmark_groups: [B8_equal_groups, B14_equal_members]
+benchmark_cost_convention: same_event_dates_and_same_per_side_rate_net_trades
+data_vintage: current_adjustment_file_filtered_to_cold_cutoff_not_historical_pit_snapshot
+rules:
+  A_weekly_weekday_top2:
+    status: ADAPTIVE_TO_SEEN_HISTORY_NOT_OOS
+    signal_schedule: first_exchange_session_of_iso_week
+    factor: weekday_relative_return_pattern_60
+    score_requirement: all_eight_groups_complete_at_D
+    ranking: frozen_direction_stable_rank_top_two_group_id_tie
+    weights: equal_two_groups_equal_members_within_group_full_account
+    entry_lag_sessions: 2
+    exit_lag_sessions: 7
+    overlap: skip_signal_if_its_entry_precedes_active_sleeve_exit
+    cash: before_entry_after_exit_or_incomplete_score
+    benchmark_interval: same_ranked_entry_exit_intervals_and_cash_gaps
+  B_monthly_absolute_trend:
+    status: NEW_MECHANISM_NO_PARAMETER_SWEEP
+    signal_schedule: first_exchange_session_of_calendar_month
+    statistic: each_etf_adjusted_close_D_divided_by_own_trailing_60_session_mean_including_D
+    group_statistic: equal_member_mean_of_statistic
+    eligible_group: group_statistic_strictly_above_one
+    weights: equal_eligible_groups_equal_members_within_group_full_account
+    entry_lag_sessions: 2
+    exit: next_month_signal_plus_two_sessions_open
+    cash: all_groups_ineligible_or_incomplete_60_session_warmup
+    benchmark_interval: every_monthly_rebalance_interval
+partial_cold_month: mark_open_positions_at_cold_cutoff_adjusted_close_without_exit_cost_or_completed_trade_claim
+reporting: full_account_nav_daily_gross_and_illustrative_net_vs_same_event_B8_B14_turnover_drawdown_calendar_year

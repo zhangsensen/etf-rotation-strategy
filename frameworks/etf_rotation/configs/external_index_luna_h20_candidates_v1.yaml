@@ -1,0 +1,491 @@
+schema_version: external_index_luna_h20_candidates_v1
+selection_author: openai/gpt-5.6-luna
+selection_surface: mechanism_only_no_index_outcomes
+index_population_outcomes_loaded_before_freeze: false
+historical_candidate_files_read: false
+stock_or_etf_results_read: false
+target_contract:
+  signal: D_CLOSE
+  entry: open_D_plus_2
+  exit: open_D_plus_22
+candidates:
+  - id: I2L001
+    operator: atomic
+    left: {source: directional_trend, name: RET_5}
+    expected_sign: 1
+    mechanism: short-horizon directional persistence
+  - id: I2L002
+    operator: atomic
+    left: {source: directional_trend, name: RET_60}
+    expected_sign: 1
+    mechanism: intermediate-horizon directional persistence
+  - id: I2L003
+    operator: atomic
+    left: {source: directional_trend, name: RET_120}
+    expected_sign: 1
+    mechanism: long-horizon directional persistence
+  - id: I2L004
+    operator: atomic
+    left: {source: directional_trend, name: SKIP_RECENT_MOM_20_5}
+    expected_sign: 1
+    mechanism: medium trend excluding the latest short interval
+  - id: I2L005
+    operator: atomic
+    left: {source: directional_trend, name: SKIP_RECENT_MOM_60_5}
+    expected_sign: 1
+    mechanism: long trend excluding the latest short interval
+  - id: I2L006
+    operator: atomic
+    left: {source: directional_trend, name: TREND_RET_VOLADJ_20}
+    expected_sign: 1
+    mechanism: volatility-adjusted medium trend strength
+  - id: I2L007
+    operator: atomic
+    left: {source: directional_trend, name: TREND_RET_VOLADJ_60}
+    expected_sign: 1
+    mechanism: volatility-adjusted long trend strength
+  - id: I2L008
+    operator: atomic
+    left: {source: price_location, name: PRICE_POSITION_20}
+    expected_sign: 1
+    mechanism: recent range price location
+  - id: I2L009
+    operator: atomic
+    left: {source: price_location, name: PRICE_POSITION_60}
+    expected_sign: 1
+    mechanism: medium range price location
+  - id: I2L010
+    operator: atomic
+    left: {source: price_location, name: PRICE_POSITION_120}
+    expected_sign: 1
+    mechanism: long range price location
+  - id: I2L011
+    operator: atomic
+    left: {source: price_location, name: DIST_HIGH_20_VOLADJ}
+    expected_sign: 1
+    mechanism: volatility-adjusted proximity to recent high
+  - id: I2L012
+    operator: atomic
+    left: {source: price_location, name: DIST_HIGH_60_VOLADJ}
+    expected_sign: 1
+    mechanism: volatility-adjusted proximity to medium high
+  - id: I2L013
+    operator: atomic
+    left: {source: price_location, name: BREAKOUT_ATR_20}
+    expected_sign: 1
+    mechanism: recent ATR-normalized breakout state
+  - id: I2L014
+    operator: atomic
+    left: {source: price_location, name: BREAKOUT_ATR_60}
+    expected_sign: 1
+    mechanism: medium ATR-normalized breakout state
+  - id: I2L015
+    operator: atomic
+    left: {source: downside_risk, name: REALIZED_VOL_60}
+    expected_sign: -1
+    mechanism: medium realized volatility burden
+  - id: I2L016
+    operator: atomic
+    left: {source: downside_risk, name: DOWNSIDE_DEV_20}
+    expected_sign: -1
+    mechanism: recent downside deviation burden
+  - id: I2L017
+    operator: atomic
+    left: {source: downside_risk, name: DOWNSIDE_DEV_60}
+    expected_sign: -1
+    mechanism: medium downside deviation burden
+  - id: I2L018
+    operator: atomic
+    left: {source: downside_risk, name: CURRENT_DD_20}
+    expected_sign: 1
+    mechanism: recent drawdown recovery state
+  - id: I2L019
+    operator: atomic
+    left: {source: downside_risk, name: CURRENT_DD_60}
+    expected_sign: 1
+    mechanism: medium drawdown recovery state
+  - id: I2L020
+    operator: atomic
+    left: {source: downside_risk, name: MAX_DD_20}
+    expected_sign: 1
+    mechanism: recent historical drawdown resilience
+  - id: I2L021
+    operator: atomic
+    left: {source: downside_risk, name: MAX_DD_60}
+    expected_sign: 1
+    mechanism: medium historical drawdown resilience
+  - id: I2L022
+    operator: atomic
+    left: {source: downside_risk, name: ULCER_20}
+    expected_sign: -1
+    mechanism: recent persistent drawdown stress
+  - id: I2L023
+    operator: atomic
+    left: {source: downside_risk, name: ULCER_60}
+    expected_sign: -1
+    mechanism: medium persistent drawdown stress
+  - id: I2L024
+    operator: atomic
+    left: {source: downside_risk, name: VOL_ACCEL_5_20}
+    expected_sign: -1
+    mechanism: short-term volatility acceleration
+  - id: I2L025
+    operator: atomic
+    left: {source: daily_candle, name: OVERNIGHT_GAP}
+    expected_sign: 1
+    mechanism: overnight repricing continuation
+  - id: I2L026
+    operator: atomic
+    left: {source: daily_candle, name: SESSION_RETURN}
+    expected_sign: 1
+    mechanism: regular-session directional continuation
+  - id: I2L027
+    operator: atomic
+    left: {source: daily_candle, name: DAILY_RANGE_PCT}
+    expected_sign: -1
+    mechanism: daily range uncertainty burden
+  - id: I2L028
+    operator: atomic
+    left: {source: daily_candle, name: CLOSE_LOCATION_DAILY}
+    expected_sign: 1
+    mechanism: close placement within daily auction range
+  - id: I2L029
+    operator: atomic
+    left: {source: daily_candle, name: BODY_TO_RANGE}
+    expected_sign: 1
+    mechanism: directional body dominance within range
+  - id: I2L030
+    operator: atomic
+    left: {source: daily_candle, name: GAP_MEAN_20}
+    expected_sign: 1
+    mechanism: medium overnight repricing persistence
+  - id: I2L031
+    operator: atomic
+    left: {source: daily_candle, name: GAP_MEAN_60}
+    expected_sign: 1
+    mechanism: long overnight repricing persistence
+  - id: I2L032
+    operator: atomic
+    left: {source: daily_candle, name: SESSION_MEAN_20}
+    expected_sign: 1
+    mechanism: medium regular-session directional persistence
+  - id: I2L033
+    operator: atomic
+    left: {source: daily_candle, name: SESSION_MEAN_60}
+    expected_sign: 1
+    mechanism: long regular-session directional persistence
+  - id: I2L034
+    operator: atomic
+    left: {source: path_efficiency, name: PATH_EFFICIENCY_10}
+    expected_sign: 1
+    mechanism: short path directional efficiency
+  - id: I2L035
+    operator: atomic
+    left: {source: path_efficiency, name: PATH_EFFICIENCY_20}
+    expected_sign: 1
+    mechanism: medium path directional efficiency
+  - id: I2L036
+    operator: atomic
+    left: {source: path_efficiency, name: PATH_EFFICIENCY_60}
+    expected_sign: 1
+    mechanism: long path directional efficiency
+  - id: I2L037
+    operator: atomic
+    left: {source: return_tail_shape, name: RETURN_SKEW_20}
+    expected_sign: 1
+    mechanism: recent favorable return-tail asymmetry
+  - id: I2L038
+    operator: atomic
+    left: {source: return_tail_shape, name: RETURN_SKEW_60}
+    expected_sign: 1
+    mechanism: medium favorable return-tail asymmetry
+  - id: I2L039
+    operator: atomic
+    left: {source: return_tail_shape, name: WORST_DAY_20}
+    expected_sign: 1
+    mechanism: recent single-session downside severity
+  - id: I2L040
+    operator: atomic
+    left: {source: return_tail_shape, name: WORST_DAY_60}
+    expected_sign: 1
+    mechanism: medium single-session downside severity
+  - id: I2L041
+    operator: atomic
+    left: {source: return_tail_shape, name: TAIL_Q10_20}
+    expected_sign: 1
+    mechanism: recent lower-tail return severity
+  - id: I2L042
+    operator: atomic
+    left: {source: return_tail_shape, name: TAIL_Q10_60}
+    expected_sign: 1
+    mechanism: medium lower-tail return severity
+  - id: I2L043
+    operator: atomic
+    left: {source: trading_activity, name: AMOUNT_RATIO_5_20}
+    expected_sign: 1
+    mechanism: recent turnover participation acceleration
+  - id: I2L044
+    operator: atomic
+    left: {source: trading_activity, name: AMOUNT_RATIO_20_60}
+    expected_sign: 1
+    mechanism: medium turnover participation acceleration
+  - id: I2L045
+    operator: atomic
+    left: {source: trading_activity, name: AMOUNT_Z_60}
+    expected_sign: 1
+    mechanism: medium abnormal turnover participation
+  - id: I2L046
+    operator: atomic
+    left: {source: trading_activity, name: VOLUME_RATIO_5_20}
+    expected_sign: 1
+    mechanism: recent volume participation acceleration
+  - id: I2L047
+    operator: atomic
+    left: {source: trading_activity, name: VOLUME_RATIO_20_60}
+    expected_sign: 1
+    mechanism: medium volume participation acceleration
+  - id: I2L048
+    operator: atomic
+    left: {source: trading_activity, name: VOLUME_Z_20}
+    expected_sign: 1
+    mechanism: recent abnormal volume participation
+  - id: I2L049
+    operator: atomic
+    left: {source: trading_activity, name: VOLUME_Z_60}
+    expected_sign: 1
+    mechanism: medium abnormal volume participation
+  - id: I2L050
+    operator: atomic
+    left: {source: price_volume_coupling, name: AMIHUD_20}
+    expected_sign: -1
+    mechanism: recent price-impact friction
+  - id: I2L051
+    operator: atomic
+    left: {source: price_volume_coupling, name: AMIHUD_60}
+    expected_sign: -1
+    mechanism: medium price-impact friction
+  - id: I2L052
+    operator: atomic
+    left: {source: price_volume_coupling, name: PRICE_AMOUNT_CORR_20}
+    expected_sign: 1
+    mechanism: recent return-turnover confirmation
+  - id: I2L053
+    operator: atomic
+    left: {source: price_volume_coupling, name: PRICE_AMOUNT_CORR_60}
+    expected_sign: 1
+    mechanism: medium return-turnover confirmation
+  - id: I2L054
+    operator: atomic
+    left: {source: price_volume_coupling, name: MONEY_PRESSURE_5}
+    expected_sign: 1
+    mechanism: short signed turnover pressure
+  - id: I2L055
+    operator: atomic
+    left: {source: price_volume_coupling, name: MONEY_PRESSURE_20}
+    expected_sign: 1
+    mechanism: recent signed turnover pressure
+  - id: I2L056
+    operator: atomic
+    left: {source: price_volume_coupling, name: MONEY_PRESSURE_60}
+    expected_sign: 1
+    mechanism: medium signed turnover pressure
+  - id: I2L057
+    operator: atomic
+    left: {source: serial_dependence, name: RET_ACF1_5}
+    expected_sign: 1
+    mechanism: short return continuation memory
+  - id: I2L058
+    operator: atomic
+    left: {source: serial_dependence, name: RET_ACF1_20}
+    expected_sign: 1
+    mechanism: recent return continuation memory
+  - id: I2L059
+    operator: atomic
+    left: {source: serial_dependence, name: RET_ACF1_60}
+    expected_sign: 1
+    mechanism: medium return continuation memory
+  - id: I2L060
+    operator: atomic
+    left: {source: serial_dependence, name: RET_ACF2_20}
+    expected_sign: 1
+    mechanism: recent two-lag return memory
+  - id: I2L061
+    operator: atomic
+    left: {source: serial_dependence, name: RET_ACF2_60}
+    expected_sign: 1
+    mechanism: medium two-lag return memory
+  - id: I2L062
+    operator: atomic
+    left: {source: serial_dependence, name: SIGN_ACF1_5}
+    expected_sign: 1
+    mechanism: short return-sign persistence
+  - id: I2L063
+    operator: atomic
+    left: {source: serial_dependence, name: SIGN_ACF1_20}
+    expected_sign: 1
+    mechanism: recent return-sign persistence
+  - id: I2L064
+    operator: atomic
+    left: {source: serial_dependence, name: SIGN_ACF1_60}
+    expected_sign: 1
+    mechanism: medium return-sign persistence
+  - id: I2L065
+    operator: atomic
+    left: {source: serial_dependence, name: VAR_RATIO_5_60}
+    expected_sign: 1
+    mechanism: short aggregation trend memory
+  - id: I2L066
+    operator: atomic
+    left: {source: serial_dependence, name: VAR_RATIO_20_120}
+    expected_sign: 1
+    mechanism: long aggregation trend memory
+  - id: I2L067
+    operator: atomic
+    left: {source: range_memory, name: RANGE_ACF1_20}
+    expected_sign: -1
+    mechanism: recent range-volatility persistence burden
+  - id: I2L068
+    operator: atomic
+    left: {source: gap_response, name: GAP_SESSION_CORR_20}
+    expected_sign: 1
+    mechanism: overnight-to-session price discovery continuity
+  - id: I2L069
+    operator: atomic
+    left: {source: gap_volatility, name: GAP_VOL_RATIO_20}
+    expected_sign: -1
+    mechanism: overnight volatility allocation burden
+  - id: I2L070
+    operator: atomic
+    left: {source: liquidity_variability, name: LOG_AMOUNT_VOL_20}
+    expected_sign: -1
+    mechanism: turnover instability burden
+  - id: I2L071
+    operator: atomic
+    left: {source: transaction_friction, name: RETURN_REVERSAL_COV_20}
+    expected_sign: -1
+    mechanism: recent negative return covariance friction
+  - id: I2L072
+    operator: atomic
+    left: {source: transaction_friction, name: RETURN_REVERSAL_COV_60}
+    expected_sign: -1
+    mechanism: medium negative return covariance friction
+  - id: I2L073
+    operator: atomic
+    left: {source: conditional_activity, name: DOWN_UP_ACTIVITY_20}
+    expected_sign: -1
+    mechanism: recent downside-versus-upside turnover pressure
+  - id: I2L074
+    operator: atomic
+    left: {source: conditional_activity, name: DOWN_UP_ACTIVITY_60}
+    expected_sign: -1
+    mechanism: medium downside-versus-upside turnover pressure
+  - id: I2L075
+    operator: atomic
+    left: {source: return_concentration, name: RETURN_CONCENTRATION_20}
+    expected_sign: -1
+    mechanism: recent concentration of absolute return risk
+  - id: I2L076
+    operator: atomic
+    left: {source: return_concentration, name: RETURN_CONCENTRATION_60}
+    expected_sign: -1
+    mechanism: medium concentration of absolute return risk
+  - id: I2L077
+    operator: atomic
+    left: {source: auction_range_overlap, name: RANGE_OVERLAP_20}
+    expected_sign: 1
+    mechanism: recent adjacent-auction price continuity
+  - id: I2L078
+    operator: atomic
+    left: {source: auction_range_overlap, name: RANGE_OVERLAP_60}
+    expected_sign: 1
+    mechanism: medium adjacent-auction price continuity
+  - id: I2L079
+    operator: atomic
+    left: {source: activity_response, name: SHOCK_ACTIVITY_RESPONSE_20}
+    expected_sign: -1
+    mechanism: recent turnover response to lagged price shocks
+  - id: I2L080
+    operator: atomic
+    left: {source: activity_response, name: SHOCK_ACTIVITY_RESPONSE_60}
+    expected_sign: -1
+    mechanism: medium turnover response to lagged price shocks
+  - id: I2L081
+    operator: atomic
+    left: {source: uncertainty_activity, name: RANGE_ACTIVITY_ELASTICITY_20}
+    expected_sign: -1
+    mechanism: recent turnover sensitivity to range uncertainty
+  - id: I2L082
+    operator: atomic
+    left: {source: uncertainty_activity, name: RANGE_ACTIVITY_ELASTICITY_60}
+    expected_sign: -1
+    mechanism: medium turnover sensitivity to range uncertainty
+  - id: I2L083
+    operator: atomic
+    left: {source: volume_at_price_memory, name: OVERHEAD_TURNOVER_20}
+    expected_sign: -1
+    mechanism: recent turnover overhead supply
+  - id: I2L084
+    operator: atomic
+    left: {source: volume_at_price_memory, name: TRADED_MEDIAN_DISTANCE_20}
+    expected_sign: 1
+    mechanism: recent close displacement from traded median
+  - id: I2L085
+    operator: atomic
+    left: {source: volume_at_price_memory, name: TRADED_MEDIAN_DISTANCE_60}
+    expected_sign: 1
+    mechanism: medium close displacement from traded median
+  - id: I2L086
+    operator: atomic
+    left: {source: drawdown_duration, name: UNDERWATER_RUN_60}
+    expected_sign: -1
+    mechanism: longest recent underwater run
+  - id: I2L087
+    operator: atomic
+    left: {source: drawdown_duration, name: UNDERWATER_FRACTION_20}
+    expected_sign: -1
+    mechanism: recent fraction of underwater sessions
+  - id: I2L088
+    operator: atomic
+    left: {source: drawdown_duration, name: UNDERWATER_FRACTION_60}
+    expected_sign: -1
+    mechanism: medium fraction of underwater sessions
+  - id: I2L089
+    operator: atomic
+    left: {source: swing_topology, name: SWING_COUNT_20}
+    expected_sign: -1
+    mechanism: recent reversal-prone swing frequency
+  - id: I2L090
+    operator: atomic
+    left: {source: volatility_feedback, name: LEVERAGE_CORR_20}
+    expected_sign: -1
+    mechanism: recent return-to-range-volatility feedback
+  - id: I2L091
+    operator: atomic
+    left: {source: volatility_feedback, name: LEVERAGE_CORR_60}
+    expected_sign: -1
+    mechanism: medium return-to-range-volatility feedback
+  - id: I2L092
+    operator: atomic
+    left: {source: volatility_feedback, name: VOL_RESPONSE_ASYMMETRY_20}
+    expected_sign: -1
+    mechanism: recent downside-versus-upside range response
+  - id: I2L093
+    operator: atomic
+    left: {source: volatility_feedback, name: VOL_RESPONSE_ASYMMETRY_60}
+    expected_sign: -1
+    mechanism: medium downside-versus-upside range response
+  - id: I2L094
+    operator: atomic
+    left: {source: gap_repair, name: GAP_FILL_FRACTION_20}
+    expected_sign: -1
+    mechanism: recent gap-repair and continuation tension
+  - id: I2L095
+    operator: atomic
+    left: {source: gap_repair, name: GAP_FILL_FRACTION_60}
+    expected_sign: -1
+    mechanism: medium gap-repair and continuation tension
+  - id: I2L096
+    operator: atomic
+    left: {source: swing_topology, name: SWING_COUNT_60}
+    expected_sign: -1
+    mechanism: medium reversal-prone swing frequency

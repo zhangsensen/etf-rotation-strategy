@@ -1,0 +1,72 @@
+process_version: etf_ic_monthly_factory_v2
+process_status: superseded_by_v3_before_first_ledger_entry
+parent_process_version: etf_ic_monthly_factory_v1
+parent_status: superseded_before_first_ledger_entry
+project: etf_rotation_fixed14_eight_groups
+population: config/etf_rotation_universe_v1.json#role=candidate
+population_sha256: 0d3fb1ac4ede5008dac6f061928f725ddc07f0f2618c0b6c7b7107079460cebc
+population_file_sha256: e298763b7bbda3b07d4830e9805db7d25ba4e54bc80b9373ff82ae8b060fd80e
+groups: frameworks/etf_rotation/configs/etf_candidate14_economic_groups_v1.yaml
+groups_sha256: bd8af89b0f4d1dc5e8de0dd0fbbffe7718b5f83edfb2875576b984714570c441
+signal_time: close_D
+entry_lag: 2
+horizon: 5
+return_label: open_D_plus_7_div_open_D_plus_2_minus_1
+training_window_sessions: 360
+freeze_rule: calendar_month_end_after_all_training_labels_mature
+evaluation_rule: next_calendar_month_signal_dates
+primary_metric: eight_group_daily_spearman_rank_ic
+max_selected: 2
+selection:
+  direction: frozen_catalog_direction
+  min_mean_ic: 0.01
+  min_hac_t: 2.0
+  hac_lag: 10
+  tie_break: hac_t_then_mean_ic_then_candidate_id
+candidate_catalog:
+  - efficiency_5
+  - range_expansion_5
+  - reverse_illiquidity_5
+  - reverse_minute_late_return_5
+  - reverse_realized_vol_term_structure_5_20
+  - direction_range_coupling_20
+  - market_residual_abs_cluster_20
+  - wick_body_coupling_20
+  - d2025_range_gap_abs_corr_20
+  - d2025_amount_innovation_abs_change_20
+  - d2025_body_wick_abs_corr_20
+  - d2025_amount_shock_wick_rejection_20
+  - d2025_clv_extreme_recovery_rate_20
+  - d2025_range_shock_body_absorption_20
+  - d2025_range_shock_gap_absorption_20
+  - d2025_range_shock_clv_absorption_20
+  - d2025_range_shock_body_recovery_20
+  - d2025_range_shock_wick_rejection_20
+  - d2025_clv_extreme_wick_rejection_20
+excluded_candidates:
+  d2025_minute_amount_abs_return_concentration_20:
+    status: EXCLUDED_513100_OPEN_HALT_SENSITIVE
+    evidence: >-
+      us_large_growth mean rank was 7.96 when the trailing window contained at
+      least three 513100 opening-halt days versus 6.44 otherwise.
+  nav_source_family:
+    status: DATA_QUALITY_PENDING_NAV_OUTLIERS
+    evidence: 515880, 159516 and 159995 contain approximately 100%-200% basis outliers.
+  share_source_family:
+    status: DEGRADED_513100_SHARE_STAGNATION
+    evidence: 513100 share changes are zero on 98.8% of 2025 and 94.8% of 2026 dates.
+retained_after_sensitivity_review:
+  reverse_minute_late_return_5:
+    halted_window_mean_rank: 4.85
+    nonhalted_window_mean_rank: 4.87
+    status: RETAINED_NOT_OPEN_HALT_SENSITIVE
+paired_experiments:
+  d2025_range_shock_clv_absorption_20:
+    required_comparators: [event, response]
+    min_increment_hac_t: 2.0
+cost_policy: record_turnover_only_not_a_factor_gate
+ledger_key: [process_version, contract_sha256, freeze_month, evaluation_month]
+version_policy: any_population_group_formula_or_rule_change_requires_new_process_version_and_separate_ledger_view
+historical_surface_policy: 2026_is_seen_history_not_independent_confirmation
+conditional_search_budget_at_freeze: 384
+certification_authority: none_forward_process_evaluation_only

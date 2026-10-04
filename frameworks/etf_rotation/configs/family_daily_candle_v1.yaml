@@ -1,0 +1,15 @@
+domain: etf_rotation
+grammar_version: etf_family_daily_candle_v1
+factor_source: daily_candle
+atoms:
+  - {name: OVERNIGHT_GAP, family: daily_candle}
+  - {name: SESSION_RETURN, family: daily_candle}
+  - {name: DAILY_RANGE_PCT, family: daily_candle}
+  - {name: CLOSE_LOCATION_DAILY, family: daily_candle}
+  - {name: BODY_TO_RANGE, family: daily_candle}
+  - {name: WICK_IMBALANCE, family: daily_candle}
+  - {name: GAP_MEAN_20, family: daily_candle}
+  - {name: GAP_MEAN_60, family: daily_candle}
+  - {name: SESSION_MEAN_20, family: daily_candle}
+  - {name: SESSION_MEAN_60, family: daily_candle}
+grammar: {operators: [atomic], pair_policy: cross_family_only, max_atoms: 1}

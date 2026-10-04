@@ -1,0 +1,22 @@
+version: etf_personal_paper_v1
+purpose: forward_only_observation_not_trade_authority
+parent_contract: frameworks/etf_rotation/configs/etf_ic_monthly_factory_v4.yaml
+first_freeze_month: '2026-09'
+first_evaluation_month: '2026-10'
+signal_time: close_D
+entry_lag: 2
+horizon: 5
+group_rank: mean_of_selected_factors_stable_eight_group_ranks
+selected_groups: 2
+group_tie_break: group_id_ascending
+member_weight: equal_within_fixed_group
+daily_sleeve_fraction: 0.2
+zero_selection: cash
+missed_entry: leave_member_allocation_in_cash
+missed_exit: unpriced_no_monthly_return
+opening_fill_proxy: first_09_31_minute_volume_positive_and_daily_open_valid
+price_basis: adjusted_open_total_return_proxy_raw_open_for_fill_audit
+illustrative_cost_bps_per_side: 10
+cost_interpretation: fixed_sensitivity_only_not_personal_brokerage_cost
+benchmark: [B8_equal_groups, B14_equal_members]
+result_interpretation: realized_h5_sleeve_pnl_over_fixed_reference_capital_not_compounded_account_equity

@@ -1,0 +1,15 @@
+description: "Controller tick for the Sonnet 5 ETF mining lane (same controller scripts, ETF_RUN_DIR points at the sonnet run dir)."
+group: Research
+type: graph
+working_dir: /home/sensen/dev/projects/gpu_ml-coral
+schedule: "2-59/5 * * * *"
+max_active_runs: 1
+timeout_sec: 1500
+log_output: merged
+env:
+  - ETF_RUN_DIR: /home/sensen/dev/projects/gpu_ml-coral/runtime_outputs/etf_sonnet_mining_20260920
+  - ETF_MINING_DAG: /home/sensen/.config/dagu-gpuml/dags/etf_sonnet_mining.yaml
+steps:
+  - id: tick
+    name: Controller tick (sonnet lane)
+    run: bash frameworks/etf_rotation/scripts/research/pi_glm_mining/audit/controller_tick.sh

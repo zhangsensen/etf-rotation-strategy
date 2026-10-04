@@ -1,0 +1,107 @@
+version: group_ic_round8_horizon_and_seasonality_20260923
+source_type: claude_rounds
+purpose: seen_history_discovery_only
+campaign_extension: true
+discovery_surface: IC_DISCOVERY_ONLY
+data_root: /home/sensen/dev/projects/gpu_ml/data/etf_rotation_v1
+as_of: '2026-09-17'
+start: '2023-07-27'
+evaluation_start: '2025-01-01'
+groups: frameworks/etf_rotation/configs/etf_candidate14_economic_groups_v1.yaml
+universe: config/etf_rotation_universe_v1.json
+calendar_symbol: 510300.SH
+entry_lag: 2
+horizon: 5
+top_k: 2
+warmup: 60
+hac_lag: 10
+max_leads: 4
+external_registered_definitions: 8
+screens:
+  min_days: 360
+  min_year_days: 40
+  min_positive_years: 2
+  min_ic: 0.01
+  min_ic_hac_t: 2.0
+  min_ic_block_t: 2.0
+  min_excess8_hac_t: 2.0
+  alpha: 0.05
+  max_abs_rank_corr: 0.7
+prior_registered: 489
+budget_cap: 493
+new_definitions: 4
+mechanisms:
+  corr_horizon_ratio:
+    direction: -1
+    window: 60
+    hypothesis: "corr(5-day overlapping r_i, r_m) / corr(1-day r_i, r_m), both over the trailing 60-day window (dense). Master's own spec: a ratio below 1 (high-frequency correlation lower than low-frequency correlation) is an Epps-effect-style signature of lagged/staggered co-movement -- a different object from lead_lag statistics (those measure LEAD-LAG DIRECTION at a fixed lag; this measures the AGGREGATION-HORIZON level at which co-movement becomes visible, direction-agnostic). direction -1."
+    raw_formula: "returns_5d = close.pct_change(5); market_5d = fixed14 equal-weight mean of returns_5d on all-14-valid days (same convention as the 1-day market leg); corr_1d = corr(market_1d, returns_1d, w=60); corr_5d = corr(market_5d, returns_5d, w=60); corr_5d / corr_1d (zero-guarded)."
+  residual_semideviation_asymmetry:
+    direction: 1
+    window: 60
+    hypothesis: "MY_ASSUMPTION: market-residual return volatility asymmetry between the residual's own up-days and down-days (upside semi-deviation minus downside semi-deviation), read the same way as residual_skew_gap's up/down asymmetry but a different moment (2nd, not 3rd) of the same up/down-day conditional split. The campaign has already accepted variance-ratio/kurtosis/skew-gap as distinct moment-family candidates on the same residual series, not merged a priori. direction +1: more upside vol relative to downside vol is a favorable asymmetry."
+    raw_formula: "residual=r_i-r_m; up_vol=std(residual|residual>0, w=60, conditional min_periods=15); down_vol=std(residual|residual<0, w=60, conditional min_periods=15); up_vol - down_vol."
+  weekday_relative_return_pattern:
+    direction: 1
+    window: 60
+    hypothesis: "MY_ASSUMPTION: a day-of-week seasonality pattern in relative returns (the classic 'weekend effect' literature: Monday relative weakness, Friday relative strength) persisting is read the same 'seasonality persistence' way as master's own month_end_calendar_relative_return -- but a date's weekday name is an intrinsic, immediately-known property of the date itself (no forward information about whether more trading days remain in any period is ever needed), so this candidate has no leakage analog of the original month-end trading-day-count issue. direction +1: mean(r_i-r_m | Friday) - mean(r_i-r_m | Monday), persistent Friday-strength/Monday-weakness predicts continuation."
+    raw_formula: "friday_mean = mean(r_i-r_m | dayofweek==4, w=60, min_periods=3); monday_mean = mean(r_i-r_m | dayofweek==0, w=60, min_periods=3); friday_mean - monday_mean."
+  month_end_calendar_relative_return:
+    direction: 1
+    window: 120
+    hypothesis: "Master's own spec, originally 'last 3 TRADING days of the month' (month-end flow seasonality persistence), replaced 2026-09-23 (master approved) with a CALENDAR-DAY proxy after the trading-day-count version was found to have a genuine leakage issue: whether a day within the still-open current month is one of its last 3 trading days cannot be known until the month has actually ended (observing the following month's first trading day), which fails leakage_checks's truncation-invariance test for any cut falling mid-month -- confirmed via a dedicated unit test before this config was drafted, not merely suspected. The calendar-day proxy uses only each date's own intrinsic day-of-month/days-in-month, hence is provably leak-free under any truncation. direction +1 unchanged."
+    raw_formula: "month_end_day(t) = day-of-month(t) >= days-in-month(t) - 4 (the last 5 calendar days of the month); mean(r_i-r_m | month_end_day, w=120, min_periods=8). ~18 qualifying days expected per master's own estimate (~6 months x 3 trading days); coverage may run COVERAGE_INSUFFICIENT (n<360) at the evaluation stage -- expected, not a code defect."
+notes:
+  fixed_population: 14 ETFs / 8 economic groups
+  timing: close(D) signal; open(D+2) to open(D+7) H5 research label contract
+  evaluation_surface: previously-seen history, signal_date 2025-01-01 through 2026-09-17; discovery, not OOS
+  direction_status: economic sign frozen before evaluation; no sign selection or automatic flip
+  complete_input_windows_only: true
+  member_aggregation: each member atom computed independently, then existing fixed group aggregation
+  source_vintage: canonical daily bars; no additional information sources
+  engine: frameworks/etf_rotation/src/etf_strategy/core/etf_group_claude_rounds.py, source_type=claude_rounds.
+  campaign: >-
+    Round 8 of the USER 2026-09-23 50-round sub-agent mining campaign. Rounds 1-7 registered 24 candidates (1
+    HAS_IC: peer_corr_network_change_60, round 3). Round 8: master gave 3 candidates (corr_horizon_ratio,
+    beta_horizon_ratio, and originally month_end_relative_return -- replaced by month_end_calendar_relative_
+    return after the leakage fix); I self-devised 3 MY_ASSUMPTION candidates (mechanism written before
+    definition, master's cap: <=3 per round). 2 dropped, 4 registered below.
+  originally_proposed: >-
+    6 candidates: corr_horizon_ratio_60, beta_horizon_ratio_60 (master), rank_persistence_60,
+    residual_semideviation_asymmetry_60, weekday_relative_return_pattern_60 (MY_ASSUMPTION), plus
+    month_end_calendar_relative_return_120 (master, after the leakage-driven redefinition). 2 dropped on the
+    no-label dedup precheck below.
+  dropped_candidates: >-
+    beta_horizon_ratio_60 (master's formula, beta(5d)/beta(1d), direction +1): dedup max 0.9093 vs
+    NEW:corr_horizon_ratio_60 -- the two "horizon ratio" statistics (correlation ratio vs beta ratio, same
+    5-day/1-day aggregation construction) are highly internally correlated with each other. Note on
+    attribution: the dedup script records each unordered new-vs-new pair only once (alphabetically, under
+    "beta_horizon_ratio_60" here), so this 0.9093 collision counts toward beta_horizon_ratio_60's own reported
+    max but not toward corr_horizon_ratio_60's; since beta_horizon_ratio_60 is the one being dropped,
+    corr_horizon_ratio_60's own remaining max (0.4970, entirely against the external library) is what actually
+    matters for its own registration and is genuinely clean. rank_persistence_60 (MY_ASSUMPTION, cross-
+    sectional RANK-of-return persistence, direction +1): dedup max 0.8736 vs vol_scaled_momentum_60 -- rank-
+    transforming the return before averaging did not sufficiently decorrelate it from an existing raw-value
+    momentum family.
+  family_precheck: >-
+    checked against runtime_outputs/etf_rotation_research/ic_inventory_20260923_claude_5rounds/families.csv
+    (freshest snapshot, post round 1-5; rounds 6-7's 6 registered candidates not yet reflected as rows, but
+    their real saved scores ARE in the dedup library below). No exact-duplicate under source_type=claude_rounds
+    for any of the 4 registered candidates. Adjacency noted: daily_rounds:activity_rank_dynamics (trading-
+    ACTIVITY rank, not RETURN rank -- the underlying variable rank_persistence_60 would have used, had it
+    survived dedup) is a different object, not re-derived under a new name.
+  no_label_dedup_precheck: >-
+    computed group scores only (no forward return/H5 label), 2025-01-01..2026-09-23, against the full saved
+    scores_*.csv library (deduped to latest per candidate id, now including rounds 1-7's 24 registered
+    candidates) plus the other candidates from this round's attempts. Registered candidates' max mean(abs(daily
+    cross-sectional rank corr)): corr_horizon_ratio_60 0.4970, residual_semideviation_asymmetry_60 0.5176,
+    weekday_relative_return_pattern_60 0.5149, month_end_calendar_relative_return_120 0.6144 (all <0.7, all
+    clean, zero flagged rows in the final 4-candidate pass). See
+    runtime_outputs/etf_rotation_research/diagnostics/round8_20260923/dedup_precheck.csv.
+  eval_window_structural_precheck: >-
+    2025-01-01..2026-09-23 (420 days), read-only feature check, no labels read. All 4 registered candidates:
+    every single-member group nan_rate=0.0, mode_value_rate<=0.0405 (no near-constant group),
+    days_all_8_valid=420/420 for every candidate. No candidate was dropped on this precheck. See
+    runtime_outputs/etf_rotation_research/diagnostics/round8_20260923/structural_diagnostics.csv.
+  no_label_read: true
+  no_formal_evaluation_in_implementation_task: true

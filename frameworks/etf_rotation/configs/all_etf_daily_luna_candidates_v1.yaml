@@ -1,0 +1,134 @@
+schema_version: all_etf_daily_luna_candidates_v1
+selection_author: openai/gpt-5.6-luna
+selection_surface: mechanism_only_before_any_broad_etf_outcome_was_loaded
+population_contract: all_etf_daily_discovery_v1
+signal_time: D_CLOSE
+entry_time: open_D_plus_2
+exit_time: open_D_plus_7
+return_label: open(D+7)/open(D+2)-1
+formula_inputs: causal_daily_atom_ranks_only
+
+forward_gates:
+  fixed_campaign_budget: 64
+  alpha: 0.05
+  min_names: 100
+  min_forward_days: 250
+  min_signed_mean_ic: 0.01
+  min_forward_hac_t: 2.0
+  top_fraction: 0.10
+  min_top_label_coverage: 0.95
+  min_top_excess_bp: 5.0
+  min_top_excess_hac_t: 1.5
+  max_abs_rank_corr: 0.75
+  min_residual_mean_ic: 0.005
+  min_residual_hac_t: 1.5
+
+candidates:
+  - id: LDE001
+    operator: atomic
+    left: {source: directional_trend, name: TREND_RET_VOLADJ_20}
+    expected_sign: 1
+    mechanism: risk_adjusted_directional_drift
+  - id: LDE002
+    operator: atomic
+    left: {source: price_location, name: PRICE_POSITION_60}
+    expected_sign: 1
+    mechanism: medium_horizon_breakout_state
+  - id: LDE003
+    operator: atomic
+    left: {source: downside_risk, name: DOWNSIDE_DEV_20}
+    expected_sign: -1
+    mechanism: low_downside_risk
+  - id: LDE004
+    operator: atomic
+    left: {source: path_efficiency, name: PATH_EFFICIENCY_20}
+    expected_sign: 1
+    mechanism: continuous_price_discovery
+  - id: LDE005
+    operator: atomic
+    left: {source: gap_response, name: GAP_SESSION_CORR_20}
+    expected_sign: 1
+    mechanism: overnight_session_continuation
+  - id: LDE006
+    operator: atomic
+    left: {source: trading_activity, name: AMOUNT_RATIO_5_20}
+    expected_sign: 1
+    mechanism: attention_and_capacity_expansion
+  - id: LDE007
+    operator: atomic
+    left: {source: price_volume_coupling, name: PRICE_AMOUNT_CORR_20}
+    expected_sign: 1
+    mechanism: price_activity_confirmation
+  - id: LDE008
+    operator: atomic
+    left: {source: serial_dependence, name: VAR_RATIO_5_60}
+    expected_sign: 1
+    mechanism: directional_return_memory
+  - id: LDE009
+    operator: atomic
+    left: {source: range_memory, name: RANGE_ACF1_20}
+    expected_sign: -1
+    mechanism: low_volatility_clustering
+  - id: LDE010
+    operator: atomic
+    left: {source: gap_volatility, name: GAP_VOL_RATIO_20}
+    expected_sign: -1
+    mechanism: low_overnight_jump_uncertainty
+  - id: LDE011
+    operator: atomic
+    left: {source: transaction_friction, name: RETURN_REVERSAL_COV_20}
+    expected_sign: -1
+    mechanism: low_reversal_friction
+  - id: LDE012
+    operator: atomic
+    left: {source: volume_at_price_memory, name: OVERHEAD_TURNOVER_60}
+    expected_sign: -1
+    mechanism: low_overhead_supply
+  - id: LDE013
+    operator: rank_spread
+    left: {source: directional_trend, name: TREND_RET_VOLADJ_20}
+    right: {source: downside_risk, name: DOWNSIDE_DEV_20}
+    expected_sign: 1
+    mechanism: drift_minus_downside_risk
+  - id: LDE014
+    operator: rank_spread
+    left: {source: path_efficiency, name: PATH_EFFICIENCY_20}
+    right: {source: price_volume_coupling, name: AMIHUD_20}
+    expected_sign: 1
+    mechanism: price_discovery_minus_impact
+  - id: LDE015
+    operator: rank_spread
+    left: {source: daily_candle, name: GAP_MEAN_20}
+    right: {source: gap_volatility, name: GAP_VOL_RATIO_20}
+    expected_sign: 1
+    mechanism: overnight_drift_minus_jump_instability
+  - id: LDE016
+    operator: rank_spread
+    left: {source: price_volume_coupling, name: PRICE_AMOUNT_CORR_20}
+    right: {source: transaction_friction, name: RETURN_REVERSAL_COV_20}
+    expected_sign: 1
+    mechanism: activity_confirmation_minus_reversal
+  - id: LDE017
+    operator: rank_spread
+    left: {source: serial_dependence, name: RET_ACF1_20}
+    right: {source: range_memory, name: RANGE_ACF1_20}
+    expected_sign: 1
+    mechanism: return_continuation_minus_range_clustering
+  - id: LDE018
+    operator: rank_spread
+    left: {source: trading_activity, name: AMOUNT_RATIO_5_20}
+    right: {source: liquidity_variability, name: LOG_AMOUNT_VOL_20}
+    expected_sign: 1
+    mechanism: activity_expansion_minus_activity_instability
+  - id: LDE019
+    operator: rank_spread
+    left: {source: price_location, name: PRICE_POSITION_60}
+    right: {source: drawdown_duration, name: UNDERWATER_FRACTION_60}
+    expected_sign: 1
+    mechanism: range_strength_minus_underwater_duration
+  - id: LDE020
+    operator: rank_spread
+    left: {source: return_tail_shape, name: TAIL_Q10_20}
+    right: {source: volatility_feedback, name: VOL_RESPONSE_ASYMMETRY_20}
+    expected_sign: 1
+    mechanism: resilient_left_tail_minus_downside_volatility_response

@@ -1,0 +1,73 @@
+domain: etf_rotation_regime
+generation: regime_switch_attack_v5
+grammar_version: etf_regime_state_grammar_v6_attack_referee_wiring
+
+basket:
+  defensive_symbols: [511010.SH, 511880.SH, 518880.SH, 512890.SH]
+  attack_source: candidate_role_excluding_defensive
+  # Only three attack ETFs existed by the 2020 block; fail closed below this
+  # floor while keeping the first predeclared block observable.
+  min_attack_members: 3
+  min_defensive_members: 4
+
+execution:
+  signal_time: D_CLOSE
+  entry_lag_sessions: 2
+  horizons: [5, 10, 20]
+  primary_horizon: 5
+
+state_inputs:
+  benchmark_symbols: [510300.SH, 510500.SH]
+  normalization_window: 252
+  # A 95% historical-coverage floor tolerates isolated missing sessions while
+  # keeping the rolling moments backward-looking.
+  normalization_min_observations: 240
+  information_cutoff: close(D)
+
+atoms:
+  - {name: BENCH_RET_5, family: benchmark_trend}
+  - {name: BENCH_RET_20, family: benchmark_trend}
+  - {name: BENCH_RET_60, family: benchmark_trend}
+  - {name: BENCH_SLOPE_5, family: benchmark_trend}
+  - {name: BENCH_SLOPE_20, family: benchmark_trend}
+  - {name: BENCH_SLOPE_60, family: benchmark_trend}
+  - {name: BENCH_ABOVE_MA_20, family: benchmark_trend}
+  - {name: BENCH_ABOVE_MA_60, family: benchmark_trend}
+  - {name: CANDIDATE_BREADTH_5, family: breadth}
+  - {name: CANDIDATE_BREADTH_20, family: breadth}
+  - {name: CANDIDATE_BREADTH_60, family: breadth}
+  - {name: CANDIDATE_DISPERSION_20, family: dispersion}
+  - {name: CANDIDATE_DISPERSION_60, family: dispersion}
+  - {name: BENCH_VOL_20, family: volatility}
+  - {name: BENCH_VOL_60, family: volatility}
+  - {name: DEFENSIVE_RET_20, family: defensive_trend}
+  - {name: DEFENSIVE_RET_60, family: defensive_trend}
+  - {name: DEFENSIVE_REL_BENCH_20, family: defensive_relative}
+  - {name: DEFENSIVE_REL_BENCH_60, family: defensive_relative}
+  - {name: GOLD_RET_20, family: defensive_trend}
+  - {name: ATTACK_RET_20, family: attack_return}
+  - {name: ATTACK_RET_60, family: attack_return}
+  - {name: ATTACK_REL_DEFENSIVE_20, family: attack_relative}
+  - {name: ATTACK_REL_DEFENSIVE_60, family: attack_relative}
+  - {name: ATTACK_DD_20, family: attack_drawdown}
+  - {name: ATTACK_DD_60, family: attack_drawdown}
+
+grammar:
+  operators: [atomic, sum, spread, interaction]
+  pair_policy: cross_family_only
+
+referee:
+  # These blocks are frozen before reading the first regime result.
+  blocks:
+    up_2020: {start: '2020-01-01', end: '2020-12-31'}
+    down_2022: {start: '2022-01-01', end: '2022-12-31'}
+    sideways_2023_2024: {start: '2023-01-01', end: '2024-12-31'}
+    current_2025_2026: {start: '2025-01-01', end: '2026-09-17'}
+  diagnostic_2021_start: '2021-01-01'
+  diagnostic_2021_end: '2021-12-31'
+  directional_blocks: [down_2022, current_2025_2026]
+  neutral_blocks: [sideways_2023_2024]
+  diagnostic_blocks: [up_2020]
+  min_signed_block_mean: 0.0
+  holm_alpha: 0.05
+  neutral_harm_alpha: 0.05

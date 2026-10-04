@@ -1,0 +1,12 @@
+description: "Controller tick for the pi ETF mining line: auto-advance staged directives on exhaustion, cross-verify new admissions, refresh pair inventory, archive code. Idempotent, every 5 min."
+group: Research
+type: graph
+working_dir: /home/sensen/dev/projects/gpu_ml-coral
+schedule: "*/5 * * * *"
+max_active_runs: 1
+timeout_sec: 1500
+log_output: merged
+steps:
+  - id: tick
+    name: Controller tick
+    run: bash frameworks/etf_rotation/scripts/research/pi_glm_mining/audit/controller_tick.sh

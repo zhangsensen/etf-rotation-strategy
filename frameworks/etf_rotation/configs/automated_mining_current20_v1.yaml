@@ -1,0 +1,66 @@
+domain: etf_rotation
+grammar_version: etf_current20_ohlcv_rank_grammar_v3
+factor_source: ohlcv
+availability_lag_sessions: 0
+
+population:
+  ranking_roles: [candidate, defensive_tool, benchmark, observation]
+  min_history_sessions: 120
+  require_positive_volume: true
+
+execution:
+  signal_time: D_CLOSE
+  entry_lag_sessions: 2
+  horizons: [5, 10, 20]
+  primary_horizon: 5
+
+surfaces:
+  discovery_end: '2023-12-31'
+  ordered_audit_start: '2024-01-01'
+  ordered_audit_end: '2025-04-30'
+  seen_diagnostic_start: '2025-05-01'
+
+atoms:
+  - {name: RET_5, family: trend}
+  - {name: RET_10, family: trend}
+  - {name: RET_20, family: trend}
+  - {name: RET_60, family: trend}
+  - {name: RET_120, family: trend}
+  - {name: SKIP_RECENT_MOM_20_5, family: trend}
+  - {name: SKIP_RECENT_MOM_60_5, family: trend}
+  - {name: TREND_RET_VOLADJ_20, family: trend}
+  - {name: TREND_RET_VOLADJ_60, family: trend}
+  - {name: UP_DAY_RATIO_20, family: breadth_path}
+  - {name: UP_DAY_RATIO_60, family: breadth_path}
+  - {name: PRICE_POSITION_20, family: position}
+  - {name: PRICE_POSITION_60, family: position}
+  - {name: PRICE_POSITION_120, family: position}
+  - {name: BREAKOUT_ATR_20, family: breakout}
+  - {name: BREAKOUT_ATR_60, family: breakout}
+  - {name: CURRENT_DD_20, family: drawdown}
+  - {name: CURRENT_DD_60, family: drawdown}
+  - {name: CURRENT_DD_120, family: drawdown}
+  - {name: ULCER_20, family: drawdown}
+  - {name: ULCER_60, family: drawdown}
+  - {name: REALIZED_VOL_10, family: risk}
+  - {name: REALIZED_VOL_20, family: risk}
+  - {name: REALIZED_VOL_60, family: risk}
+  - {name: DOWNSIDE_DEV_20, family: risk}
+  - {name: DOWNSIDE_DEV_60, family: risk}
+  - {name: VOL_ACCEL_5_20, family: risk}
+
+grammar:
+  operators: [atomic, rank_mean, rank_spread, rank_interaction]
+  pair_policy: cross_family_only
+  max_atoms: 2
+
+gates:
+  # Frozen from coverage alone: at least ten pool members have 120 sessions well before audit.
+  min_discovery_days: 500
+  min_median_pairs: 10
+  min_abs_discovery_ic: 0.015
+  min_rolling_direction_stability: 0.65
+  min_year_direction_agreement: 0.75
+  min_abs_ordered_audit_ic: 0.01
+  holm_alpha: 0.05
+  redundancy_max_abs_rank_corr: 0.80

@@ -1,0 +1,11 @@
+domain: etf_rotation
+grammar_version: etf_family_nav_premium_v1
+factor_source: nav_premium
+data_subdirs: [fund_share, nav]
+asset_class_config: configs/etf_asset_classes_current20_v1.yaml
+atoms:
+  - {name: PREMIUM, family: nav_premium}
+  - {name: PREMIUM_Z_20, family: nav_premium}
+  - {name: PREMIUM_CHG_5, family: nav_premium}
+  - {name: PREM_SHARE_ALIGNED_20, family: nav_premium}
+grammar: {operators: [atomic], pair_policy: cross_family_only, max_atoms: 1}

@@ -1,0 +1,21 @@
+domain: etf_rotation
+grammar_version: etf_family_repl_volume_core_b_v1
+factor_source: repl_volume_core_b
+frequency: 1m
+# S26 stage (corrected, round_612): independent re-implementation, part
+# B of 2 (split from repl_volume_core_v1.py so the 4 directive pair
+# reproductions satisfy cross_family_only).
+# R_BIGBAR_VOL_SHARE_20: combined volume of top-10%-volume 1m bars /
+#   day total volume, 20d mean.
+# R_VOL_AUTOCORR_20: lag-1 autocorrelation of the 1m volume series
+#   within each day, 20d mean.
+# R_ULCER_20: Martin-McCann (1989) Ulcer Index on daily close, 20-day
+#   window.
+# R_GAP_FILL_FRACTION_60: fraction of trailing 60 days where the day's
+#   opening gap was crossed back through by the day's high/low range.
+atoms:
+  - {name: R_BIGBAR_VOL_SHARE_20, family: repl_volume_core_b}
+  - {name: R_VOL_AUTOCORR_20, family: repl_volume_core_b}
+  - {name: R_ULCER_20, family: repl_volume_core_b}
+  - {name: R_GAP_FILL_FRACTION_60, family: repl_volume_core_b}
+grammar: {operators: [atomic], pair_policy: cross_family_only, max_atoms: 1}

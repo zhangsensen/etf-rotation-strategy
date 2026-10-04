@@ -1,0 +1,28 @@
+schema_version: outcome_discovery_luna_frozen_pairs_v1
+selection_author: openai/gpt-5.6-luna
+selection_surface: discovery_only_before_v43_evaluation
+note: >-
+  Luna selected these mechanisms from the 25 stable discovery atom profiles before
+  round_215 produced any candidate metric. Five pairs already present in round_215
+  are omitted here; the ten remaining pairs are preserved without audit-driven edits.
+pairs:
+  - left: AFTERNOON_TURNOVER_SHARE
+    right: CATEGORY_VOL_20
+  - left: GAP_MEAN_20
+    right: BENCHMARK_RESIDUAL_VOL_60
+  - left: SHOCK_ACTIVITY_RESPONSE_60
+    right: TRADED_MEDIAN_DISTANCE_60
+  - left: INTRADAY_TAIL_JUMP_ASYMMETRY
+    right: BENCHMARK_RESIDUAL_VOL_20
+  - left: INTRADAY_TAIL_JUMP_ASYMMETRY
+    right: CLOSE_VWAP_DEVIATION
+  - left: PATH_EFFICIENCY_20
+    right: SIGN_ACF1_20
+  - left: PATH_EFFICIENCY_20
+    right: CATEGORY_MOM_60
+  - left: PEER_LEAD_NETWORK_CORR_20
+    right: DAILY_RANGE_PCT
+  - left: MARKET_LEAD_CORR_20
+    right: RET_ACF1_5
+  - left: RET_5
+    right: FIRST_HOUR_TURNOVER_SHARE

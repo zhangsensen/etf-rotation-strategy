@@ -1,0 +1,17 @@
+domain: etf_rotation
+grammar_version: etf_family_volume_at_price_memory_v1
+factor_source: volume_at_price_memory
+atoms:
+- name: OVERHEAD_TURNOVER_20
+  family: volume_at_price_memory
+- name: OVERHEAD_TURNOVER_60
+  family: volume_at_price_memory
+- name: TRADED_MEDIAN_DISTANCE_20
+  family: volume_at_price_memory
+- name: TRADED_MEDIAN_DISTANCE_60
+  family: volume_at_price_memory
+grammar:
+  operators:
+  - atomic
+  pair_policy: cross_family_only
+  max_atoms: 1

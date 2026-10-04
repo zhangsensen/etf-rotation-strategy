@@ -1,0 +1,74 @@
+version: group_ic_batch47_luna_five_20260923
+source_type: daily_rounds
+purpose: seen_history_discovery_only
+campaign_extension: true
+discovery_surface: IC_DISCOVERY_ONLY
+data_root: /home/sensen/dev/projects/gpu_ml/data/etf_rotation_v1
+as_of: '2026-09-17'
+start: '2023-07-27'
+evaluation_start: '2025-01-01'
+groups: frameworks/etf_rotation/configs/etf_candidate14_economic_groups_v1.yaml
+universe: config/etf_rotation_universe_v1.json
+calendar_symbol: 510300.SH
+entry_lag: 2
+horizon: 5
+top_k: 2
+warmup: 60
+hac_lag: 10
+max_leads: 4
+external_registered_definitions: 8
+windows:
+- 20
+screens:
+  min_days: 360
+  min_year_days: 40
+  min_positive_years: 2
+  min_ic: 0.01
+  min_ic_hac_t: 2.0
+  min_ic_block_t: 2.0
+  min_excess8_hac_t: 2.0
+  alpha: 0.05
+  max_abs_rank_corr: 0.7
+notes:
+  fixed_population: 14 ETFs / 8 economic groups
+  timing: close(D) signal; open(D+2) to open(D+7) H5 research label contract
+  evaluation_surface: previously-seen history, signal_date 2025-01-01 through 2026-09-17;
+    discovery, not OOS
+  direction_status: economic sign frozen before evaluation; no sign selection or automatic
+    flip
+  complete_input_windows_only: true
+  member_aggregation: each member atom computed independently, then existing fixed
+    group aggregation
+  source_vintage: canonical daily bars; no additional information sources
+prior_registered: 439
+budget_cap: 443
+new_definitions: 4
+mechanisms:
+  l47_prior_body_to_next_gap_corr:
+    direction: 1
+    raw_formula: body_t=Close_t/Open_t-1；gap_t=Open_t/Close_{t-1}-1。对最近20个完整(body_{t-1},gap_t)配对计算Pearson相关，任一序列零方差或缺失则NaN。
+    hypothesis: 正向日内实体之后更常出现同向隔夜缺口，表示价格发现跨越收盘持续。
+    family: close_to_open_carry
+    nearest_previous: gap_lag_body_corr_20; gap_body_magnitude_coupling_20
+    distinction: 旧项将前日gap与当日日内实体配对；本项将前日日内实体与次日gap配对，跨越相反的收盘边界。
+  l47_prior_clv_to_next_gap_corr:
+    direction: 1
+    raw_formula: clv_t=(2Close_t-High_t-Low_t)/(High_t-Low_t)；与gap_{t+1}=Open_{t+1}/Close_t-1构成最近20个配对的Pearson相关；零区间/零方差/缺失则NaN。
+    hypothesis: 前日收盘靠近区间高端后隔夜向上开盘，表示收盘买压延续到开盘。
+    family: close_to_open_carry
+    nearest_previous: clv_autocorr_20; gap_lag_body_corr_20
+    distinction: CLV不是前日收益实体；响应变量是下一隔夜gap而非当前实体或CLV自身。
+  l47_prior_range_to_next_gap_size_corr:
+    direction: -1
+    raw_formula: range_t=(High_t-Low_t)/Close_{t-1}；与|gap_{t+1}|构成最近20个完整配对的Pearson相关；零方差或缺失则NaN。
+    hypothesis: 前日区间越宽，次日开盘跳变越大，体现不稳定的隔夜风险延续。
+    family: close_to_open_carry
+    nearest_previous: overnight_variance_share_20; ohlc_range_overlap_20
+    distinction: 跨日关系连接前日全日区间与次日gap幅度，不是同窗隔夜方差占比或相邻区间交叠率。
+  l47_gap_magnitude_to_next_gap_magnitude_corr:
+    direction: -1
+    raw_formula: 计算|gap_t|与|gap_{t+1}|最近20个完整配对的Pearson相关，gap_t=Open_t/Close_{t-1}-1；零方差或缺失则NaN。
+    hypothesis: 隔夜冲击幅度成簇延续时，短窗相对强度的风险更高。
+    family: close_to_open_carry
+    nearest_previous: gap_abs_change_20; overnight_variance_share_20
+    distinction: 度量相邻隔夜gap绝对幅度的跨日依赖，不是gap幅度变化均值或overnight方差对总方差的占比。

@@ -1,0 +1,62 @@
+version: etf_candidate14_economic_groups_v1
+defined_on: '2026-09-22'
+status: descriptive_taxonomy
+universe_source: config/etf_rotation_universe_v1.json
+universe_role: candidate
+classification_basis: economic_exposure_and_underlying_market
+historical_point_in_time_claim: false
+return_clustering_used: false
+automatic_engine_activation: false
+group_return_weights: null
+# Membership is a research taxonomy, not a portfolio or a claim of independence.
+# Group-return weights and evaluation rules require a separate explicit definition.
+groups:
+  cn_technology_manufacturing:
+    name: A股科技与先进制造
+    heterogeneous: true
+    members: [159995.SZ, 159516.SZ, 515880.SH, 159852.SZ, 562500.SH, 159732.SZ]
+    subgroups:
+      semiconductors: [159995.SZ, 159516.SZ]
+      communications_hardware: [515880.SH]
+      software_services: [159852.SZ]
+      industrial_automation: [562500.SH]
+      consumer_electronics: [159732.SZ]
+    note: 共享部分成长和科技风险；五个子方向不能被视为同一行业。
+  hk_technology:
+    name: 港股科技综合
+    members: [513130.SH]
+    note: 单列港股市场、企业构成及跨境定价差异。
+  us_large_growth:
+    name: 美国大型成长
+    members: [513100.SH]
+    note: 纳斯达克100含非科技行业；保留美元和海外交易时段暴露。
+  innovative_pharma:
+    name: 创新药产业
+    members: [159992.SZ, 513120.SH]
+    subgroups:
+      mainland_equity: [159992.SZ]
+      hong_kong_equity: [513120.SH]
+    note: 同产业跨市场；企业构成、汇率与市场风险不同。
+  gold:
+    name: 黄金
+    members: [518880.SH]
+    note: 黄金价格暴露，与矿业股票分开。
+  metals_equity:
+    name: 有色资源股票
+    members: [512400.SH]
+    note: 资源企业盈利与股票风险；不是金属现货篮子。
+  dividend_low_vol:
+    name: 红利低波风格
+    members: [512890.SH]
+    note: 跨行业风格篮子；可能与电力和其他行业存在持仓交集。
+  electric_power:
+    name: 电力行业
+    members: [159611.SZ]
+    note: 行业暴露，与红利低波风格分别保留。
+cross_exposure_notes:
+  - 半导体综合与设备材料具有产业链及潜在持仓重合。
+  - 通信、消费电子与半导体可能共享科技资本开支驱动。
+  - 机器人与软件存在应用和控制系统交叉。
+  - A股科技、港股科技与美国大型成长可共同受全球成长估值变化影响。
+  - 创新药为同产业不同市场，不能据分类假定收益独立或一致。
+  - 红利低波与电力可能重合；黄金与有色资源股票可能共享部分商品风险。

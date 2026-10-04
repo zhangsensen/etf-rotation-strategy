@@ -1,0 +1,16 @@
+domain: etf_rotation
+grammar_version: etf_family_downside_risk_v1
+factor_source: downside_risk
+atoms:
+  - {name: REALIZED_VOL_20, family: downside_risk}
+  - {name: REALIZED_VOL_60, family: downside_risk}
+  - {name: DOWNSIDE_DEV_20, family: downside_risk}
+  - {name: DOWNSIDE_DEV_60, family: downside_risk}
+  - {name: CURRENT_DD_20, family: downside_risk}
+  - {name: CURRENT_DD_60, family: downside_risk}
+  - {name: MAX_DD_20, family: downside_risk}
+  - {name: MAX_DD_60, family: downside_risk}
+  - {name: ULCER_20, family: downside_risk}
+  - {name: ULCER_60, family: downside_risk}
+  - {name: VOL_ACCEL_5_20, family: downside_risk}
+grammar: {operators: [atomic], pair_policy: cross_family_only, max_atoms: 1}

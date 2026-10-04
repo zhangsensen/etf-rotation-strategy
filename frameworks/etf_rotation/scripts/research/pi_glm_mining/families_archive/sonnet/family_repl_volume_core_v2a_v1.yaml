@@ -1,0 +1,17 @@
+domain: etf_rotation
+grammar_version: etf_family_repl_volume_core_v2a_v1
+factor_source: repl_volume_core_v2a
+frequency: 1m
+# S26R2 stage (round_617): re-reproduction using pi's precise
+# definitions (5x median-amount/volume threshold, tick-rule direction),
+# distinct from S26R's controller-paraphrased definitions. Part A of 2
+# (split so R2_Z2 satisfies cross_family_only).
+# R2_VOL_SPIKE_FREQ_20: fraction of 1m bars whose volume exceeds 5x
+#   that day's median 1m bar volume, 20d mean.
+# R2_BIGBAR_DIR_SKEW_20: within big bars (amount > 5x day's median bar
+#   amount), (buy volume - sell volume)/total big-bar volume via tick
+#   rule, 20d mean.
+atoms:
+  - {name: R2_VOL_SPIKE_FREQ_20, family: repl_volume_core_v2a}
+  - {name: R2_BIGBAR_DIR_SKEW_20, family: repl_volume_core_v2a}
+grammar: {operators: [atomic], pair_policy: cross_family_only, max_atoms: 1}

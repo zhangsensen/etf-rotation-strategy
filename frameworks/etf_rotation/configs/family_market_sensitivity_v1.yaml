@@ -1,0 +1,16 @@
+domain: etf_rotation
+grammar_version: etf_family_market_sensitivity_v1
+factor_source: market_sensitivity
+benchmark_symbols: [510300.SH, 510500.SH]
+atoms:
+  - {name: MARKET_BETA_20, family: market_sensitivity}
+  - {name: MARKET_BETA_60, family: market_sensitivity}
+  - {name: DOWNSIDE_BETA_20, family: market_sensitivity}
+  - {name: DOWNSIDE_BETA_60, family: market_sensitivity}
+  - {name: MARKET_CORR_20, family: market_sensitivity}
+  - {name: MARKET_CORR_60, family: market_sensitivity}
+  - {name: BENCHMARK_RESIDUAL_VOL_20, family: market_sensitivity}
+  - {name: BENCHMARK_RESIDUAL_VOL_60, family: market_sensitivity}
+  - {name: UPSIDE_BETA_20, family: market_sensitivity}
+  - {name: UPSIDE_BETA_60, family: market_sensitivity}
+grammar: {operators: [atomic], pair_policy: cross_family_only, max_atoms: 1}

@@ -1,0 +1,6 @@
+domain: etf_rotation
+grammar_version: etf_family_gap_volatility_v1
+factor_source: gap_volatility
+atoms:
+  - {name: GAP_VOL_RATIO_20, family: gap_volatility}
+grammar: {operators: [atomic], pair_policy: cross_family_only, max_atoms: 1}
