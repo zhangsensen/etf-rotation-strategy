@@ -50,3 +50,9 @@ uv run --no-sync python -m pytest -q tests/test_etf_equity_isolation.py
 ```
 
 两边 commit 前检查暂存区，push 前用 `bash scripts/guard_no_data_in_git.sh --range BASE TIP` 检查每个新增提交，并由已安装 Git 钩子再次检查。只上传源码及必要配置、锁与文档；数据、账本、结果和凭据保持本地。迁移和这些复核不解除新挖掘暂停，也不授予交易、订单或实盘部署权限。
+
+## 迁移后命令与依赖补漏（2026-10-05）
+
+两份历史比较报告生成器的复现命令仍指定 SmartMoney 的 Python 环境，现改为本项目的 `uv run --project frameworks/etf_rotation --no-sync`。独立环境补入 `tabulate==0.9.0`，供现有 pandas Markdown 表格输出使用；锁文件只增加该依赖，报告计算逻辑与冻结结果没有改写。
+
+独立环境的框架测试 1,058 项通过，根迁移/隔离测试另 8 项通过；两份命令入口及合成 Markdown 输出检查通过。日志仅留本地，不运行历史收益重放或启动挖掘。

@@ -252,7 +252,7 @@ def build(root, reference, cutoff="2026-02-10"):
         "后续若要验证目标回升时补仓，应单独定义规则，并处理新买份额的T+1限制；不与本轮降仓修复混作一个收益结论。",
         "本轮固定计划见 PLAN.md；每版源码快照、配置、依赖和复跑命令见 run_manifest.json。",
         "报告生成命令：", "```bash",
-        "UV_PROJECT_ENVIRONMENT=/home/sensen/dev/projects/gpu_ml/.venv uv run --no-sync python frameworks/etf_rotation/scripts/build_exposure_comparison.py --root runtime_outputs/etf_exposure_research_20260918 --reference-run runtime_outputs/etf_legacy_extension_20260918",
+        "uv run --project frameworks/etf_rotation --no-sync python frameworks/etf_rotation/scripts/build_exposure_comparison.py --root runtime_outputs/etf_exposure_research_20260918 --reference-run runtime_outputs/etf_legacy_extension_20260918",
         "```", "", "原始数据与冻结候选来自：" + str(reference),
     ]))
     print(display.to_string(index=False))
