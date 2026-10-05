@@ -1,5 +1,7 @@
 # ETF 专用项目规则
 
+项目名及本机目录均为 `etf-rotation-strategy`，根目录 `/home/sensen/dev/projects/etf-rotation-strategy`。旧 `/home/sensen/dev/projects/-0927` 仅是本地历史路径兼容链接，当前运行入口与调度使用新目录。
+
 当前 IC 挖掘在 `frameworks/etf_rotation/`；根 `src/etf_strategy/`、原策略脚本及 `sealed_strategies/` 保留各自历史合同，不把旧 49 ETF 的收益/执行门槛套到当前 14 ETF / 8 组 IC 发现。
 
 - 当前工程任务：ETF 已从 SmartMoney 迁回本项目。源码、配置、测试、独立环境、调度、行情、候选库与账本归本项目；个股研究继续归 SmartMoney，不导入其源码或解释其人口/结果。

@@ -3,6 +3,7 @@ from pathlib import Path
 
 PROJECT_ROOT = Path(__file__).resolve().parents[4]
 LEGACY_ROOTS = (
+    Path("/home/sensen/dev/projects/-0927"),
     Path("/home/sensen/dev/projects/gpu_ml-coral"),
     Path("/home/sensen/dev/projects/gpu_ml-coral-autoresearch"),
     Path("/home/sensen/dev/projects/gpu_ml"),

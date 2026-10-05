@@ -1,7 +1,7 @@
 description: ETF独立更新：20只，TuShare日线及CMES分钟线；不依赖QMT个股任务
 group: ETFData
 type: chain
-working_dir: /home/sensen/dev/projects/-0927
+working_dir: /home/sensen/dev/projects/etf-rotation-strategy
 skip_if_successful: false
 schedule:
   - "30 18 * * 1-5"

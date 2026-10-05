@@ -1,6 +1,8 @@
 # ETF 独立研究项目
 
-当前 ETF 因子挖掘已从 SmartMoney 迁回本仓库。本机路径为 `/home/sensen/dev/projects/-0927`，远端为 `zhangsensen/etf-rotation-strategy`。个股挖掘归 SmartMoney；源码、配置、候选登记、账本、结果和统计分母分开维护。
+当前 ETF 因子挖掘已从 SmartMoney 迁回本仓库。本机路径为 `/home/sensen/dev/projects/etf-rotation-strategy`，远端为 `zhangsensen/etf-rotation-strategy`。个股挖掘归 SmartMoney；源码、配置、候选登记、账本、结果和统计分母分开维护。
+
+本机目录于 2026-10-05 从 `-0927` 改名为 `etf-rotation-strategy`，与仓库名称一致。当前入口及 7 个已安装 ETF 调度定义使用新目录；旧名称仅保留兼容链接，供冻结策略、历史证据和既有工具工作区解析原路径。
 
 当前研究在固定 14 ETF / 8 经济组中评价冻结方向的有符号 Rank IC；旧策略平台使用自己的历史人口和执行合同。
 

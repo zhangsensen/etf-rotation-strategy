@@ -1,7 +1,7 @@
 description: "Monthly paper signal for the 1m ETF rotation (IVOL60 across 8 groups + lowest-premium QDII sleeves). Read-only ledger, no orders."
 group: Research
 type: graph
-working_dir: /home/sensen/dev/projects/-0927
+working_dir: /home/sensen/dev/projects/etf-rotation-strategy
 schedule: "30 20 1-3 * *"
 max_active_runs: 1
 timeout_sec: 900
@@ -12,5 +12,5 @@ steps:
   - id: signal
     name: Record this month's target weights and ETF picks (idempotent per month)
     run: >-
-      /home/sensen/dev/projects/-0927/frameworks/etf_rotation/.venv/bin/python
+      /home/sensen/dev/projects/etf-rotation-strategy/frameworks/etf_rotation/.venv/bin/python
       frameworks/etf_rotation/scripts/research/etf_rotation_paper_signal.py

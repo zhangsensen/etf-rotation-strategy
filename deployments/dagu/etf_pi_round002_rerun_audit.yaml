@@ -1,7 +1,7 @@
 description: "One-off audit: rerun pi round_002 (R1-R8) on engine bea695d0 in an isolated workspace; no schedule."
 group: Research
 type: graph
-working_dir: /home/sensen/dev/projects/-0927/runtime_outputs/etf_pi_glm_mining_20260919/audit_rerun_round002_bea695d0/workspace
+working_dir: /home/sensen/dev/projects/etf-rotation-strategy/runtime_outputs/etf_pi_glm_mining_20260919/audit_rerun_round002_bea695d0/workspace
 max_active_runs: 1
 timeout_sec: 3600
 log_output: merged
@@ -11,6 +11,6 @@ steps:
   - id: evaluate
     name: Evaluate R1-R8 batch on bea695d0
     run: >-
-      /home/sensen/dev/projects/-0927/frameworks/etf_rotation/.venv/bin/python
+      /home/sensen/dev/projects/etf-rotation-strategy/frameworks/etf_rotation/.venv/bin/python
       frameworks/etf_rotation/scripts/research/pi_round002_mine.py
       evaluate --output outputs/round_002 --mode batch

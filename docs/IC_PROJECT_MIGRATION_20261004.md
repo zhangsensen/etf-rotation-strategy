@@ -2,7 +2,7 @@
 
 更新：2026-10-05。源码迁移、独立环境、数据原件归属、现有调度路径及个股遗留依赖复查已完成；这是工程交接记录，不是因子研究或策略验收结果。
 
-来源为 SmartMoney 提交 `b638ac85`；目的仓库原基线为 `4e5d1fb`，本地 `/home/sensen/dev/projects/-0927`。移入 1,399 个已跟踪 ETF 源码、配置、测试和说明文件，另补独立环境、数据传输依赖和项目路径适配。原策略平台及封印目录原位保留。
+来源为 SmartMoney 提交 `b638ac85`；目的仓库原基线为 `4e5d1fb`，本地 `/home/sensen/dev/projects/etf-rotation-strategy`。移入 1,399 个已跟踪 ETF 源码、配置、测试和说明文件，另补独立环境、数据传输依赖和项目路径适配。原策略平台及封印目录原位保留。
 
 当前入口仍用 `frameworks/etf_rotation/` 相对布局，以保留配置内部来源路径。冻结 YAML 原字节保持不变。Python 的机器绝对路径改为项目本地根；旧配置物理路径由 `etf_strategy.project_paths.local_path` 映射到本项目，不更改标签、方向、人口、阈值、数据单位或计算逻辑。路径改动前的源码哈希见 [IC_MIGRATION_SOURCE_PATHS.json](IC_MIGRATION_SOURCE_PATHS.json)。
 
@@ -64,3 +64,13 @@ uv run --no-sync python -m pytest -q tests/test_etf_equity_isolation.py
 GPU ML 主线框架下的本地残留为 Python 字节码和 pytest 缓存，未发现 `.py` 源文件；已移至本项目本地 `runtime_outputs/legacy_worktree_cleanup_20261005/main_framework_cache/`。旧 `gpu_ml-coral-autoresearch` worktree 没有已跟踪修改或未忽略的新文件，也没有使用其工作目录的进程，但存在 403 个被忽略的本地文件。移除 worktree 前已逐个原件迁移到 `runtime_outputs/legacy_worktree_cleanup_20261005/autoresearch/`，其中历史实验文件 97 个；内容 SHA-256 与 inode 核对一致。移动使用同机 rename，没有创建数据副本或上传证据。
 
 旧 worktree 已从 Git 登记和原目录移除，`etf/ic-autoresearch` 分支及原提交 `a1475a8d` 保留，用于按原源码追溯。上述本地归档中的 `LOCAL_RECOVERY_MANIFEST.json` 记录原路径、归档路径、字节数及 SHA-256。工具配置 `.serena/project.yml` 的无关修改保留；`project_paths.py` 的 LEGACY_ROOTS 及历史 audit 中的旧绝对路径仍用于冻结出处和路径重映射，不是当前运行依赖。
+
+## 项目目录改名（2026-10-05）
+
+实际根目录从 `/home/sensen/dev/projects/-0927` 改为 `/home/sensen/dev/projects/etf-rotation-strategy`，同机 rename 保留目录及数据原件的 inode，没有复制行情或实验。GitHub 仓库名称、分支及研究合同保持不变。旧根路径保留为指向新根的符号链接，封印目录、历史运行快照和原始证据记录不重写。
+
+7 个已安装 ETF Dagu 定义及对应源码定义使用新根路径；只替换路径，schedule、retry、timeout、并发及成功跳过条件不变。118 个本地兼容链接改为直接指向新根；Git 的旧工具 worktree 关联已核对，新目录下工作树解析正常，既有工具工作区依靠旧路径兼容链接继续解析。未运行调度或重启服务。
+
+`etf_strategy.project_paths.local_path` 增加旧 `-0927` 根的读取映射，允许不依赖旧目录存在而解析冻结路径。当前说明、GPU ML 导航以及比较报告生成器展示的复跑路径同步更新；历史配置、封印文件和实验源码快照不作批量替换。旧工具配置 `.serena/project.yml` 的无关改动原样保留。
+
+新目录实测框架 1,058 项、根目录集成 8 项及个股隔离 6 项通过；行情到特征冒烟仍读取 14 个候选、21,609 个有效日线观测。961 个冻结配置及封印文件逐项 SHA-256 一致。114 个当前 ETF 结果兼容链接全部有效；另外两个旧平台快捷链接 `results/run_latest`、`results/_run_latest_bak` 指向的历史目标已缺失，改名保留其目标后缀和原缺失状态，不生成替代结果。改名核对记录仅留本地 `runtime_outputs/project_rename_20261005/`。
