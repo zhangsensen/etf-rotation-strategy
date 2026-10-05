@@ -24,7 +24,7 @@
 
 两边代码提交均已在 2026-10-05 通过远端分支引用回读核对。文档后续更新另行提交，不改变以上代码基线。
 
-迁移期间记录的工程验证：ETF 测试共 1,066 项通过，历史外部个股测试 26 项通过，补漏后的 SmartMoney 根隔离测试 6 项通过。244 个冻结 ETF YAML 原字节对照一致；56 个历史个股计算模块在命名空间与上下文名称归一后 AST 一致，提取的上下文与执行收益标签逻辑另行对照未变。测试数量只表示工程检查，不是因子数量。
+迁移期间记录的工程验证：ETF 框架测试 1,058 项通过，根目录下载器与项目隔离集成测试另 8 项通过；两套命令合计 1,066 项，单独运行框架命令只计 1,058。历史外部个股测试 26 项通过，补漏后的 SmartMoney 根隔离测试 6 项通过。244 个冻结 ETF YAML 原字节对照一致；56 个历史个股计算模块在命名空间与上下文名称归一后 AST 一致，提取的上下文与执行收益标签逻辑另行对照未变。测试数量只表示工程检查，不是因子数量。
 
 7 个已安装 Dagu 定义为 `etf_luna_open50_once`、`etf_ic_monthly_factory`、`etf_pi_forward_ledger`、`etf_pi_fund_data_daily`、`etf_rotation_paper_signal`、`etf_rotation_daily`、`etf_pi_round002_rerun_audit`。定义中的运行路径及 Python 环境改为本项目，原 schedule、max_active_runs、retry_policy、timeout、skip_if_successful 设置保持不变；历史 audit 使用迁入的原工作区。未触发这些任务，也未重启服务。
 
@@ -56,3 +56,11 @@ uv run --no-sync python -m pytest -q tests/test_etf_equity_isolation.py
 两份历史比较报告生成器的复现命令仍指定 SmartMoney 的 Python 环境，现改为本项目的 `uv run --project frameworks/etf_rotation --no-sync`。独立环境补入 `tabulate==0.9.0`，供现有 pandas Markdown 表格输出使用；锁文件只增加该依赖，报告计算逻辑与冻结结果没有改写。
 
 独立环境的框架测试 1,058 项通过，根迁移/隔离测试另 8 项通过；两份命令入口及合成 Markdown 输出检查通过。日志仅留本地，不运行历史收益重放或启动挖掘。
+
+## 核查残留与本地恢复（2026-10-05）
+
+旧 `t0_etf9_sonnet_factor_mining_20r` 为九只 T+0 ETF 手动日内挖掘，沿用历史合同；`luna_v12_diversity20_20260928` 是已过期、旧入口失效的一次性挖掘。二者已从本机在用 Dagu 目录撤下，GPU ML 跟踪的 T+0 DAG 源副本也已撤下。原定义字节保存在 [归档说明](../deployments/archive/etf_mining_retired_20261005/README.md) 同目录的 `.yaml.archived` 文件中，不作为可部署 YAML，不改成当前 IC 任务。旧路径和模型名称是出处记录；未触发任务、重启服务或改动其他任务的调度设置。
+
+GPU ML 主线框架下的本地残留为 Python 字节码和 pytest 缓存，未发现 `.py` 源文件；已移至本项目本地 `runtime_outputs/legacy_worktree_cleanup_20261005/main_framework_cache/`。旧 `gpu_ml-coral-autoresearch` worktree 没有已跟踪修改或未忽略的新文件，也没有使用其工作目录的进程，但存在 403 个被忽略的本地文件。移除 worktree 前已逐个原件迁移到 `runtime_outputs/legacy_worktree_cleanup_20261005/autoresearch/`，其中历史实验文件 97 个；内容 SHA-256 与 inode 核对一致。移动使用同机 rename，没有创建数据副本或上传证据。
+
+旧 worktree 已从 Git 登记和原目录移除，`etf/ic-autoresearch` 分支及原提交 `a1475a8d` 保留，用于按原源码追溯。上述本地归档中的 `LOCAL_RECOVERY_MANIFEST.json` 记录原路径、归档路径、字节数及 SHA-256。工具配置 `.serena/project.yml` 的无关修改保留；`project_paths.py` 的 LEGACY_ROOTS 及历史 audit 中的旧绝对路径仍用于冻结出处和路径重映射，不是当前运行依赖。

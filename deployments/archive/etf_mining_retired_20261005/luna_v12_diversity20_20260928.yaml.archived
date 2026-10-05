@@ -1,0 +1,28 @@
+description: "Authorized one-off twenty-round ETF mining with failure and quota diagnostics"
+group: Research
+type: graph
+working_dir: /home/sensen/dev/projects/gpu_ml-coral
+schedule:
+  - at: "2026-09-28T21:30:00+08:00"
+max_active_runs: 1
+log_output: merged
+max_output_size: 16777216
+env:
+  - PYTHONUNBUFFERED: "1"
+  - PATH: "/home/sensen/.local/bin:/home/sensen/.cargo/bin:/usr/local/bin:/usr/bin:/bin"
+retry_policy:
+  limit: 0
+steps:
+  - id: preflight
+    run: /home/sensen/dev/projects/gpu_ml-coral/.venv/bin/python /home/sensen/dev/projects/gpu_ml-coral/runtime_outputs/etf_autoresearch_ic/launches/luna_v12_diversity20_20260928/preflight.py
+  - id: mine_twenty_rounds
+    depends: [preflight]
+    name: Twenty Luna rounds with Sol review and unchanged IC rules
+    run: >-
+      /home/sensen/dev/projects/gpu_ml-coral/.venv/bin/python -u
+      frameworks/etf_rotation/scripts/research/run_etf_autoresearch_campaign.py
+      --campaign-id luna_v12_diversity20_20260928 --rounds 20 --candidates-per-round 4
+      --mode mixed --profiles ext_coal,minute,share,nav,daily,us_sector,us_vix,us_style,ext_gold,ext_copper,ext_crude,ext_cnh,ext_hktech,ext_realrate --model gpt-6-luna --reviewer gpt-5.6-sol
+  - id: summarize
+    depends: [mine_twenty_rounds]
+    run: /home/sensen/dev/projects/gpu_ml-coral/.venv/bin/python /home/sensen/dev/projects/gpu_ml-coral/runtime_outputs/etf_autoresearch_ic/launches/luna_v12_diversity20_20260928/postprocess.py

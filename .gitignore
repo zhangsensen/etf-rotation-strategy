@@ -175,3 +175,10 @@ etf_list.json
 !/deployments/archive/
 /deployments/archive/*
 !/deployments/archive/etf_research_20261003/
+
+# Retired DAG source definitions only; runtime evidence stays ignored.
+!/deployments/archive/etf_mining_retired_20261005/
+/deployments/archive/etf_mining_retired_20261005/*
+!/deployments/archive/etf_mining_retired_20261005/README.md
+!/deployments/archive/etf_mining_retired_20261005/t0_etf9_sonnet_factor_mining_20r.yaml.archived
+!/deployments/archive/etf_mining_retired_20261005/luna_v12_diversity20_20260928.yaml.archived

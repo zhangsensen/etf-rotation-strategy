@@ -1,0 +1,45 @@
+description: Manual 20-round Claude Sonnet causal 1m entry-factor discovery for nine T+0 ETFs
+group: AShareResearch
+type: graph
+working_dir: /home/sensen/dev/projects/gpu_ml
+skip_if_successful: false
+log_output: merged
+
+env:
+  - PYTHONUNBUFFERED: "1"
+  - CONFIG: "alpha_mining/mining_session/config/intraday_t0_etf9_sonnet_discovery_v1.yaml"
+
+retry_policy:
+  limit: 0
+
+steps:
+  - id: preflight
+    name: Verify Sonnet, frozen configs, nine ETF archives, and sealed holdout
+    run: >-
+      /home/sensen/.local/bin/uv run --no-sync python -m
+      alpha_mining.mining_session.claude_intraday_miner preflight --config "$CONFIG"
+    timeout_sec: 300
+
+  - id: mine_20_rounds
+    name: Run 20 resumable Sonnet rounds with at least 10 causal 1m factors each
+    run: >-
+      /home/sensen/.local/bin/uv run --no-sync python -m
+      alpha_mining.mining_session.claude_intraday_miner run --config "$CONFIG"
+    depends: [preflight]
+    timeout_sec: 86400
+
+  - id: verify
+    name: Verify 20 rounds, 200+ factors, zero timing violations, and unopened holdout
+    run: >-
+      /home/sensen/.local/bin/uv run --no-sync python -m
+      alpha_mining.mining_session.claude_intraday_miner verify --config "$CONFIG"
+    depends: [mine_20_rounds]
+    timeout_sec: 300
+
+  - id: status
+    name: Print validation-only discovery shortlist and lineage
+    run: >-
+      /home/sensen/.local/bin/uv run --no-sync python -m
+      alpha_mining.mining_session.claude_intraday_miner status --config "$CONFIG"
+    depends: [verify]
+    timeout_sec: 120
